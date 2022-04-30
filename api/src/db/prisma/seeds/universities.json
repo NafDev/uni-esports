@@ -1,0 +1,498 @@
+[
+  {
+    "name": "University of Aberdeen",
+    "domains": ["abdn.ac.uk", "aberdeen.ac.uk"]
+  },
+  {
+    "name": "Abertay University",
+    "domains": ["tay.ac.uk", "abertay.ac.uk"]
+  },
+  {
+    "name": "Anglia Polytechnic University",
+    "domains": ["anglia.ac.uk", "apu.ac.uk"]
+  },
+  {
+    "name": "Aston University",
+    "domains": ["aston.ac.uk"]
+  },
+  {
+    "name": "University of Bath",
+    "domains": ["bath.ac.uk"]
+  },
+  {
+    "name": "Bath Spa University College",
+    "domains": ["bathspa.ac.uk"]
+  },
+  {
+    "name": "Birkbeck College, University of London",
+    "domains": ["bbk.ac.uk", "birkbeck.ac.uk"]
+  },
+  {
+    "name": "University of Birmingham",
+    "domains": ["bham.ac.uk", "birmingham.ac.uk"]
+  },
+  {
+    "name": "University of Bournemouth",
+    "domains": ["bournemouth.ac.uk"]
+  },
+  {
+    "name": "University of Bradford",
+    "domains": ["brad.ac.uk", "bradford.ac.uk"]
+  },
+  {
+    "name": "University of Brighton",
+    "domains": ["bton.ac.uk", "brighton.ac.uk"]
+  },
+  {
+    "name": "University of Bristol",
+    "domains": ["bris.ac.uk", "bristol.ac.uk"]
+  },
+  {
+    "name": "Brunel University",
+    "domains": ["brunel.ac.uk"]
+  },
+  {
+    "name": "University of Buckingham",
+    "domains": ["buckingham.ac.uk"]
+  },
+  {
+    "name": "University of Cambridge",
+    "domains": ["cam.ac.uk", "cambridge.ac.uk"]
+  },
+  {
+    "name": "Canterbury Christ Church University College",
+    "domains": ["cant.ac.uk"]
+  },
+  {
+    "name": "Chichester College",
+    "domains": ["chichester.ac.uk"]
+  },
+  {
+    "name": "University of Central England",
+    "domains": ["uce.ac.uk"]
+  },
+  {
+    "name": "University of Central Lancashire",
+    "domains": ["uclan.ac.uk"]
+  },
+  {
+    "name": "City University, London",
+    "domains": ["city.ac.uk"]
+  },
+  {
+    "name": "University of Coventry",
+    "domains": ["coventry.ac.uk", "cov.ac.uk"]
+  },
+  {
+    "name": "Cranfield University",
+    "domains": ["cranfield.ac.uk"]
+  },
+  {
+    "name": "University of Derby",
+    "domains": ["derby.ac.uk"]
+  },
+  {
+    "name": "University of Dundee",
+    "domains": ["dundee.ac.uk"]
+  },
+  {
+    "name": "University of Durham",
+    "domains": ["dur.ac.uk", "durham.ac.uk"]
+  },
+  {
+    "name": "University of East Anglia",
+    "domains": ["uea.ac.uk"]
+  },
+  {
+    "name": "University of East London",
+    "domains": ["uel.ac.uk"]
+  },
+  {
+    "name": "University of Edinburgh",
+    "domains": ["ed.ac.uk", "edinburgh.ac.uk"]
+  },
+  {
+    "name": "Edinburgh College of Art",
+    "domains": ["eca.ac.uk"]
+  },
+  {
+    "name": "University of Essex",
+    "domains": ["essex.ac.uk", "sx.ac.uk"]
+  },
+  {
+    "name": "University of Exeter",
+    "domains": ["ex.ac.uk", "exeter.ac.uk"]
+  },
+  {
+    "name": "Glasgow Caledonian University",
+    "domains": ["gcal.ac.uk"]
+  },
+  {
+    "name": "University of Glamorgan",
+    "domains": ["glam.ac.uk", "glamorgan.ac.uk"]
+  },
+  {
+    "name": "University of Glasgow",
+    "domains": ["gla.ac.uk", "glasgow.ac.uk"]
+  },
+  {
+    "name": "Glasgow School of Art",
+    "domains": ["gsa.ac.uk"]
+  },
+  {
+    "name": "University of Gloucestershire",
+    "domains": ["glos.ac.uk", "chelt.ac.uk"]
+  },
+  {
+    "name": "University of Greenwich",
+    "domains": ["gre.ac.uk", "greenwich.ac.uk"]
+  },
+  {
+    "name": "University of London School of Pharmacy",
+    "domains": ["ulsop.ac.uk"]
+  },
+  {
+    "name": "London Metropolitan University",
+    "domains": ["londonmet.ac.uk", "lgu.ac.uk", "unl.ac.uk"]
+  },
+  {
+    "name": "Harper-Adams Agricultural College",
+    "domains": ["harper-adams.ac.uk", "haac.ac.uk"]
+  },
+  {
+    "name": "Heriot-Watt University",
+    "domains": ["hw.ac.uk", "heriot-watt.ac.uk"]
+  },
+  {
+    "name": "University of Hertfordshire",
+    "domains": ["herts.ac.uk", "hertfordshire.ac.uk"]
+  },
+  {
+    "name": "Homerton College Cambridge",
+    "domains": ["health-homerton.ac.uk", "homerton.cam.ac.uk"]
+  },
+  {
+    "name": "University of Huddersfield",
+    "domains": ["hud.ac.uk", "huddersfield.ac.uk"]
+  },
+  {
+    "name": "University of Hull",
+    "domains": ["hull.ac.uk"]
+  },
+  {
+    "name": "Institute of Cancer Research, University of London",
+    "domains": ["icr.ac.uk"]
+  },
+  {
+    "name": "Institute of Education, University of London",
+    "domains": ["ioe.ac.uk"]
+  },
+  {
+    "name": "University of Keele",
+    "domains": ["keele.ac.uk"]
+  },
+  {
+    "name": "University of Kent at Canterbury",
+    "domains": ["kent.ac.uk", "ukc.ac.uk"]
+  },
+  {
+    "name": "Kingston University",
+    "domains": ["king.ac.uk", "kingston.ac.uk"]
+  },
+  {
+    "name": "University of Lancaster",
+    "domains": ["lancs.ac.uk", "lancaster.ac.uk"]
+  },
+  {
+    "name": "University of Leeds",
+    "domains": ["leeds.ac.uk"]
+  },
+  {
+    "name": "Leeds Metropolitan University",
+    "domains": ["lmu.ac.uk"]
+  },
+  {
+    "name": "University of Leicester",
+    "domains": ["le.ac.uk", "leicester.ac.uk"]
+  },
+  {
+    "name": "De Montfort University",
+    "domains": ["dmu.ac.uk"]
+  },
+  {
+    "name": "University of Lincoln and Humberside",
+    "domains": ["lincoln.ac.uk", "ulh.ac.uk", "humber.ac.uk"]
+  },
+  {
+    "name": "University of Liverpool",
+    "domains": ["liv.ac.uk", "liverpool.ac.uk"]
+  },
+  {
+    "name": "Liverpool John Moores University",
+    "domains": ["livjm.ac.uk"]
+  },
+  {
+    "name": "Goldsmiths College, University of London",
+    "domains": ["goldsmiths.ac.uk", "gold.ac.uk"]
+  },
+  {
+    "name": "Imperial College, University of London",
+    "domains": ["ic.ac.uk"]
+  },
+  {
+    "name": "London University Business School",
+    "domains": ["london.edu"]
+  },
+  {
+    "name": "King's College London",
+    "domains": ["kcl.ac.uk"]
+  },
+  {
+    "name": "Queen Mary, University of London",
+    "domains": ["qmw.ac.uk"]
+  },
+  {
+    "name": "Royal Holloway, University of London",
+    "domains": ["rhul.ac.uk", "rhbnc.ac.uk"]
+  },
+  {
+    "name": "University College London",
+    "domains": ["ucl.ac.uk"]
+  },
+  {
+    "name": "London School of Hygiene and Tropical Medicine",
+    "domains": ["lshtm.ac.uk"]
+  },
+  {
+    "name": "London School of Economics",
+    "domains": ["lse.ac.uk"]
+  },
+  {
+    "name": "School of Oriental and African Studies",
+    "domains": ["soas.ac.uk"]
+  },
+  {
+    "name": "University of Loughborough",
+    "domains": ["lboro.ac.uk", "loughborough.ac.uk"]
+  },
+  {
+    "name": "University of Luton",
+    "domains": ["luton.ac.uk"]
+  },
+  {
+    "name": "Manchester Metropolitan University",
+    "domains": ["mmu.ac.uk"]
+  },
+  {
+    "name": "University of Manchester",
+    "domains": ["man.ac.uk", "manchester.ac.uk", "mcc.ac.uk"]
+  },
+  {
+    "name": "University of Manchester Institute of Science and Technology",
+    "domains": ["umist.ac.uk"]
+  },
+  {
+    "name": "University of Middlesex",
+    "domains": ["mdx.ac.uk"]
+  },
+  {
+    "name": "Napier University",
+    "domains": ["napier.ac.uk"]
+  },
+  {
+    "name": "University of Newcastle",
+    "domains": ["ncl.ac.uk", "newcastle.ac.uk"]
+  },
+  {
+    "name": "University of Northumbria",
+    "domains": ["unn.ac.uk", "northumbria.ac.uk"]
+  },
+  {
+    "name": "University of Wales College Newport",
+    "domains": ["newport.ac.uk"]
+  },
+  {
+    "name": "Northampton University College",
+    "domains": ["northampton.ac.uk"]
+  },
+  {
+    "name": "University of Nottingham",
+    "domains": ["nott.ac.uk", "nottingham.ac.uk"]
+  },
+  {
+    "name": "Nottingham Trent University",
+    "domains": ["ntu.ac.uk"]
+  },
+  {
+    "name": "University of the Arts London",
+    "domains": ["arts.ac.uk", "linst.ac.uk"]
+  },
+  {
+    "name": "Open University",
+    "domains": ["open.ac.uk"]
+  },
+  {
+    "name": "University of Oxford",
+    "domains": ["ox.ac.uk", "oxford.ac.uk"]
+  },
+  {
+    "name": "Oxford Brookes University",
+    "domains": ["brookes.ac.uk", "oxford-brookes.ac.uk"]
+  },
+  {
+    "name": "University of Paisley",
+    "domains": ["paisley.ac.uk"]
+  },
+  {
+    "name": "University of Plymouth",
+    "domains": ["plym.ac.uk", "plymouth.ac.uk"]
+  },
+  {
+    "name": "University of Portsmouth",
+    "domains": ["port.ac.uk", "portsmouth.ac.uk"]
+  },
+  {
+    "name": "Queen Margaret University College",
+    "domains": ["qmced.ac.uk", "qmuc.ac.uk"]
+  },
+  {
+    "name": "Queen's University Belfast",
+    "domains": ["qub.ac.uk"]
+  },
+  {
+    "name": "University of Reading",
+    "domains": ["rdg.ac.uk", "reading.ac.uk"]
+  },
+  {
+    "name": "The Robert Gordon University",
+    "domains": ["rgu.ac.uk"]
+  },
+  {
+    "name": "The Royal Vetinary College, University of London",
+    "domains": ["rvc.ac.uk"]
+  },
+  {
+    "name": "The Royal College of Art",
+    "domains": ["rca.ac.uk"]
+  },
+  {
+    "name": "University of St Andrews",
+    "domains": ["st-and.ac.uk", "st-andrews.ac.uk"]
+  },
+  {
+    "name": "University of Salford",
+    "domains": ["salford.ac.uk"]
+  },
+  {
+    "name": "University of Sheffield",
+    "domains": ["shef.ac.uk", "sheffield.ac.uk"]
+  },
+  {
+    "name": "Sheffield Hallam University",
+    "domains": ["shu.ac.uk"]
+  },
+  {
+    "name": "University of Southampton",
+    "domains": ["soton.ac.uk", "southampton.ac.uk"]
+  },
+  {
+    "name": "South Bank University",
+    "domains": ["sbu.ac.uk"]
+  },
+  {
+    "name": "University of Staffordshire",
+    "domains": ["staffs.ac.uk", "staffordshire.ac.uk"]
+  },
+  {
+    "name": "University of Stirling",
+    "domains": ["stir.ac.uk", "stirling.ac.uk"]
+  },
+  {
+    "name": "University of Strathclyde",
+    "domains": ["strath.ac.uk", "strathclyde.ac.uk"]
+  },
+  {
+    "name": "University of Sunderland",
+    "domains": ["sunderland.ac.uk", "sund.ac.uk"]
+  },
+  {
+    "name": "The Surrey Institute of Art and Design University College",
+    "domains": ["surrart.ac.uk"]
+  },
+  {
+    "name": "University of Surrey",
+    "domains": ["surrey.ac.uk"]
+  },
+  {
+    "name": "University of Surrey, Roehampton",
+    "domains": ["roehampton.ac.uk"]
+  },
+  {
+    "name": "University of Sussex",
+    "domains": ["susx.ac.uk", "sussex.ac.uk"]
+  },
+  {
+    "name": "St.George's Hospital Medical School",
+    "domains": ["sghms.ac.uk"]
+  },
+  {
+    "name": "University of Teeside",
+    "domains": ["tees.ac.uk", "teeside.ac.uk"]
+  },
+  {
+    "name": "Thames Valley University",
+    "domains": ["tvu.ac.uk"]
+  },
+  {
+    "name": "University of Ulster",
+    "domains": ["ulst.ac.uk", "ulster.ac.uk"]
+  },
+  {
+    "name": "University of Wales, Aberystwyth",
+    "domains": ["aber.ac.uk", "aberystwyth.ac.uk"]
+  },
+  {
+    "name": "University of Wales Bangor",
+    "domains": ["bangor.ac.uk"]
+  },
+  {
+    "name": "Cardiff University",
+    "domains": ["cf.ac.uk", "cardiff.ac.uk", "uwcm.ac.uk"]
+  },
+  {
+    "name": "University of Wales, Lampeter",
+    "domains": ["lamp.ac.uk", "lampeter.ac.uk"]
+  },
+  {
+    "name": "University of Swansea",
+    "domains": ["swan.ac.uk", "swansea.ac.uk"]
+  },
+  {
+    "name": "University of Warwick",
+    "domains": ["warwick.ac.uk"]
+  },
+  {
+    "name": "University of the West of England",
+    "domains": ["uwe.ac.uk"]
+  },
+  {
+    "name": "University of Wales Institute at Cardiff",
+    "domains": ["uwic.ac.uk"]
+  },
+  {
+    "name": "University of Westminster",
+    "domains": ["wmin.ac.uk", "westminster.ac.uk"]
+  },
+  {
+    "name": "University of Wolverhampton",
+    "domains": ["wlv.ac.uk", "wolverhampton.ac.uk"]
+  },
+  {
+    "name": "University College Worcester",
+    "domains": ["worc.ac.uk"]
+  },
+  {
+    "name": "University of York",
+    "domains": ["york.ac.uk"]
+  }
+]

@@ -1,0 +1,25 @@
+button {
+  @apply text-white font-medium text-sm text-center
+    rounded-md px-5 py-2.5 mr-2 mb-2 shadow-sm flex justify-center;
+}
+
+button.primary {
+  @apply bg-gradient-to-br from-primary to-[#2b76d1] hover:bg-gradient-to-tl;
+}
+
+button.secondary {
+  @apply text-white bg-black bg-opacity-10 hover:bg-opacity-20 border border-grey;
+}
+
+button.danger {
+  @apply bg-gradient-to-br to-[#d84b5b] from-[#ff596c] hover:bg-gradient-to-tl;
+}
+
+button.loading {
+  @apply text-opacity-0;
+}
+
+.card {
+  @apply
+    block p-6 max-w-sm bg-grey bg-opacity-10 rounded-lg border border-grey shadow-md
+}

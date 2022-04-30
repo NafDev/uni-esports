@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    // ---  Mono-repo compilerOptions ---
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+  },
+}

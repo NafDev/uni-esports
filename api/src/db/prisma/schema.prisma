@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  Int       @id @default(autoincrement())
+  uid                 String    @unique
+  email               String    @unique
+  verified            Boolean   @default(false)
+  passwordHash        String
+  passwordResetToken  String?
+  passwordResetExpiry DateTime?
+  universityId        Int?
+  steam64Id           String?
+  discordId           String?
+
+  university University? @relation(fields: [universityId], references: [id])
+  UserRoles  UserRoles[]
+  @@map("user")
+}
+
+model Role {
+  id   Int    @id
+  name String
+
+  UserRoles UserRoles[]
+  @@map("role")
+}
+
+model UserRoles {
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  userId Int
+  roleId Int
+
+  @@id([userId, roleId])
+  @@map("user_role")
+}
+
+model University {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  EmailDomain EmailDomain[]
+  User        User[]
+  @@map("university")
+}
+
+model EmailDomain {
+  domain       String @unique
+  universityId Int
+
+  university University @relation(fields: [universityId], references: [id])
+  @@id([domain, universityId])
+  @@map("university_domain")
+}
