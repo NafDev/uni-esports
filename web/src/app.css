@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-background;
-  color: white;
-  font-family: 'Play', sans-serif;
+	@apply bg-background;
+	color: white;
+	font-family: 'Play', sans-serif;
 }

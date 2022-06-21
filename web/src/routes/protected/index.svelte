@@ -1,16 +1,16 @@
 <script context="module" lang="ts">
-  // import { isLoggedInGuard } from '@/lib/guards/auth';
+	// import { isLoggedInGuard } from '@/lib/guards/auth';
 
-  // export async function load() {
-  //   return isLoggedInGuard();
-  // }
+	// export async function load() {
+	//   return isLoggedInGuard();
+	// }
 </script>
 
 <script lang="ts">
 </script>
 
 <svelte:head>
-  <title>Protected Page</title>
+	<title>Protected Page</title>
 </svelte:head>
 
 <h1>This page is protected</h1>

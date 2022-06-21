@@ -1,5 +1,4 @@
-export const enum Roles {
-  PLAYER = 100,
-  CAPTAIN = 110,
-  USER_ADMIN = 500,
-}
+export type Role = 
+| 'USER' 
+| 'ADMIN'
+| 'MODERATOR'

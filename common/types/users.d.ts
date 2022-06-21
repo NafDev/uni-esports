@@ -4,7 +4,7 @@ export interface IUserLoginDto {
 }
 
 export interface IUserInfoDto {
-  uid: string;
+  id: string;
   email: string;
 }
 

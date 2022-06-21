@@ -1,36 +1,35 @@
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { getAllCORSHeaders } from 'supertokens-node';
-import { SupertokensExceptionFilter } from './api/auth/auth.filter';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
+import { SupertokensExceptionFilter } from './api/auth/auth.filter';
 import { AllExceptionsFilter } from './common/exception.filter';
+import appConfig from './config/app.config';
 import { PrismaExceptionFilter } from './db/prisma/prisma.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+	const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
-  app.useLogger(app.get(Logger));
-  app.useGlobalInterceptors(new LoggerErrorInterceptor());
+	app.useLogger(app.get(Logger));
+	app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
-  const configService = app.get(ConfigService);
+	app.getHttpAdapter().getInstance().set('etag', false);
+	app.use(helmet());
+	app.enableCors({
+		origin: [appConfig.WEB_DOMAIN],
+		allowedHeaders: ['content-type', ...getAllCORSHeaders()],
+		credentials: true
+	});
 
-  app.getHttpAdapter().getInstance().set('etag', false);
+	app.useGlobalFilters(new SupertokensExceptionFilter());
+	app.useGlobalFilters(new PrismaExceptionFilter());
+	app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
-  app.enableCors({
-    origin: [configService.get('WEB_DOMAIN')],
-    allowedHeaders: ['content-type', ...getAllCORSHeaders()],
-    credentials: true,
-  });
+	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  app.useGlobalFilters(new SupertokensExceptionFilter());
-  app.useGlobalFilters(new PrismaExceptionFilter());
-  app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
-
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-
-  await app.listen(configService.get('PORT'));
+	await app.listen(appConfig.PORT);
 }
 
 void bootstrap();

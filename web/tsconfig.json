@@ -1,5 +1,5 @@
 {
-	"extends": "../tsconfig.json",
+	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
 		"moduleResolution": "node",
 		"module": "es2020",
@@ -29,8 +29,9 @@
 		"allowJs": true,
 		"checkJs": true,
 		"paths": {
-			"@/*": ["src/*"],
-			"@uniesports/types": ["../common/types"],
+			"$lib": ["src/lib"],
+			"$lib/*": ["src/lib/*"],
+			"@uniesports/*": ["../common/*"]
 		}
 	},
 	"include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte"]
