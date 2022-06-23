@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import type { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { Error as STError } from 'supertokens-node';
 import { errorHandler } from 'supertokens-node/framework/express';
 

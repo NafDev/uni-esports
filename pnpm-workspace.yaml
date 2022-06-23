@@ -1,5 +1,6 @@
 packages:
-  - "api"
-  - "web"
-  # exclude packages that are inside test directories
-  - "!**/test/**"
+  - 'api'
+  - 'web'
+  - 'interfaces'
+  # exclude packages that are inside test/ directories
+  - '!**/test/**'

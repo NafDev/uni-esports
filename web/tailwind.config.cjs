@@ -1,3 +1,6 @@
+const typography = require('@tailwindcss/typography');
+const forms = require('@tailwindcss/forms');
+
 module.exports = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
@@ -12,6 +15,6 @@ module.exports = {
 		},
 		extend: {}
 	},
-	plugins: [],
+	plugins: [forms, typography],
 	mode: 'jit'
 };

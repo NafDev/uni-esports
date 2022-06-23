@@ -14,12 +14,8 @@
 		"pretty": true,
 		"stripInternal": true,
 		"noEmitOnError": true,
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"paths": {
-			"@uniesports/*": ["../common/*"]
-		}
+		"importsNotUsedAsValues": "error",
+		"sourceMap": true
 	},
 	"ts-node": {
 		"files": true

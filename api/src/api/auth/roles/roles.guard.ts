@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
-import { Role } from '../../users/users.types';
-import { AccessTokenPayload } from '../auth.types';
+import type { Request } from 'express';
+import type { Role, AccessTokenPayload } from '@uni-esports/interfaces';
 import { ROLES_KEY } from './roles.decorator';
 
 @Injectable()
@@ -21,6 +20,12 @@ export class RolesGuard implements CanActivate {
 		const request: Request = context.switchToHttp().getRequest();
 		const payload: AccessTokenPayload = request.session?.getAccessTokenPayload();
 
-		return requiredRoles.every((role) => payload.roles.includes(role));
+		if (!payload || payload.roles === undefined) {
+			return false;
+		}
+
+		const payloadRoles = payload.roles;
+
+		return requiredRoles.every((role) => payloadRoles.includes(role));
 	}
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Res, Session, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
-import { SessionContainer } from 'supertokens-node/recipe/session';
+import type { Response } from 'express';
+import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { EmailDto, PasswordDto, UserLoginDto } from '../users/users.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';

@@ -5,9 +5,11 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  // https://github.com/prisma/prisma/issues/13672
+  // output   = ".prisma-client-js"
 }
 
-// Keep in sync with common/types/roles.d.ts
+// Keep in sync with @uni-esports/interfaces
 enum Role {
   ADMIN
   USER

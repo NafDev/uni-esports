@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { hash } from 'bcrypt';
 import appConfig from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
-import { CreateUserDto, UserInfoDto } from './users.dto';
+import type { CreateUserDto, UserInfoDto } from './users.dto';
 
 @Injectable()
 export class UserService {

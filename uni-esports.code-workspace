@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"name": ".",
+			"path": "."
+		},
+		{
+			"name": "interfaces",
+			"path": "interfaces"
+		},
+		{
+			"name": "api",
+			"path": "api"
+		},
+		{
+			"name": "web",
+			"path": "web"
+		}
+	],
+	"settings": {
+	}
+}

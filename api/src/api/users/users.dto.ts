@@ -7,7 +7,7 @@ import type {
 	IPasswordResetDto,
 	IUserInfoDto,
 	IUserLoginDto
-} from '@uniesports/types';
+} from '@uni-esports/interfaces';
 
 export class UserLoginDto implements IUserLoginDto {
 	@IsEmail()

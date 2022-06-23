@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
-import { Response } from 'express';
-import { SessionContainer } from 'supertokens-node/recipe/session';
-import { AccessTokenPayload } from '@uniesports/types';
+import type { Response } from 'express';
+import type { SessionContainer } from 'supertokens-node/recipe/session';
+import type { AccessTokenPayload } from '@uni-esports/interfaces';
 import appConfig from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
 import { createToken, sha265hex } from '../../util/utility';
-import { UserLoginDto } from '../users/users.dto';
+import type { UserLoginDto } from '../users/users.dto';
 import { STSession } from './supertokens/supertokens.types';
 
 @Injectable()

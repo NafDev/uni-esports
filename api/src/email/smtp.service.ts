@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { Injectable, Logger } from '@nestjs/common';
 import { compile } from 'handlebars';
 import * as nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import mjml2html from 'mjml';
 import appConfig from '../config/app.config';
 

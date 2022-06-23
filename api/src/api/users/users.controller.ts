@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Session, UseGuards } from '@nestjs/common';
-import { SessionContainer } from 'supertokens-node/recipe/session';
+import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/auth.guard';
 import { CreateUserDto } from './users.dto';
 import { UserService } from './users.service';
