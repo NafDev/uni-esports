@@ -1,12 +1,15 @@
 /// <reference types="@sveltejs/kit" />
 
-type Boolish = boolean | Promise<boolean> | (() => boolean) | (() => Promise<boolean>);
-
-// See https://kit.svelte.dev/docs/types#the-app-namespace
+// See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare namespace App {
-	// interface Locals {}
+	interface Locals {
+		userid: string;
+	}
+
 	// interface Platform {}
+
 	// interface Session {}
-	// interface Stuff
+
+	// interface Stuff {}
 }

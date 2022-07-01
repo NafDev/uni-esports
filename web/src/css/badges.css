@@ -1,0 +1,18 @@
+.badge {
+	@apply flex h-auto w-auto items-center rounded-md text-center text-sm font-bold text-white;
+}
+.badge-primary {
+	@apply bg-primary px-1 py-0.5;
+}
+.badge-dark {
+	@apply bg-black bg-opacity-30 px-1 py-0.5;
+}
+.badge-success {
+	@apply bg-success px-1 py-0.5;
+}
+.badge-warning {
+	@apply bg-warning px-1 py-0.5;
+}
+.badge-danger {
+	@apply bg-danger px-1 py-0.5;
+}

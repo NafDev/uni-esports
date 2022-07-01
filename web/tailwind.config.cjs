@@ -10,8 +10,11 @@ module.exports = {
 			greyText: '#c9d4e9',
 			transparent: '#fff0',
 			grey: '#8492a6',
-			primary: '#3c94ff',
-			danger: '##F05365',
+			primary: '#3984da',
+			secondary: '#555d81',
+			success: '#30b663',
+			warning: '#E29A11',
+			danger: '#D44448',
 			background: '#001D3D'
 		},
 		extend: {}

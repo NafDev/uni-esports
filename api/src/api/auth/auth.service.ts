@@ -19,7 +19,7 @@ export class AuthService {
 	async login(userLoginDto: UserLoginDto, resp: Response) {
 		const user = await this.prisma.user.findUnique({
 			where: { email: userLoginDto.email.toLowerCase() },
-			select: { id: true, passwordHash: true, roles: true }
+			select: { id: true, passwordHash: true, roles: true, email: true }
 		});
 
 		if (user !== null && user.passwordHash === null) {
@@ -30,7 +30,7 @@ export class AuthService {
 			const payload: AccessTokenPayload = { roles: user.roles };
 
 			await STSession.createNewSession(resp, user.id, payload);
-			return;
+			return { email: user.email };
 		}
 
 		throw new UnauthorizedException('Invalid email or password');
