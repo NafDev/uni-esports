@@ -1,62 +1,51 @@
 datasource db {
   provider = "postgres"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URI")
 }
 
 generator client {
   provider = "prisma-client-js"
+  // https://github.com/prisma/prisma/issues/13672
+  // output   = ".prisma-client-js"
+}
+
+// Keep in sync with @uni-esports/interfaces
+enum Role {
+  ADMIN
+  USER
+  MODERATOR
 }
 
 model User {
-  id                  Int       @id @default(autoincrement())
-  uid                 String    @unique
-  email               String    @unique
-  verified            Boolean   @default(false)
-  passwordHash        String
-  passwordResetToken  String?
-  passwordResetExpiry DateTime?
-  universityId        Int?
-  steam64Id           String?
-  discordId           String?
+  id                 String   @id @default(uuid()) @db.Uuid
+  email              String   @unique
+  passwordHash       String?
+  passwordResetToken String?  @unique
+  verified           Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  roles              Role[]
+  universityId       Int?
+  steam64Id          String?
+  discordId          String?
 
-  university University? @relation(fields: [universityId], references: [id])
-  UserRoles  UserRoles[]
+  University University? @relation(fields: [universityId], references: [id])
   @@map("user")
-}
-
-model Role {
-  id   Int    @id
-  name String
-
-  UserRoles UserRoles[]
-  @@map("role")
-}
-
-model UserRoles {
-  user User @relation(fields: [userId], references: [id])
-  role Role @relation(fields: [roleId], references: [id])
-
-  userId Int
-  roleId Int
-
-  @@id([userId, roleId])
-  @@map("user_role")
 }
 
 model University {
   id   Int    @id @default(autoincrement())
   name String @unique
+  User User[]
 
-  EmailDomain EmailDomain[]
-  User        User[]
+  UniversityDomain UniversityDomain[]
   @@map("university")
 }
 
-model EmailDomain {
+model UniversityDomain {
   domain       String @unique
   universityId Int
 
-  university University @relation(fields: [universityId], references: [id])
+  University University @relation(fields: [universityId], references: [id])
   @@id([domain, universityId])
-  @@map("university_domain")
+  @@map("universityDomain")
 }

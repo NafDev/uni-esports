@@ -1,0 +1,36 @@
+.btn {
+	@apply h-8 w-auto rounded-md text-center text-sm font-bold text-white transition-all duration-300 hover:opacity-90;
+}
+.btn.primary {
+	@apply bg-primary px-5;
+}
+.btn.primary-outlined {
+	@apply border-[3px] border-primary px-5;
+}
+.btn.secondary {
+	@apply border-[3px] border-[#555d81] bg-black bg-opacity-20  px-3;
+}
+.btn.dark {
+	@apply bg-black bg-opacity-20 px-5;
+}
+.btn.light {
+	@apply border-[3px] border-[#33374D] border-opacity-50 bg-black bg-opacity-20 px-3;
+}
+.btn.success {
+	@apply bg-success px-3;
+}
+.btn.success-outlined {
+	@apply border-[3px] border-success px-3 text-success;
+}
+.btn.warning {
+	@apply bg-warning px-3;
+}
+.btn.warning-outlined {
+	@apply border-[3px] border-warning px-3 text-warning;
+}
+.btn.danger {
+	@apply bg-danger px-3;
+}
+.btn.danger-outlined {
+	@apply border-[3px] border-danger px-3 text-danger;
+}

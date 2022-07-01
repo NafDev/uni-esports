@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": ".",
+			"path": "."
+		},
+		{
+			"name": "interfaces",
+			"path": "interfaces"
+		},
+		{
+			"name": "api",
+			"path": "api"
+		},
+		{
+			"name": "web",
+			"path": "web"
+		}
+	],
+	"settings": {
+		"editor.formatOnSave": true,
+		"css.lint.unknownAtRules": "ignore",
+		"prettier.documentSelectors": ["**/*.svelte"]
+	}
+}
