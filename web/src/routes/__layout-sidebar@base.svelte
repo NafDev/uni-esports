@@ -5,7 +5,7 @@
 	let mobileSidebarActive = false;
 </script>
 
-<div class="grid h-screen grid-flow-col grid-cols-[300px_1fr]">
+<div class="grid h-screen w-screen grid-flow-col grid-cols-[300px_1fr]">
 	<div
 		class="absolute z-40 h-screen w-[300px] lg:static lg:inline"
 		class:hidden={!mobileSidebarActive}

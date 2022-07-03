@@ -1,5 +1,5 @@
 .btn {
-	@apply h-8 w-auto rounded-md text-center text-sm font-bold text-white transition-all duration-300 hover:opacity-90;
+	@apply flex h-8 w-auto items-center justify-around rounded-md py-1 text-center text-sm font-bold text-white transition-all duration-300 hover:opacity-90;
 }
 .btn.primary {
 	@apply bg-primary px-5;
@@ -33,4 +33,7 @@
 }
 .btn.danger-outlined {
 	@apply border-[3px] border-danger px-3 text-danger;
+}
+.btn.isLoading {
+	@apply relative text-opacity-0 before:absolute before:aspect-square before:h-4/6 before:animate-spin before:rounded-full before:border-2 before:border-y-white before:border-x-transparent;
 }

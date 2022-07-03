@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
 import type {
 	ICreateUserDto,
 	IEmailDto,
@@ -23,6 +23,9 @@ export class CreateUserDto implements ICreateUserDto {
 	email!: string;
 
 	@MinLength(6) password!: string;
+
+	@Matches(/^[\w-.]{3,24}$/)
+	username!: string;
 }
 
 export class UserInfoDto implements IUserInfoDto {

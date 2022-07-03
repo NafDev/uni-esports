@@ -1,0 +1,3 @@
+form > input {
+	@apply form-input block w-full rounded-sm border-0 border-b-2 border-b-white border-opacity-50 bg-white bg-opacity-5 p-2.5 text-sm text-greyText transition-colors  focus:border-b-primary focus:ring-transparent;
+}

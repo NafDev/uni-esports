@@ -5,6 +5,7 @@
 	import { Icon } from '@steeze-ui/svelte-icon';
 
 	import { isSignedIn, user } from '$lib/stores/auth.store';
+	import { signOut } from '$lib/api/auth';
 
 	export let mobileSidebarActive: boolean;
 </script>
@@ -21,7 +22,7 @@
 		<div class="flex w-auto items-center">
 			<button
 				class="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/25"
-				on:click={() => console.log('Logging out')}
+				on:click={() => signOut()}
 			>
 				<Icon src={Logout} size="28" />
 			</button>
@@ -33,7 +34,10 @@
 		</div>
 	{:else}
 		<div class="flex flex-col">
-			<button class="btn primary flex items-center justify-center" on:click={() => goto('/signin')}>
+			<button
+				class="btn primary"
+				on:click={() => goto('/user/signin')}
+			>
 				<span class="pr-2"><Icon class="stroke-white" src={Login} size="16" /></span>
 				Sign In
 			</button>

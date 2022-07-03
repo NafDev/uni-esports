@@ -8,10 +8,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
 	constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
 	catch(exception: unknown, host: ArgumentsHost): void {
-		if (exception instanceof Error) {
-			this.logger.error('Uncaught error', exception.stack);
+		if (exception instanceof HttpException) {
+			this.logger.error('Request error', exception.stack);
 		} else {
-			this.logger.error('Uncaught unknown', exception);
+			this.logger.error('Uncaught error', exception);
 		}
 
 		const { httpAdapter } = this.httpAdapterHost;

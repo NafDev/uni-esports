@@ -30,7 +30,7 @@ export class AuthService {
 			const payload: AccessTokenPayload = { roles: user.roles };
 
 			await STSession.createNewSession(resp, user.id, payload);
-			return { email: user.email };
+			return;
 		}
 
 		throw new UnauthorizedException('Invalid email or password');

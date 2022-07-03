@@ -19,6 +19,6 @@ module.exports = {
 		},
 		extend: {}
 	},
-	plugins: [forms, typography],
+	plugins: [forms({ strategy: 'class' }), typography],
 	mode: 'jit'
 };

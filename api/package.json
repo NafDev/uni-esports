@@ -14,14 +14,15 @@
 		"node": "^17.9"
 	},
 	"prisma": {
-		"schema": "src/db/prisma/schema.prisma"
+		"schema": "src/db/prisma/schema.prisma",
+		"seed": "npx ts-node src/db/prisma/seeds/seed.ts"
 	},
 	"dependencies": {
-		"@uni-esports/interfaces": "workspace:0.0.1",
 		"@nestjs/common": "^8.4.6",
 		"@nestjs/core": "^8.4.6",
 		"@nestjs/platform-express": "^8.4.6",
-		"@prisma/client": "^3.9.1",
+		"@prisma/client": "^4.0.0",
+		"@uni-esports/interfaces": "workspace:0.0.1",
 		"axios": "^0.27.2",
 		"bcrypt": "^5.0.1",
 		"class-transformer": "^0.5.1",
@@ -30,6 +31,8 @@
 		"envalid": "^7.3.1",
 		"handlebars": "^4.7.7",
 		"helmet": "^5.1.0",
+		"lodash.capitalize": "^4.2.1",
+		"lodash.startcase": "^4.4.0",
 		"mjml": "^4.12.0",
 		"nanoid": "3.3.4",
 		"nestjs-pino": "^2.6.0",
@@ -47,6 +50,8 @@
 		"@types/bcrypt": "^5.0.0",
 		"@types/express": "^4.17.13",
 		"@types/helmet": "^4.0.0",
+		"@types/lodash.capitalize": "^4.2.7",
+		"@types/lodash.startcase": "^4.4.7",
 		"@types/mjml": "^4.7.0",
 		"@types/node": "^17.0.42",
 		"@types/nodemailer": "^6.4.4",

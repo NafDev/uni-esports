@@ -11,7 +11,7 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@Post('login')
-	async login(@Body() userLoginDto: UserLoginDto, @Res({ passthrough: true }) resp: Response): Promise<IEmailDto> {
+	async login(@Body() userLoginDto: UserLoginDto, @Res({ passthrough: true }) resp: Response): Promise<void> {
 		return this.authService.login(userLoginDto, resp);
 	}
 

@@ -1,5 +1,6 @@
 import axios, { type Options, type Response } from 'redaxios';
 import { BASE_API_URL } from '$lib/config';
+import { dev } from '$app/env';
 
 export const enum HttpMethod {
 	GET,
@@ -17,27 +18,36 @@ export const http = axios.create({
 export async function makeRequest<T>(
 	method: HttpMethod,
 	req: { url: string; body?: object; config?: Options },
-	displayUiError: boolean
-): Promise<Response<T>> {
+	displayUiError = true
+): Promise<Response<T> | false> {
 	try {
 		switch (method) {
 			case HttpMethod.GET:
-				return http.get(req.url, req.config);
+				return await http.get(req.url, req.config);
 			case HttpMethod.POST:
-				return http.post(req.url, req.body, req.config);
+				return await http.post(req.url, req.body, req.config);
 			case HttpMethod.PUT:
-				return http.put(req.url, req.body, req.config);
+				return await http.put(req.url, req.body, req.config);
 			case HttpMethod.PATCH:
-				return http.patch(req.url, req.body, req.config);
+				return await http.patch(req.url, req.body, req.config);
 			case HttpMethod.DELETE:
-				return http.delete(req.url, req.config);
+				return await http.delete(req.url, req.config);
 		}
 	} catch (error) {
-		console.log('Error during HTTP request');
-
-		if (displayUiError) {
-			// Probably add some UI notification logic here
+		if (dev) {
+			console.warn('Network request error', error);
 		}
+
+		if (Object.prototype.hasOwnProperty.call(error, 'ok')) {
+			const erroredResponse = error as Response<{ message?: string }>;
+			if (displayUiError) {
+				console.warn(`Response code ${erroredResponse.status}`);
+				// TODO Notification erroredResponse.data.message ?? "An error occurred with your request"
+			}
+
+			return false;
+		}
+
 		throw error;
 	}
 }

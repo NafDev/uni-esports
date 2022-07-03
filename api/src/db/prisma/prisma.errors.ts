@@ -1,7 +1,16 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { PrismaError } from '../../types/prisma';
+import startCase from 'lodash.startcase';
+import capitalize from 'lodash.capitalize';
+import { ConflictException } from '@nestjs/common';
 
-export function classifyPrismaError(error: unknown): [PrismaError, PrismaClientKnownRequestError] | undefined {
+export const enum PrismaError {
+	UNKNOWN,
+	INVALID_REQUEST,
+	NOT_FOUND,
+	CONSTRAINT_FAILED
+}
+
+export function classifyPrismaError(error: unknown): [PrismaError, PrismaClientKnownRequestError] {
 	let errorCode = '';
 	let prismaError: PrismaClientKnownRequestError;
 
@@ -9,7 +18,8 @@ export function classifyPrismaError(error: unknown): [PrismaError, PrismaClientK
 		errorCode = error.code;
 		prismaError = error;
 	} else {
-		return;
+		const originalError = error as Error;
+		throw new Error('Unexpected error type', { cause: originalError });
 	}
 
 	// https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
@@ -34,5 +44,14 @@ export function classifyPrismaError(error: unknown): [PrismaError, PrismaClientK
 			return [PrismaError.CONSTRAINT_FAILED, prismaError];
 		default:
 			return [PrismaError.UNKNOWN, prismaError];
+	}
+}
+
+export function normalizeConflictError(error: PrismaClientKnownRequestError): string | undefined {
+	if (error.meta?.target instanceof Array) {
+		const conflictFields: string[] = error.meta.target.map((value: string) => /\((.+)\)/.exec(value)?.at(0) ?? value);
+
+		const errorPrefix = capitalize(startCase(conflictFields.join(', ')));
+		return `${errorPrefix} already in use`;
 	}
 }

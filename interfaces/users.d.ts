@@ -9,9 +9,15 @@ export interface IUserInfoDto {
 }
 
 export interface ICreateUserDto {
+	username: string;
 	email: string;
 	password: string;
 }
+
+// export interface ICreateUserResponse {
+// 	email: string;
+// 	username: string;
+// }
 
 export interface IEmailDto {
 	email: string;

@@ -1,5 +1,6 @@
 @import 'badges.css';
 @import 'buttons.css';
+@import 'inputs.css';
 
 @tailwind base;
 @tailwind components;
@@ -9,6 +10,9 @@
 	font-family: 'Play';
 	user-select: none;
 	@apply text-greyText;
+}
+input {
+	user-select: text;
 }
 *::-webkit-scrollbar {
 	display: none;
@@ -28,7 +32,8 @@ body {
 .app {
 	background: rgb(34, 43, 69);
 	background: linear-gradient(180deg, rgba(34, 43, 69, 1) 0%, rgba(29, 33, 50, 1) 100%);
-	height: 100vh;
+	min-height: 100vh;
+	display: flex;
 }
 
 /* .hero__overlay {

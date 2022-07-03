@@ -23,9 +23,9 @@ async function bootstrap() {
 		credentials: true
 	});
 
+	app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 	app.useGlobalFilters(new SupertokensExceptionFilter());
 	app.useGlobalFilters(new PrismaExceptionFilter());
-	app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
 
 	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
