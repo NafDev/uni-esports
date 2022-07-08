@@ -1,21 +1,35 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { login } from '$lib/api/auth';
+	import { signIn } from '$lib/api/auth';
 	import logo from '../../images/logo.png';
+	import { onMount } from 'svelte';
+	import { pushNotification } from '$lib/stores/notifications.store';
+
+	onMount(() => {
+		if ($page.url.searchParams.get('redirect')) {
+			pushNotification({
+				message: 'Please sign in',
+				type: 'warning'
+			});
+		}
+	});
 
 	let email: string;
 	let password: string;
 
 	let isLoading = false;
 
-	function doLogin() {
-		console.log("brr")
-		isLoading = true
-		login({ email, password }, '/').finally(() => isLoading = false);
+	function doSignIn() {
+		isLoading = true;
+
+		signIn({ email, password }, $page.url.searchParams.get('redirect') ?? '/').finally(
+			() => (isLoading = false)
+		);
 	}
 </script>
 
-<div class="my-auto mx-auto w-5/6 md:w-96">
+<div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">
 		<a href="/">
 			<img src={logo} href="/" alt="logo" class="mb-10 h-12" />
@@ -23,7 +37,7 @@
 		<h3 class="text-4xl">Sign In</h3>
 	</div>
 
-	<form on:submit|preventDefault={() => doLogin()} class="w-full">
+	<form on:submit|preventDefault={() => doSignIn()} class="w-full">
 		<label for="email">Email address</label>
 		<input class="mb-3 mt-1" type="email" id="email" required bind:value={email} />
 
@@ -46,5 +60,4 @@
 			</button>
 		</div>
 	</form>
-
 </div>

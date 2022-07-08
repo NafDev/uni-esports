@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { login, signUp } from '$lib/api/auth';
+	import { signUp } from '$lib/api/auth';
 	import logo from '../../images/logo.png';
 
 	const usernameCheck = /^[\w-\.]{3,24}$/;

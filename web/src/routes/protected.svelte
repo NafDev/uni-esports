@@ -1,10 +1,9 @@
 <script lang="ts" context="module">
-	import type { Load, LoadEvent, LoadOutput } from '@sveltejs/kit';
+	import type { LoadEvent } from '@sveltejs/kit';
+	import { adminGuard } from '$lib/guards';
 
-	export async function load(): Promise<LoadOutput> {
-		return {
-			status: 404
-		};
+	export async function load(_: LoadEvent) {
+		return await adminGuard(_);
 	}
 </script>
 
