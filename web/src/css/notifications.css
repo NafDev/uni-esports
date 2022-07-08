@@ -1,0 +1,13 @@
+/* Need to include these styles as TW colours don't work with dynamic classes */
+.notification.primary {
+	@apply border-l-primary;
+}
+.notification.danger {
+	@apply border-l-danger;
+}
+.notification.warning {
+	@apply border-l-warning;
+}
+.notification.success {
+	@apply border-l-success;
+}

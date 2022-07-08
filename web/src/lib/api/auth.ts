@@ -8,10 +8,10 @@ import type {
 import { HttpMethod, makeRequest } from './http';
 import { user } from '$lib/stores/auth.store';
 import { goto } from '$app/navigation';
+import { pushNotification } from '$lib/stores/notifications.store';
 
-export async function login(body: IUserLoginDto, redirectOnSuccess?: string | URL) {
-	const res = await makeRequest<IEmailDto>(HttpMethod.POST, { url: '/auth/login', body });
-	console.log('auth.ts line 14', res);
+export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | URL) {
+	const res = await makeRequest<IEmailDto>(HttpMethod.POST, { url: '/auth/signin', body });
 	if (!res) return;
 
 	const userId = await SuperTokens.getUserId();
@@ -19,10 +19,7 @@ export async function login(body: IUserLoginDto, redirectOnSuccess?: string | UR
 
 	user.set({ id: userId, roles: tokenPayload.roles });
 
-	console.log('auth.ts line 22');
-
 	if (redirectOnSuccess) {
-		console.log('auth.ts line 25');
 		await goto(redirectOnSuccess);
 	}
 }
@@ -30,7 +27,10 @@ export async function login(body: IUserLoginDto, redirectOnSuccess?: string | UR
 export async function signUp(body: ICreateUserDto, redirectOnSuccess?: string | URL) {
 	const res = await makeRequest<void>(HttpMethod.POST, { url: '/users/create', body });
 	if (res && redirectOnSuccess) {
-		// TODO Notification "Account created"
+		pushNotification({
+			message: '<b>Account created</b>\nPlease login with your email and password',
+			type: 'success'
+		});
 		await goto(redirectOnSuccess);
 	}
 }

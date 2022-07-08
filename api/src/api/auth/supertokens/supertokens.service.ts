@@ -34,6 +34,10 @@ export class SupertokensService {
 						});
 					},
 
+					async getEmailVerificationURL() {
+						return `${config.appInfo.websiteDomain}${config.appInfo.websiteBasePath ?? '/'}user/verify-email`;
+					},
+
 					override: {
 						functions(originalImpl) {
 							return {

@@ -9,7 +9,6 @@ module.exports = {
 			black: '#000',
 			greyText: '#c9d4e9',
 			transparent: '#fff0',
-			grey: '#8492a6',
 			primary: '#3984da',
 			secondary: '#555d81',
 			success: '#30b663',

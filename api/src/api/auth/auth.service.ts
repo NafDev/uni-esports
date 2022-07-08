@@ -19,7 +19,7 @@ export class AuthService {
 	async login(userLoginDto: UserLoginDto, resp: Response) {
 		const user = await this.prisma.user.findUnique({
 			where: { email: userLoginDto.email.toLowerCase() },
-			select: { id: true, passwordHash: true, roles: true, email: true }
+			select: { id: true, passwordHash: true, roles: true, email: true, verified: true }
 		});
 
 		if (user !== null && user.passwordHash === null) {
@@ -27,7 +27,10 @@ export class AuthService {
 		}
 
 		if (user !== null && (await compare(userLoginDto.password, user.passwordHash ?? ''))) {
-			const payload: AccessTokenPayload = { roles: user.roles };
+			const payload: AccessTokenPayload = {
+				roles: user.roles,
+				pendingEmailVerification: user.verified ? undefined : true
+			};
 
 			await STSession.createNewSession(resp, user.id, payload);
 			return;

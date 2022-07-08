@@ -10,12 +10,12 @@ import { AuthService } from './auth.service';
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	@Post('login')
+	@Post('signin')
 	async login(@Body() userLoginDto: UserLoginDto, @Res({ passthrough: true }) resp: Response): Promise<void> {
 		return this.authService.login(userLoginDto, resp);
 	}
 
-	@Get('logout')
+	@Get('signout')
 	@UseGuards(AuthGuard)
 	async logout(@Session() session: SessionContainer) {
 		return this.authService.logout(session);

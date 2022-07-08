@@ -1,6 +1,7 @@
 import axios, { type Options, type Response } from 'redaxios';
 import { BASE_API_URL } from '$lib/config';
 import { dev } from '$app/env';
+import { pushNotification } from '$lib/stores/notifications.store';
 
 export const enum HttpMethod {
 	GET,
@@ -40,9 +41,14 @@ export async function makeRequest<T>(
 
 		if (Object.prototype.hasOwnProperty.call(error, 'ok')) {
 			const erroredResponse = error as Response<{ message?: string }>;
+
 			if (displayUiError) {
 				console.warn(`Response code ${erroredResponse.status}`);
-				// TODO Notification erroredResponse.data.message ?? "An error occurred with your request"
+
+				pushNotification({
+					message: erroredResponse.data.message ?? 'An error occurred with your request',
+					type: 'danger'
+				});
 			}
 
 			return false;
