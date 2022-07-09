@@ -13,11 +13,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { signUp } from '$lib/api/auth';
+	import { PASSWORD_CHECK, USERNAME_CHECK } from '$lib/config';
 	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
 	import logo from '../../images/logo.png';
-
-	const usernameCheck = /^[\w-\.]{3,24}$/;
-	const passwordCheck = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
 
 	let isLoading = false;
 
@@ -29,7 +27,7 @@
 				'Your username should be 3-24 characters long and may only include alphanumeric characters, underscores, hypens, and full stops',
 			validate: () =>
 				(form.username.isValid =
-					!form.username.value.length || usernameCheck.test(form.username.value))
+					!form.username.value.length || USERNAME_CHECK.test(form.username.value))
 		},
 		email: {
 			value: '',
@@ -45,7 +43,7 @@
 				'Your password must be at least 6 characters long and include one number, one capital letter, and one special character <a class="font-mono bg-black bg-opacity-30 px-1">#?!@$%^&*-</a>',
 			validate: () =>
 				(form.password.isValid =
-					!form.password.value.length || passwordCheck.test(form.password.value))
+					!form.password.value.length || PASSWORD_CHECK.test(form.password.value))
 		},
 		confirmPassword: {
 			value: '',

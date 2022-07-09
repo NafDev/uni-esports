@@ -2,6 +2,7 @@ import SuperTokens from 'supertokens-website';
 import type {
 	ICreateUserDto,
 	IEmailDto,
+	IPasswordResetDto,
 	IUserInfoDto,
 	IUserLoginDto
 } from '@uni-esports/interfaces';
@@ -78,5 +79,33 @@ export async function verifyEmail(token: string) {
 	if (isSignedIn.get()) {
 		await makeRequest<IUserInfoDto>(HttpMethod.GET, { url: '/users/me' });
 		return await SuperTokens.attemptRefreshingSession();
+	}
+}
+
+export async function sendPasswordResetEmail(body: IEmailDto) {
+	const res = await makeRequest<void>(HttpMethod.POST, { url: '/auth/password/reset', body }, true);
+
+	if (res) {
+		pushNotification({
+			message:
+				'If an account exists with this email address, a password reset link has been sent to your inbox.',
+			type: 'primary'
+		});
+	}
+}
+
+export async function performPasswordReset(body: IPasswordResetDto) {
+	const res = await makeRequest<void>(
+		HttpMethod.POST,
+		{ url: '/auth/password/reset/token', body },
+		true
+	);
+
+	if (res) {
+		pushNotification({
+			message: 'Password reset successful. Please sign in again.',
+			type: 'success'
+		});
+		goto('/user/signin');
 	}
 }

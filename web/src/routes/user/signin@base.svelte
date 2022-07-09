@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	export async function load({ session }: LoadEvent): Promise<LoadOutput> {
 		if (session.user) {
-			console.log(session);
 			return {
 				status: 302,
 				redirect: '/'

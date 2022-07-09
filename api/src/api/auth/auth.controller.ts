@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post, Res, Session, UseGuards } from '@nestjs/common';
-import type { IEmailDto } from '@uni-esports/interfaces';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { EmailDto, PasswordDto, UserLoginDto } from '../users/users.dto';
@@ -23,7 +22,7 @@ export class AuthController {
 
 	@Post('password/reset')
 	async resetPassword(@Body() emailDto: EmailDto) {
-		return this.authService.sendPasswordResetTokenEmail(emailDto.email);
+		void this.authService.sendPasswordResetTokenEmail(emailDto.email);
 	}
 
 	@Post('password/reset/token')

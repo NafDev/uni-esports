@@ -2,7 +2,6 @@
 	import type { LoadEvent } from '@sveltejs/kit';
 
 	export async function load(input: LoadEvent) {
-		console.log(input.session)
 		if (!input.session.user || !input.session.user.pendingEmailVerification) {
 			return {
 				status: 302,
@@ -57,9 +56,10 @@
 
 		<p class="my-10 text-center">Check your inbox for an email verification link</p>
 
-		<button 
-			class="btn primary self-center" 
-			class:isLoading disabled={isLoading} 
+		<button
+			class="btn primary self-center"
+			class:isLoading
+			disabled={isLoading}
 			on:click={() => resendEmail()}
 		>
 			Resend email

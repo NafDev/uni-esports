@@ -9,6 +9,7 @@ import { EmailTemplates, SmtpService } from '../../email/smtp.service';
 import { createToken, sha265hex } from '../../util/utility';
 import type { UserLoginDto } from '../users/users.dto';
 import { STSession } from './supertokens/supertokens.types';
+import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 
 @Injectable()
 export class AuthService {
@@ -50,15 +51,25 @@ export class AuthService {
 			appConfig.PASSWORD_RESET_EXPIRY_MINS * 60_000
 		).toString()}`;
 
-		const user = await this.prisma.user.update({
-			where: { email },
-			data: { passwordResetToken: timeLimitedToken },
-			select: { email: true, id: true }
-		});
+		let user;
+		try {
+			user = await this.prisma.user.update({
+				where: { email },
+				data: { passwordResetToken: timeLimitedToken },
+				select: { email: true, id: true }
+			});
+		} catch (error: unknown) {
+			const [type] = classifyPrismaError(error);
+			if (type === PrismaError.NOT_FOUND) {
+				return;
+			}
+
+			throw error;
+		}
 
 		if (user) {
 			await this.smtpService.sendEmail(email, 'Reset your password', EmailTemplates.RESET_PASSWORD, {
-				link: `${appConfig.WEB_DOMAIN}/auth/password-reset?token=${token}`
+				link: `${appConfig.WEB_DOMAIN}/user/reset-password?token=${token}`
 			});
 		}
 

@@ -9,7 +9,6 @@
 	import { fly } from 'svelte/transition';
 	import { expoOut } from 'svelte/easing';
 	import { browser, dev } from '$app/env';
-	import { goto } from '$app/navigation';
 
 	import Alert from '$components/base/alert.svelte';
 
@@ -26,9 +25,9 @@
 				onHandleEvent: async (event) => {
 					switch (event.action) {
 						case 'SESSION_CREATED':
-							console.log("Session Created")
+							console.log('Session Created');
 						case 'REFRESH_SESSION':
-						console.log("Session Refreshed")
+							console.log('Session Refreshed');
 							const userId = await SuperTokens.getUserId();
 							const tokenPayload: AccessTokenPayload =
 								await SuperTokens.getAccessTokenPayloadSecurely();
@@ -36,17 +35,6 @@
 							break;
 						case 'SIGN_OUT':
 							user.set(undefined);
-							break;
-						case 'UNAUTHORISED':
-							if (!window.location.toString().endsWith('/user/signin')) {
-								pushNotification({
-									message: 'Please sign in to continue',
-									type: 'warning'
-								});
-								goto('/user/signin');
-							}
-							break;
-						default:
 							break;
 					}
 				}

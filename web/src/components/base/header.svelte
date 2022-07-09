@@ -27,17 +27,14 @@
 				<Icon src={Logout} size="28" />
 			</button>
 			<img
-				src={`https://avatars.dicebear.com/api/identicon/${$user.id}.svg?scale=90`}
+				src={`https://avatars.dicebear.com/api/identicon/${$user.id}.svg`}
 				alt="profile"
-				class="ml-5 h-16 rounded-full"
+				class="ml-5 h-16 rounded-lg"
 			/>
 		</div>
 	{:else}
 		<div class="flex flex-col">
-			<button
-				class="btn primary"
-				on:click={() => goto('/user/signin')}
-			>
+			<button class="btn primary" on:click={() => goto('/user/signin')}>
 				<span class="pr-2"><Icon class="stroke-white" src={Login} size="16" /></span>
 				Sign In
 			</button>
