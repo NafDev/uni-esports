@@ -1,6 +1,19 @@
+<script lang="ts" context="module">
+	export async function load({ session }: LoadEvent): Promise<LoadOutput> {
+		if (session.user) {
+			return {
+				status: 302,
+				redirect: '/'
+			};
+		}
+		return {};
+	}
+</script>
+
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { signUp } from '$lib/api/auth';
+	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
 	import logo from '../../images/logo.png';
 
 	const usernameCheck = /^[\w-\.]{3,24}$/;
@@ -52,12 +65,14 @@
 		) {
 			isLoading = true;
 
-			signUp({
-				username: form.username.value,
-				email: form.email.value,
-				password: form.password.value
-			}, '/user/signin')
-				.finally(() => (isLoading = false));
+			signUp(
+				{
+					username: form.username.value,
+					email: form.email.value,
+					password: form.password.value
+				},
+				'/user/signin'
+			).finally(() => (isLoading = false));
 		}
 	}
 </script>
@@ -83,7 +98,9 @@
 			bind:value={form.username.value}
 			on:blur={() => form.username.validate()}
 		/>
-		<p class="mb-2 text-xs text-danger">{!form.username.isValid && form.username.errorText || ''}</p>
+		<p class="mb-2 text-xs text-danger">
+			{(!form.username.isValid && form.username.errorText) || ''}
+		</p>
 
 		<label class="mt-1" for="email">Email address</label>
 		<input
@@ -94,7 +111,7 @@
 			bind:value={form.email.value}
 			on:blur={() => form.email.validate()}
 		/>
-		<p class="mb-2 text-xs text-danger">{!form.email.isValid && form.email.errorText || ''}</p>
+		<p class="mb-2 text-xs text-danger">{(!form.email.isValid && form.email.errorText) || ''}</p>
 
 		<label class="mt-1" for="password">Password</label>
 		<input
@@ -106,7 +123,7 @@
 			on:blur={() => form.password.validate()}
 		/>
 		<p class="mb-2 text-xs text-danger">
-			{@html !form.password.isValid && form.password.errorText || ''}
+			{@html (!form.password.isValid && form.password.errorText) || ''}
 		</p>
 
 		<label class="mt-1" for="password">Confirm Password</label>
@@ -118,7 +135,9 @@
 			bind:value={form.confirmPassword.value}
 			on:blur={() => form.confirmPassword.validate()}
 		/>
-		<p class="mb-2 text-xs text-danger">{!form.confirmPassword.isValid && form.confirmPassword.errorText || ''}</p>
+		<p class="mb-2 text-xs text-danger">
+			{(!form.confirmPassword.isValid && form.confirmPassword.errorText) || ''}
+		</p>
 
 		<div class="mt-3 flex flex-row flex-wrap items-center justify-around">
 			<button

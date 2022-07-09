@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import supertokens from 'supertokens-node';
+import { emailVerificationUrl } from '../../../config/app.config';
 import { PrismaService } from '../../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../../email/smtp.service';
 import { AuthModuleConfig, ConfigInjectionToken } from '../config.interface';
@@ -33,9 +34,8 @@ export class SupertokensService {
 							link: emailVerificationURLWithToken
 						});
 					},
-
 					async getEmailVerificationURL() {
-						return `${config.appInfo.websiteDomain}${config.appInfo.websiteBasePath ?? '/'}user/verify-email`;
+						return emailVerificationUrl;
 					},
 
 					override: {

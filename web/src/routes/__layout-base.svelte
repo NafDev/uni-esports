@@ -23,8 +23,17 @@
 				apiDomain: BASE_API_URL,
 				apiBasePath: '/',
 				autoAddCredentials: true,
-				onHandleEvent: (event) => {
+				onHandleEvent: async (event) => {
 					switch (event.action) {
+						case 'SESSION_CREATED':
+							console.log("Session Created")
+						case 'REFRESH_SESSION':
+						console.log("Session Refreshed")
+							const userId = await SuperTokens.getUserId();
+							const tokenPayload: AccessTokenPayload =
+								await SuperTokens.getAccessTokenPayloadSecurely();
+							user.set({ id: userId, ...tokenPayload });
+							break;
 						case 'SIGN_OUT':
 							user.set(undefined);
 							break;
@@ -61,12 +70,13 @@
 
 <!-- Notifications -->
 <div class="absolute bottom-0 right-0 z-50 flex flex-col items-end justify-end overflow-clip">
-	{#each $notificationStore as notif (notif.id)}
+	{#each $notificationStore as n (n.id)}
 		<div in:fly={{ x: 1000, easing: expoOut }} out:fly={{ x: 500 }}>
 			<Alert
-				message={notif.message}
-				type={notif.type}
-				removeNotification={notif.removeNotification}
+				message={n.message}
+				type={n.type}
+				heading={n.heading}
+				removeNotification={n.removeNotification}
 			/>
 		</div>
 	{/each}

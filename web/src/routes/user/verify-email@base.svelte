@@ -1,11 +1,17 @@
-<script lang="ts" context="module">
-	import { signedInGuard } from '$lib/guards';
-	import type { LoadEvent } from '@sveltejs/kit';
+<script lang="ts">
+	import { goto } from '$app/navigation';
 
-	export async function load(input: LoadEvent) {
-		return await signedInGuard(input);
-	}
+	import { page } from '$app/stores';
+	import { verifyEmail } from '$lib/api/auth';
+	import { onMount } from 'svelte';
+
+	onMount(async () => {
+		const token = $page.url.searchParams.get('token');
+
+		if (token) {
+			await verifyEmail(token);
+		}
+
+		goto('/', { replaceState: true });
+	});
 </script>
-
-<div class="h-screen w-screen bg-danger" />
-<div class="m-auto w-5/6 md:w-96">hello</div>

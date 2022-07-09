@@ -27,7 +27,7 @@ import { UserModule } from './api/users/users.module';
 				appName: appConfig.APP_NAME,
 				apiDomain: appConfig.API_DOMAIN,
 				websiteDomain: appConfig.WEB_DOMAIN,
-				apiBasePath: '/'
+				apiBasePath: appConfig.API_BASE_PATH
 			}
 		}),
 		DatabaseModule,

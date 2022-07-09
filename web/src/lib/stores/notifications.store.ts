@@ -4,6 +4,7 @@ import { atom } from 'nanostores';
 type NotificationInput = {
 	type: 'primary' | 'danger' | 'warning' | 'success';
 	message: string;
+	heading?: string;
 	timeout?: number;
 };
 

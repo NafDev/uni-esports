@@ -4,11 +4,13 @@ import * as cookie from 'cookie';
 export function getSession(event: RequestEvent): App.Session {
 	const cookies = cookie.parse(event.request.headers.get('cookie') || '');
 
-	if (!cookies || !cookies['sFrontToken']) return {};
+	if (!cookies || !cookies['sAccessToken']) return {};
 
-	const payload = JSON.parse(Buffer.from(cookies['sFrontToken'], 'base64').toString());
+	const b64data = decodeURIComponent(cookies['sAccessToken']).split('.').at(1);
+
+	const payload = JSON.parse(Buffer.from(b64data, 'base64').toString());
 
 	return {
-		user: payload.up
+		user: payload.userData
 	};
 }

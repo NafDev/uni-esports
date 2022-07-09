@@ -1,3 +1,16 @@
+<script lang="ts" context="module">
+	export async function load({ session }: LoadEvent): Promise<LoadOutput> {
+		if (session.user) {
+			console.log(session);
+			return {
+				status: 302,
+				redirect: '/'
+			};
+		}
+		return {};
+	}
+</script>
+
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -5,6 +18,7 @@
 	import logo from '../../images/logo.png';
 	import { onMount } from 'svelte';
 	import { pushNotification } from '$lib/stores/notifications.store';
+	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
 
 	onMount(() => {
 		if ($page.url.searchParams.get('redirect')) {

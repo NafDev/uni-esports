@@ -11,7 +11,7 @@ export class UserController {
 	@Get('me')
 	@UseGuards(AuthGuard)
 	async getUser(@Session() session: SessionContainer) {
-		return this.userService.getUserInfo(session.getUserId());
+		return this.userService.getUserInfo(session);
 	}
 
 	@Post('create')

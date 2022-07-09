@@ -5,6 +5,7 @@
 	import { ExclamationCircle, InformationCircle, CheckCircle, X } from '@steeze-ui/heroicons';
 
 	export let type: 'primary' | 'warning' | 'danger' | 'success';
+	export let heading: string = undefined;
 	export let message: string;
 	export let removeNotification: () => void;
 
@@ -26,8 +27,11 @@
 	</span>
 	<div class="flex flex-row items-center justify-center px-4 py-4">
 		<span class="mr-4"><Icon src={icon} size="28" theme="solid" /></span>
-		<p class="text-md inline max-h-full w-full overflow-auto align-middle font-bold text-greyText">
-			{message}
-		</p>
+		<div class="inline max-h-full w-full overflow-auto align-middle font-bold">
+			{#if heading}
+				<header class="mb-1 text-xl font-bold text-white">{heading}</header>
+			{/if}
+			<p>{message}</p>
+		</div>
 	</div>
 </div>
