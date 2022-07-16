@@ -2,39 +2,33 @@
 	import { page } from '$app/stores';
 	import { performPasswordReset } from '$lib/api/auth';
 	import logo from '../../images/logo.png';
-	import { PASSWORD_CHECK } from '$lib/config';
+	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$lib/config';
+	import { formHandler, inputHandler } from '$lib/form-inputs';
 
 	const token = $page.url.searchParams.get('token');
 
 	let isLoading = false;
 
+	const [passwordState, passwordHandlers] = inputHandler<string>({
+		errorText: PASSWORD_PROMPT,
+		validator: (newValue) => PASSWORD_CHECK(newValue)
+	});
+
+	const [confirmPasswordState, confirmPasswordHandlers] = inputHandler<string>({
+		errorText: 'Make sure that you have typed in the same password in both fields',
+		validator: (newValue) => newValue === passwordState.get().value
+	});
+
+	const form = formHandler([passwordHandlers, confirmPasswordHandlers]);
+
 	function doPasswordResest() {
-		if (form.password.validate() && form.confirmPassword.validate()) {
+		if (form.validateAll()) {
 			isLoading = true;
-			performPasswordReset({ token, password: form.password.value }).finally(
+			performPasswordReset({ token, password: passwordState.get().value }).finally(
 				() => (isLoading = false)
 			);
 		}
 	}
-
-	const form = {
-		password: {
-			value: '',
-			isValid: true,
-			errorText:
-				'Your password must be at least 6 characters long and include one number, one capital letter, and one special character <a class="font-mono bg-black bg-opacity-30 px-1">#?!@$%^&*-</a>',
-			validate: () =>
-				(form.password.isValid =
-					!form.password.value.length || PASSWORD_CHECK.test(form.password.value))
-		},
-		confirmPassword: {
-			value: '',
-			isValid: true,
-			errorText: 'Make sure that you have typed in the same password in both fields',
-			validate: () =>
-				(form.confirmPassword.isValid = form.confirmPassword.value === form.password.value)
-		}
-	};
 </script>
 
 <div class="m-auto w-5/6 md:w-96">
@@ -48,28 +42,28 @@
 	<form on:submit|preventDefault={() => doPasswordResest()} class="w-full">
 		<label class="mt-1" for="password">New Password</label>
 		<input
-			class="my-2"
+			class="form my-2"
 			type="password"
 			id="password"
 			required
-			bind:value={form.password.value}
-			on:blur={() => form.password.validate()}
+			bind:value={$passwordState.value}
+			on:blur={() => passwordHandlers.validate()}
 		/>
 		<p class="mb-2 text-xs text-danger">
-			{@html (!form.password.isValid && form.password.errorText) || ''}
+			{@html (!$passwordState.isValid && passwordHandlers.errorText) || ''}
 		</p>
 
 		<label class="mt-1" for="password">Confirm Password</label>
 		<input
-			class="my-2"
+			class="form my-2"
 			type="password"
 			id="password"
 			required
-			bind:value={form.confirmPassword.value}
-			on:blur={() => form.confirmPassword.validate()}
+			bind:value={$confirmPasswordState.value}
+			on:blur={() => confirmPasswordHandlers.validate()}
 		/>
 		<p class="mb-2 text-xs text-danger">
-			{(!form.confirmPassword.isValid && form.confirmPassword.errorText) || ''}
+			{(!$confirmPasswordState.isValid && confirmPasswordHandlers.errorText) || ''}
 		</p>
 
 		<button type="submit" class="btn primary mt-5" class:isLoading disabled={isLoading}>

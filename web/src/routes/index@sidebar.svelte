@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { user } from '$lib/stores/auth.store';
 
-	$: {
-		console.log($user);
-	}
+	// $: {
+	// 	console.log($user);
+	// }
 </script>
 
 <div class="main text-2xl text-white">

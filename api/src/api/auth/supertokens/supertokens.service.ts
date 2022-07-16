@@ -17,7 +17,7 @@ export class SupertokensService {
 			appInfo: config.appInfo,
 			supertokens: { connectionURI: config.connectionURI },
 			recipeList: [
-				STSession.init({ antiCsrf: 'NONE', cookieSameSite: 'strict' }),
+				STSession.init({ antiCsrf: 'NONE', cookieSameSite: 'strict', sessionExpiredStatusCode: 511 }),
 				STEmailVerification.init({
 					async getEmailForUserId(userId) {
 						const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });

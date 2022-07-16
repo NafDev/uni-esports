@@ -1,15 +1,22 @@
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+	BadRequestException,
+	Injectable,
+	InternalServerErrorException,
+	Logger,
+	NotFoundException,
+	UnauthorizedException
+} from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import type { AccessTokenPayload } from '@uni-esports/interfaces';
+import type { AccessTokenPayload, INewPasswordDto } from '@uni-esports/interfaces';
 import appConfig from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
 import { createToken, sha265hex } from '../../util/utility';
 import type { UserLoginDto } from '../users/users.dto';
-import { STSession } from './supertokens/supertokens.types';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
+import { STSession } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
@@ -91,5 +98,35 @@ export class AuthService {
 		});
 
 		this.logger.log(`User ${user.id} successfully performed password reset`);
+	}
+
+	async performChangePasswordRequest(session: SessionContainer, body: INewPasswordDto) {
+		const { oldPassword, password } = body;
+		const id = session.getUserId();
+
+		const user = await this.prisma.user.findUnique({
+			where: { id },
+			select: { id: true, passwordHash: true }
+		});
+
+		if (!user) {
+			this.logger.error(`Unexpected not found user ${id}`);
+			throw new InternalServerErrorException();
+		}
+
+		if (!(await compare(oldPassword, user.passwordHash ?? ''))) {
+			throw new UnauthorizedException('Old password is invalid');
+		}
+
+		await this.prisma.user.update({
+			where: { id },
+			data: { passwordHash: await hash(password, appConfig.PASSWORD_SALT_ROUNDS) },
+			select: { id: true }
+		});
+
+		const currentSession = session.getHandle();
+		const sessions = await STSession.getAllSessionHandlesForUser(id);
+
+		await STSession.revokeMultipleSessions(sessions.filter((handle) => handle !== currentSession));
 	}
 }

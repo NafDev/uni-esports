@@ -1,14 +1,16 @@
 <script lang="ts" context="module">
 	import type { LoadEvent } from '@sveltejs/kit';
 
-	export async function load(input: LoadEvent) {
-		if (!input.session.user || !input.session.user.pendingEmailVerification) {
-			return {
-				status: 302,
-				redirect: '/user/signin'
-			};
-		}
-		return {};
+	export async function load(load: LoadEvent) {
+		return await customGuard(load, ({ session }) => {
+			if (!session.user || !session.user.pendingEmailVerification) {
+				return {
+					status: 302,
+					redirect: '/user/signin'
+				};
+			}
+			return {};
+		});
 	}
 </script>
 
@@ -21,6 +23,7 @@
 	import { InboxIn } from '@steeze-ui/heroicons';
 	import { resendVerificationEmail } from '$lib/api/auth';
 	import { pushNotification } from '$lib/stores/notifications.store';
+	import { customGuard } from '$lib/guards';
 
 	if (browser && !user.get().pendingEmailVerification) {
 		goto('/');

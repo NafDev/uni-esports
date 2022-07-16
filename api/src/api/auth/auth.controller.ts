@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post, Res, Session, UseGuards } from '@nestjs/common';
+import type { INewPasswordDto } from '@uni-esports/interfaces';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { EmailDto, PasswordDto, UserLoginDto } from '../users/users.dto';
@@ -29,5 +30,11 @@ export class AuthController {
 	async performPasswordReset(@Body() passwordResetDto: PasswordDto) {
 		const { token, password } = passwordResetDto;
 		return this.authService.performPasswordReset(token, password);
+	}
+
+	@Post('password/change')
+	@UseGuards(AuthGuard)
+	async performPasswordChange(@Body() passwordChangeDto: INewPasswordDto, @Session() session: SessionContainer) {
+		return this.authService.performChangePasswordRequest(session, passwordChangeDto);
 	}
 }

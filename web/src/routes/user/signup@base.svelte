@@ -1,73 +1,56 @@
 <script lang="ts" context="module">
-	export async function load({ session }: LoadEvent): Promise<LoadOutput> {
-		if (session.user) {
-			return {
-				status: 302,
-				redirect: '/'
-			};
-		}
-		return {};
+	export async function load(load: LoadEvent): Promise<LoadOutput> {
+		return await signedOutGuard(load);
 	}
 </script>
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { signUp } from '$lib/api/auth';
-	import { PASSWORD_CHECK, USERNAME_CHECK } from '$lib/config';
+	import { PASSWORD_CHECK, PASSWORD_PROMPT, USERNAME_CHECK, USERNAME_PROMPT } from '$lib/config';
+	import { formHandler, inputHandler } from '$lib/form-inputs';
+	import { signedOutGuard } from '$lib/guards';
 	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
 	import logo from '../../images/logo.png';
 
 	let isLoading = false;
 
-	const form = {
-		username: {
-			value: '',
-			isValid: true,
-			errorText:
-				'Your username should be 3-24 characters long and may only include alphanumeric characters, underscores, hypens, and full stops',
-			validate: () =>
-				(form.username.isValid =
-					!form.username.value.length || USERNAME_CHECK.test(form.username.value))
-		},
-		email: {
-			value: '',
-			isValid: true,
-			errorText: 'Please enter your university email address (ending with .ac.uk)',
-			validate: () =>
-				(form.email.isValid = !form.email.value.length || form.email.value.endsWith('.ac.uk'))
-		},
-		password: {
-			value: '',
-			isValid: true,
-			errorText:
-				'Your password must be at least 6 characters long and include one number, one capital letter, and one special character <a class="font-mono bg-black bg-opacity-30 px-1">#?!@$%^&*-</a>',
-			validate: () =>
-				(form.password.isValid =
-					!form.password.value.length || PASSWORD_CHECK.test(form.password.value))
-		},
-		confirmPassword: {
-			value: '',
-			isValid: true,
-			errorText: 'Make sure that you have typed in the same password in both fields',
-			validate: () =>
-				(form.confirmPassword.isValid = form.confirmPassword.value === form.password.value)
-		}
-	};
+	const [usernameState, usernameHandlers] = inputHandler<string>({
+		errorText: USERNAME_PROMPT,
+		validator: (newValue) => USERNAME_CHECK.test(newValue)
+	});
+
+	const [emailState, emailHandlers] = inputHandler<string>({
+		errorText: 'Please enter your university email address (ending with .ac.uk)',
+		validator: (newValue) => newValue.endsWith('.ac.uk')
+	});
+
+	const [passwordState, passwordHandlers] = inputHandler<string>({
+		errorText: PASSWORD_PROMPT,
+		validator: (newValue) => PASSWORD_CHECK(newValue)
+	});
+
+	const [confirmPasswordState, confirmPasswordHandlers] = inputHandler<string>({
+		errorText: 'Make sure that you have typed in the same password in both fields',
+		validator: (newValue) => newValue === passwordState.get().value
+	});
+
+	const form = formHandler([
+		usernameHandlers,
+		emailHandlers,
+		passwordHandlers,
+		confirmPasswordHandlers
+	]);
 
 	function doSignUp() {
-		if (
-			form.username.validate() &&
-			form.email.validate() &&
-			form.password.validate() &&
-			form.confirmPassword.validate()
-		) {
+		if (form.validateAll()) {
 			isLoading = true;
 
 			signUp(
 				{
-					username: form.username.value,
-					email: form.email.value,
-					password: form.password.value
+					username: usernameState.get().value,
+					email: emailState.get().value,
+					password: passwordState.get().value
 				},
 				'/user/signin'
 			).finally(() => (isLoading = false));
@@ -89,52 +72,54 @@
 	>
 		<label class="mt-1" for="username">Username</label>
 		<input
-			class="my-2"
+			class="form my-2"
 			type="text"
 			id="username"
 			required
-			bind:value={form.username.value}
-			on:blur={() => form.username.validate()}
+			bind:value={$usernameState.value}
+			on:blur={() => usernameHandlers.validate()}
 		/>
 		<p class="mb-2 text-xs text-danger">
-			{(!form.username.isValid && form.username.errorText) || ''}
+			{(!$usernameState.isValid && usernameHandlers.errorText) || ''}
 		</p>
 
 		<label class="mt-1" for="email">Email address</label>
 		<input
-			class="my-2"
+			class="form my-2"
 			type="email"
 			id="email"
 			required
-			bind:value={form.email.value}
-			on:blur={() => form.email.validate()}
+			bind:value={$emailState.value}
+			on:blur={() => emailHandlers.validate()}
 		/>
-		<p class="mb-2 text-xs text-danger">{(!form.email.isValid && form.email.errorText) || ''}</p>
+		<p class="mb-2 text-xs text-danger">
+			{(!$emailState.isValid && emailHandlers.errorText) || ''}
+		</p>
 
 		<label class="mt-1" for="password">Password</label>
 		<input
-			class="my-2"
+			class="form my-2"
 			type="password"
 			id="password"
 			required
-			bind:value={form.password.value}
-			on:blur={() => form.password.validate()}
+			bind:value={$passwordState.value}
+			on:blur={() => passwordHandlers.validate()}
 		/>
 		<p class="mb-2 text-xs text-danger">
-			{@html (!form.password.isValid && form.password.errorText) || ''}
+			{@html (!$passwordState.isValid && passwordHandlers.errorText) || ''}
 		</p>
 
 		<label class="mt-1" for="password">Confirm Password</label>
 		<input
-			class="my-2"
+			class="form my-2"
 			type="password"
 			id="password"
 			required
-			bind:value={form.confirmPassword.value}
-			on:blur={() => form.confirmPassword.validate()}
+			bind:value={$confirmPasswordState.value}
+			on:blur={() => confirmPasswordHandlers.validate()}
 		/>
 		<p class="mb-2 text-xs text-danger">
-			{(!form.confirmPassword.isValid && form.confirmPassword.errorText) || ''}
+			{(!$confirmPasswordState.isValid && confirmPasswordHandlers.errorText) || ''}
 		</p>
 
 		<div class="mt-3 flex flex-row flex-wrap items-center justify-around">

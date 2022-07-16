@@ -10,7 +10,7 @@ async function main() {
 main()
 	.catch((error) => {
 		console.error(error);
-		process.exit(1);
+		throw error; // eslint-disable-line @typescript-eslint/no-throw-literal
 	})
 	.finally(async () => {
 		await prisma.$disconnect();

@@ -2,6 +2,7 @@ import SuperTokens from 'supertokens-website';
 import type {
 	ICreateUserDto,
 	IEmailDto,
+	INewPasswordDto,
 	IPasswordResetDto,
 	IUserInfoDto,
 	IUserLoginDto
@@ -16,7 +17,7 @@ export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | U
 	if (!res) return;
 
 	if (redirectOnSuccess) {
-		await goto(redirectOnSuccess);
+		goto(redirectOnSuccess, { replaceState: true });
 	}
 }
 
@@ -28,13 +29,13 @@ export async function signUp(body: ICreateUserDto, redirectOnSuccess?: string | 
 			message: 'Check your inbox to verify your account',
 			type: 'success'
 		});
-		await goto(redirectOnSuccess);
+		goto(redirectOnSuccess);
 	}
 }
 
 export async function signOut() {
 	await SuperTokens.signOut();
-	await goto('/');
+	goto('/');
 }
 
 export async function resendVerificationEmail() {
@@ -108,4 +109,21 @@ export async function performPasswordReset(body: IPasswordResetDto) {
 		});
 		goto('/user/signin');
 	}
+}
+
+export async function performPasswordChange(body: INewPasswordDto) {
+	const res = await makeRequest<void>(
+		HttpMethod.POST,
+		{ url: '/auth/password/change', body },
+		true
+	);
+
+	if (res) {
+		pushNotification({
+			message: 'Password successfully changed',
+			type: 'success'
+		});
+	}
+
+	return res;
 }

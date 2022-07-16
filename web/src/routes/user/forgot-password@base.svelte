@@ -1,12 +1,6 @@
 <script lang="ts" context="module">
-	export async function load({ session }: LoadEvent): Promise<LoadOutput> {
-		if (session.user) {
-			return {
-				status: 302,
-				redirect: '/'
-			};
-		}
-		return {};
+	export async function load(load: LoadEvent): Promise<LoadOutput> {
+		return await signedOutGuard(load);
 	}
 </script>
 
@@ -14,6 +8,7 @@
 	import { sendPasswordResetEmail } from '$lib/api/auth';
 	import logo from '../../images/logo.png';
 	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
+	import { signedOutGuard } from '$lib/guards';
 
 	let email: string;
 
@@ -40,7 +35,7 @@
 		</p>
 
 		<label for="email">Enter your email address</label>
-		<input class="mb-5 mt-1" type="email" id="email" required bind:value={email} />
+		<input class="form mb-5 mt-1" type="email" id="email" required bind:value={email} />
 
 		<button type="submit" class="btn primary" class:isLoading disabled={isLoading}>
 			Request password reset

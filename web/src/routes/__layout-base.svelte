@@ -14,7 +14,7 @@
 
 	import { BASE_API_URL } from '$lib/config';
 	import { user } from '$lib/stores/auth.store';
-	import { notificationStore, pushNotification } from '$lib/stores/notifications.store';
+	import { notificationStore } from '$lib/stores/notifications.store';
 
 	export async function load({}: LoadEvent) {
 		if (browser) {
@@ -22,6 +22,7 @@
 				apiDomain: BASE_API_URL,
 				apiBasePath: '/',
 				autoAddCredentials: true,
+				sessionExpiredStatusCode: 511,
 				onHandleEvent: async (event) => {
 					switch (event.action) {
 						case 'SESSION_CREATED':

@@ -48,10 +48,10 @@ export function classifyPrismaError(error: unknown): [PrismaError, PrismaClientK
 }
 
 export function normalizeConflictError(error: PrismaClientKnownRequestError): string | undefined {
-	if (error.meta?.target instanceof Array) {
-		const conflictFields: string[] = error.meta.target.map((value: string) => /\((.+)\)/.exec(value)?.at(0) ?? value);
+	if (Array.isArray(error.meta?.target)) {
+		const conflictFields = error.meta?.target.map((value: string) => /\((.+)\)/.exec(value)?.at(0) ?? value);
 
-		const errorPrefix = capitalize(startCase(conflictFields.join(', ')));
+		const errorPrefix = capitalize(startCase(conflictFields?.join(', ')));
 		return `${errorPrefix} already in use`;
 	}
 }
