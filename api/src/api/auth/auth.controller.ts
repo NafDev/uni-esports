@@ -2,9 +2,12 @@ import { Body, Controller, Get, Post, Res, Session, UseGuards } from '@nestjs/co
 import type { INewPasswordDto } from '@uni-esports/interfaces';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
+import { VerifiedGuard } from '../../common/guards/user/verified.guard';
+import appConfig from '../../config/app.config';
 import { EmailDto, PasswordDto, UserLoginDto } from '../users/users.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { steamOpenId, SteamOpenIdParameters } from './openid/steam.openid';
 
 @Controller('auth')
 export class AuthController {
@@ -36,5 +39,19 @@ export class AuthController {
 	@UseGuards(AuthGuard)
 	async performPasswordChange(@Body() passwordChangeDto: INewPasswordDto, @Session() session: SessionContainer) {
 		return this.authService.performChangePasswordRequest(session, passwordChangeDto);
+	}
+
+	@Get('steam/redirect')
+	@UseGuards(AuthGuard, VerifiedGuard)
+	steamAuthRedirect() {
+		return {
+			url: steamOpenId.authRedirectUrl(`${appConfig.WEB_DOMAIN}/user/link/steam`, appConfig.WEB_DOMAIN)
+		};
+	}
+
+	@Post('steam/link')
+	@UseGuards(AuthGuard, VerifiedGuard)
+	async steamAuthLink(@Body() body: SteamOpenIdParameters, @Session() session: SessionContainer) {
+		return this.authService.performSteamAccountLink(body, session);
 	}
 }

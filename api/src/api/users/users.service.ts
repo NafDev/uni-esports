@@ -74,7 +74,15 @@ export class UserService {
 	async getUserInfo(session: SessionContainer): Promise<UserInfoDto> {
 		const user = await this.prisma.user.findUnique({
 			where: { id: session.getUserId() },
-			select: { email: true, id: true, University: true, roles: true, verified: true }
+			select: {
+				id: true,
+				email: true,
+				verified: true,
+				username: true,
+				roles: true,
+				steam64Id: true,
+				discordId: true
+			}
 		});
 
 		if (!user) throw new NotFoundException('User not found');
@@ -88,7 +96,10 @@ export class UserService {
 
 		return {
 			id: user.id,
-			email: user.email
+			email: user.email,
+			username: user.username,
+			steam64: user.steam64Id ?? undefined,
+			discord: user.discordId ?? undefined
 		};
 	}
 }

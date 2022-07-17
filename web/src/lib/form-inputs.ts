@@ -28,9 +28,10 @@ export function inputHandler<T extends string | number | boolean>(
 
 		if (isValidOnEmptyString && prevState.value === '') {
 			isValid = true;
+		} else {
+			isValid = validator(prevState.value);
 		}
 
-		isValid = validator(prevState.value);
 		state.set({ ...prevState, isValid });
 
 		return isValid;

@@ -10,6 +10,7 @@ import { compare, hash } from 'bcrypt';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import type { AccessTokenPayload, INewPasswordDto } from '@uni-esports/interfaces';
+import axios from 'axios';
 import appConfig from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
@@ -17,6 +18,7 @@ import { createToken, sha265hex } from '../../util/utility';
 import type { UserLoginDto } from '../users/users.dto';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { STSession } from './supertokens/supertokens.types';
+import { steamOpenId, SteamOpenIdParameters } from './openid/steam.openid';
 
 @Injectable()
 export class AuthService {
@@ -128,5 +130,30 @@ export class AuthService {
 		const sessions = await STSession.getAllSessionHandlesForUser(id);
 
 		await STSession.revokeMultipleSessions(sessions.filter((handle) => handle !== currentSession));
+	}
+
+	async performSteamAccountLink(steamOidResponse: Required<SteamOpenIdParameters>, session: SessionContainer) {
+		const id = session.getUserId();
+
+		const resp = await axios.get<string>(steamOpenId.authVerifyUrl(steamOidResponse));
+
+		if (!steamOpenId.evaluateAuthResponse(resp.data)) {
+			throw new UnauthorizedException('Could not verify your account');
+		}
+
+		const steam64Id = steamOpenId.stripClaimedId(steamOidResponse['openid.claimed_id']);
+
+		try {
+			await this.prisma.user.update({ where: { id }, data: { steam64Id }, select: { id: true } });
+
+			return { steam64Id };
+		} catch (error: unknown) {
+			const [prismaError] = classifyPrismaError(error);
+			if (prismaError === PrismaError.CONSTRAINT_FAILED) {
+				throw new BadRequestException('This Steam account cannot be linked');
+			}
+
+			throw error;
+		}
 	}
 }

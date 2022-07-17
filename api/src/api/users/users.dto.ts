@@ -31,6 +31,9 @@ export class CreateUserDto implements ICreateUserDto {
 export class UserInfoDto implements IUserInfoDto {
 	id!: string;
 	email!: string;
+	username!: string;
+	steam64?: string;
+	discord?: string;
 }
 
 export class EmailDto implements IEmailDto {

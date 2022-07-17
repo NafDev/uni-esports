@@ -12,11 +12,16 @@
 	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$lib/config';
 	import steamSignin from '../../images/sits_small.png';
 	import { formHandler, inputHandler } from '$lib/form-inputs';
-	import { performPasswordChange } from '$lib/api/auth';
+	import { performPasswordChange, steamAuthRedirect } from '$lib/api/auth';
+	import { getUserInfo } from '$lib/api/users';
+	import { userInfo } from '$lib/stores/auth.store';
 
-	let username: string;
-	let email: string;
-	let steam64Id: string;
+	onMount(async () => {
+		if (userInfo.get().id === undefined) {
+			const info = await getUserInfo();
+			userInfo.set(info);
+		}
+	});
 
 	let oldPassword = '';
 	let isLoadingPasswdChange = false;
@@ -57,13 +62,13 @@
 	<!-- Generic Profile Fields -->
 	<div class="flex basis-full flex-col p-3 md:basis-1/2">
 		<p class="mb-7 text-xl font-bold">Profile Information</p>
+
 		<label for="email">Email address</label>
-		<input class="form mb-5 mt-1" type="email" id="email" bind:value={email} disabled />
+		<input class="form mb-5 mt-1" type="email" id="email" value={$userInfo.email ?? ''} disabled />
 
 		<label for="username">Username</label>
 		<div class="mb-5 mt-1 flex flex-row items-center">
-			<input class="form " type="text" id="username" bind:value={username} />
-			<button class="btn primary ml-4">Update</button>
+			<input class="form" type="text" id="username" value={$userInfo.username ?? ''} disabled />
 		</div>
 
 		<p class="my-5 font-bold">Change password</p>
@@ -116,10 +121,26 @@
 
 		<div class="flex flex-col">
 			<label for="steam64Id">Steam</label>
-			{#if steam64Id}
-				<input class="form mb-5 mt-1" type="text" id="steam64Id" bind:value={steam64Id} disabled />
+			{#if $userInfo.steam64}
+				<div class="mb-5 mt-1 flex items-center">
+					<input
+						class="form"
+						type="text"
+						id="steam64Id"
+						href={`https://steamcommunity.com/profiles/${$userInfo.steam64}`}
+						value={$userInfo.steam64}
+						disabled
+					/>
+					<a
+						class="ml-4"
+						href={`https://steamcommunity.com/profiles/${$userInfo.steam64}`}
+						target="_blank"
+					>
+						<button class="btn primary-outlined">Profile</button>
+					</a>
+				</div>
 			{:else}
-				<button class="my-3">
+				<button class="my-3" on:click={() => steamAuthRedirect()}>
 					<img src={steamSignin} alt="Sign In Through Steam" id="steam64Id" />
 				</button>
 			{/if}

@@ -13,7 +13,7 @@
 	import Alert from '$components/base/alert.svelte';
 
 	import { BASE_API_URL } from '$lib/config';
-	import { user } from '$lib/stores/auth.store';
+	import { user, userInfo } from '$lib/stores/auth.store';
 	import { notificationStore } from '$lib/stores/notifications.store';
 
 	export async function load({}: LoadEvent) {
@@ -26,16 +26,19 @@
 				onHandleEvent: async (event) => {
 					switch (event.action) {
 						case 'SESSION_CREATED':
-							console.log('Session Created');
+						case 'ACCESS_TOKEN_PAYLOAD_UPDATED':
 						case 'REFRESH_SESSION':
-							console.log('Session Refreshed');
+							console.log(event.action);
+
 							const userId = await SuperTokens.getUserId();
 							const tokenPayload: AccessTokenPayload =
 								await SuperTokens.getAccessTokenPayloadSecurely();
+
 							user.set({ id: userId, ...tokenPayload });
 							break;
 						case 'SIGN_OUT':
 							user.set(undefined);
+							userInfo.set(undefined);
 							break;
 					}
 				}

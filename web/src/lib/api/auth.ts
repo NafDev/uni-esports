@@ -1,16 +1,16 @@
 import SuperTokens from 'supertokens-website';
 import type {
-	ICreateUserDto,
 	IEmailDto,
 	INewPasswordDto,
 	IPasswordResetDto,
 	IUserInfoDto,
-	IUserLoginDto
+	IUserLoginDto,
+	SteamOpenIdParameters
 } from '@uni-esports/interfaces';
 import { HttpMethod, makeRequest } from './http';
 import { goto } from '$app/navigation';
 import { pushNotification } from '$lib/stores/notifications.store';
-import { isSignedIn } from '$lib/stores/auth.store';
+import { isSignedIn, userInfo } from '$lib/stores/auth.store';
 
 export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | URL) {
 	const res = await makeRequest<IEmailDto>(HttpMethod.POST, { url: '/auth/signin', body });
@@ -21,21 +21,10 @@ export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | U
 	}
 }
 
-export async function signUp(body: ICreateUserDto, redirectOnSuccess?: string | URL) {
-	const res = await makeRequest<void>(HttpMethod.POST, { url: '/users/create', body });
-	if (res && redirectOnSuccess) {
-		pushNotification({
-			heading: 'Account created',
-			message: 'Check your inbox to verify your account',
-			type: 'success'
-		});
-		goto(redirectOnSuccess);
-	}
-}
-
 export async function signOut() {
-	await SuperTokens.signOut();
 	goto('/');
+	await SuperTokens.signOut();
+	window.location.reload();
 }
 
 export async function resendVerificationEmail() {
@@ -79,7 +68,6 @@ export async function verifyEmail(token: string) {
 
 	if (isSignedIn.get()) {
 		await makeRequest<IUserInfoDto>(HttpMethod.GET, { url: '/users/me' });
-		return await SuperTokens.attemptRefreshingSession();
 	}
 }
 
@@ -126,4 +114,29 @@ export async function performPasswordChange(body: INewPasswordDto) {
 	}
 
 	return res;
+}
+
+export async function steamAuthRedirect() {
+	const res = await makeRequest<{ url: string }>(
+		HttpMethod.GET,
+		{ url: '/auth/steam/redirect' },
+		true
+	);
+	if (res) {
+		goto(res.data.url);
+	}
+}
+
+export async function steamAuthLink(body: SteamOpenIdParameters) {
+	const res = await makeRequest<{ steam64Id: string }>(
+		HttpMethod.POST,
+		{ url: '/auth/steam/link', body },
+		true
+	);
+
+	if (res) {
+		userInfo.setKey('steam64', res.data.steam64Id);
+	}
+
+	goto('/user/me');
 }

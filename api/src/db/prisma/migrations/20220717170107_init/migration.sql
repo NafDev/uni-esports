@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS citext;
+
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER', 'MODERATOR');
 
@@ -8,6 +10,7 @@ CREATE TABLE "user" (
     "passwordHash" TEXT,
     "passwordResetToken" TEXT,
     "verified" BOOLEAN NOT NULL DEFAULT false,
+    "username" CITEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "roles" "Role"[],
     "universityId" INTEGER,
@@ -38,6 +41,15 @@ CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_passwordResetToken_key" ON "user"("passwordResetToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_username_key" ON "user"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_steam64Id_key" ON "user"("steam64Id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_discordId_key" ON "user"("discordId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "university_name_key" ON "university"("name");

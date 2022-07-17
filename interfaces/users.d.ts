@@ -6,6 +6,9 @@ export interface IUserLoginDto {
 export interface IUserInfoDto {
 	id: string;
 	email: string;
+	username: string;
+	steam64?: string;
+	discord?: string;
 }
 
 export interface ICreateUserDto {
@@ -13,11 +16,6 @@ export interface ICreateUserDto {
 	email: string;
 	password: string;
 }
-
-// export interface ICreateUserResponse {
-// 	email: string;
-// 	username: string;
-// }
 
 export interface IEmailDto {
 	email: string;

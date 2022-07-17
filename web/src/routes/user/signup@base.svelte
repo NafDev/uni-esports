@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { signUp } from '$lib/api/auth';
+	import { signUp } from '$lib/api/users';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT, USERNAME_CHECK, USERNAME_PROMPT } from '$lib/config';
 	import { formHandler, inputHandler } from '$lib/form-inputs';
 	import { signedOutGuard } from '$lib/guards';

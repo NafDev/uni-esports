@@ -22,12 +22,12 @@ model User {
   passwordHash       String?
   passwordResetToken String?  @unique
   verified           Boolean  @default(false)
-  username           String   @unique
+  username           String   @unique @db.Citext
   createdAt          DateTime @default(now())
   roles              Role[]
   universityId       Int?
-  steam64Id          String?
-  discordId          String?
+  steam64Id          String?  @unique
+  discordId          String?  @unique
 
   University University? @relation(fields: [universityId], references: [id])
   @@map("user")
