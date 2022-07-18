@@ -17,7 +17,7 @@ import { EmailTemplates, SmtpService } from '../../email/smtp.service';
 import { createToken, sha265hex } from '../../util/utility';
 import type { UserLoginDto } from '../users/users.dto';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
-import { STSession } from './supertokens/supertokens.types';
+import { STEmailVerification, STSession } from './supertokens/supertokens.types';
 import { steamOpenId, SteamOpenIdParameters } from './openid/steam.openid';
 
 @Injectable()

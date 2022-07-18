@@ -40,7 +40,7 @@
 		"pino-http": "^7.1.0",
 		"reflect-metadata": "^0.1.13",
 		"rxjs": "^7.2.0",
-		"supertokens-node": "^9.2.3"
+		"supertokens-node": "^11.0.0"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "^8.0.0",

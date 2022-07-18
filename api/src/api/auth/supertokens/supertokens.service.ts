@@ -19,6 +19,24 @@ export class SupertokensService {
 			recipeList: [
 				STSession.init({ antiCsrf: 'NONE', cookieSameSite: 'strict', sessionExpiredStatusCode: 511 }),
 				STEmailVerification.init({
+					emailDelivery: {
+						override(oI) {
+							return {
+								async sendEmail(input) {
+									switch (input.type) {
+										case 'EMAIL_VERIFICATION':
+											await smtpService.sendEmail(input.user.email, 'Verify your email', EmailTemplates.VERIFY_USER, {
+												link: input.emailVerifyLink
+											});
+											break;
+										default:
+											return oI.sendEmail(input);
+									}
+								}
+							};
+						}
+					},
+
 					async getEmailForUserId(userId) {
 						const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
 
@@ -29,11 +47,6 @@ export class SupertokensService {
 						return user.email;
 					},
 
-					async createAndSendCustomEmail(user, emailVerificationURLWithToken) {
-						await smtpService.sendEmail(user.email, 'Verify your email address', EmailTemplates.VERIFY_USER, {
-							link: emailVerificationURLWithToken
-						});
-					},
 					async getEmailVerificationURL() {
 						return emailVerificationUrl;
 					},
