@@ -1,7 +1,7 @@
 <!-- All pages should extend this layout to ensure SuperTokens is loaded -->
 <script lang="ts" context="module">
 	import type { AccessTokenPayload } from '@uni-esports/interfaces';
-	import type { LoadEvent } from '@sveltejs/kit';
+	import type { Load } from '@sveltejs/kit';
 
 	import '../css/base.css';
 
@@ -13,10 +13,10 @@
 	import Alert from '$components/base/alert.svelte';
 
 	import { BASE_API_URL } from '$lib/config';
-	import { user, userInfo } from '$lib/stores/auth.store';
+	import { user } from '$lib/stores/auth.store';
 	import { notificationStore } from '$lib/stores/notifications.store';
 
-	export async function load({}: LoadEvent) {
+	export const load: Load = async () => {
 		if (browser) {
 			SuperTokens.init({
 				apiDomain: BASE_API_URL,
@@ -29,16 +29,12 @@
 						case 'ACCESS_TOKEN_PAYLOAD_UPDATED':
 						case 'REFRESH_SESSION':
 							console.log(event.action);
-
+							console.debug();
 							const userId = await SuperTokens.getUserId();
 							const tokenPayload: AccessTokenPayload =
 								await SuperTokens.getAccessTokenPayloadSecurely();
 
 							user.set({ id: userId, ...tokenPayload });
-							break;
-						case 'SIGN_OUT':
-							user.set(undefined);
-							userInfo.set(undefined);
 							break;
 					}
 				}
@@ -55,7 +51,7 @@
 			}
 		}
 		return {};
-	}
+	};
 </script>
 
 <slot />

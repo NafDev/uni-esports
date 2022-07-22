@@ -1,21 +1,10 @@
 <script lang="ts" context="module">
-	export async function load(load: LoadEvent): Promise<LoadOutput> {
-		return await customGuard(load, ({ session, url }) => {
-			if (session.user) {
-				if (url.searchParams.get('redirect')) {
-					return {
-						status: 302,
-						redirect: url.searchParams.get('redirect')
-					};
-				}
-				return {
-					status: 302,
-					redirect: '/'
-				};
-			}
-			return {};
-		});
-	}
+	import type { Load } from '@sveltejs/kit';
+
+	export const load: Load = (_) => {
+		console.log(_.session);
+		return new PageGuard(_).not.signedIn().done();
+	};
 </script>
 
 <script lang="ts">
@@ -25,9 +14,7 @@
 	import logo from '../../images/logo.png';
 	import { onMount } from 'svelte';
 	import { pushNotification } from '$lib/stores/notifications.store';
-	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
-	import { browser } from '$app/env';
-	import { customGuard } from '$lib/guards';
+	import { PageGuard } from '$lib/guards';
 
 	let redirect: string;
 

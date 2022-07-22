@@ -1,11 +1,11 @@
 <script lang="ts" context="module">
-	import { signedInGuard } from '$lib/guards';
-	import type { LoadEvent } from '@sveltejs/kit';
+	import { PageGuard } from '$lib/guards';
+	import type { Load } from '@sveltejs/kit';
 	import { onMount } from 'svelte';
 
-	export async function load(_: LoadEvent) {
-		return await signedInGuard(_);
-	}
+	export const load: Load = (_) => {
+		return new PageGuard(_).signedIn().done();
+	};
 </script>
 
 <script lang="ts">
@@ -56,7 +56,11 @@
 	}
 </script>
 
-<h1 class="mb-5 text-center text-5xl uppercase">Profile</h1>
+<h1
+	class="mb-5 rounded-3xl bg-opacity-5 bg-gradient-to-t from-black/20 p-10 text-left text-5xl font-black uppercase"
+>
+	Profile
+</h1>
 
 <div class="flex flex-row flex-wrap justify-items-stretch">
 	<!-- Generic Profile Fields -->

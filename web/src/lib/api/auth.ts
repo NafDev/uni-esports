@@ -10,7 +10,7 @@ import type {
 import { HttpMethod, makeRequest } from './http';
 import { goto } from '$app/navigation';
 import { pushNotification } from '$lib/stores/notifications.store';
-import { isSignedIn, userInfo } from '$lib/stores/auth.store';
+import { isSignedIn, user, userInfo } from '$lib/stores/auth.store';
 
 export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | URL) {
 	const res = await makeRequest<IEmailDto>(HttpMethod.POST, { url: '/auth/signin', body });
@@ -22,9 +22,8 @@ export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | U
 }
 
 export async function signOut() {
-	goto('/');
 	await SuperTokens.signOut();
-	window.location.reload();
+	user.set(undefined);
 }
 
 export async function resendVerificationEmail() {
@@ -122,6 +121,7 @@ export async function steamAuthRedirect() {
 		{ url: '/auth/steam/redirect' },
 		true
 	);
+
 	if (res) {
 		goto(res.data.url);
 	}

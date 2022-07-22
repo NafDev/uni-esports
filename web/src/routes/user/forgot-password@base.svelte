@@ -1,14 +1,14 @@
 <script lang="ts" context="module">
-	export async function load(load: LoadEvent): Promise<LoadOutput> {
-		return await signedOutGuard(load);
-	}
+	export const load: Load = (_) => {
+		return new PageGuard(_).not.signedIn().done();
+	};
 </script>
 
 <script lang="ts">
 	import { sendPasswordResetEmail } from '$lib/api/auth';
+	import { PageGuard } from '$lib/guards';
+	import type { Load } from '@sveltejs/kit';
 	import logo from '../../images/logo.png';
-	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
-	import { signedOutGuard } from '$lib/guards';
 
 	let email: string;
 

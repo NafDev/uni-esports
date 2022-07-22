@@ -1,7 +1,9 @@
 <script lang="ts" context="module">
-	export async function load(load: LoadEvent): Promise<LoadOutput> {
-		return await signedOutGuard(load);
-	}
+	import type { Load } from '@sveltejs/kit';
+
+	export const load: Load = (_) => {
+		return new PageGuard(_).not.signedIn().done();
+	};
 </script>
 
 <script lang="ts">
@@ -9,8 +11,7 @@
 	import { signUp } from '$lib/api/users';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT, USERNAME_CHECK, USERNAME_PROMPT } from '$lib/config';
 	import { formHandler, inputHandler } from '$lib/form-inputs';
-	import { signedOutGuard } from '$lib/guards';
-	import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
+	import { PageGuard } from '$lib/guards';
 	import logo from '../../images/logo.png';
 
 	let isLoading = false;
