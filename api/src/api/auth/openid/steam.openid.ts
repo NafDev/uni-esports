@@ -2,7 +2,6 @@ import { Equals, IsNotEmpty } from 'class-validator';
 
 // https://stackoverflow.com/questions/53573820/steam-openid-signature-validation/63652502#63652502
 export class SteamOpenIdParameters {
-	/* eslint-disable @typescript-eslint/naming-convention */
 	@IsNotEmpty() 'openid.assoc_handle': string;
 	@IsNotEmpty() 'openid.claimed_id': string;
 	@IsNotEmpty() 'openid.identity': string;
@@ -13,7 +12,6 @@ export class SteamOpenIdParameters {
 	@IsNotEmpty() @Equals('http://localhost:8080/user/link/steam') 'openid.return_to': string;
 	@IsNotEmpty() 'openid.sig': string;
 	@IsNotEmpty() 'openid.signed': string;
-	/* eslint-enable @typescript-eslint/naming-convention */
 }
 
 export const steamOpenId = {
@@ -41,7 +39,7 @@ export const steamOpenId = {
 	authVerifyUrl(parameters: Required<SteamOpenIdParameters>) {
 		return `https://steamcommunity.com/openid/login?${new URLSearchParams({
 			...parameters,
-			'openid.mode': 'check_authentication' // eslint-disable-line @typescript-eslint/naming-convention
+			'openid.mode': 'check_authentication'
 		}).toString()}`;
 	},
 

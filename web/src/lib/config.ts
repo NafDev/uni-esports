@@ -16,3 +16,7 @@ export const PASSWORD_CHECK = (value: string) => {
 		/[A-Z]+/.test(value)
 	);
 };
+
+export const TEAMNAME_CHECK = /^[\w-. ]{3,24}$/;
+export const TEAMNAME_PROMPT =
+	'Team names should be 3-24 characters long and may only include alphanumeric characters, underscores, hypens, spaces, and full stops.';

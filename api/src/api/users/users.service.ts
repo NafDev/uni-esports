@@ -81,7 +81,8 @@ export class UserService {
 				username: true,
 				roles: true,
 				steam64Id: true,
-				discordId: true
+				discordId: true,
+				University: { select: { name: true } }
 			}
 		});
 
@@ -98,6 +99,7 @@ export class UserService {
 			id: user.id,
 			email: user.email,
 			username: user.username,
+			university: user.University?.name,
 			steam64: user.steam64Id ?? undefined,
 			discord: user.discordId ?? undefined
 		};

@@ -8,11 +8,13 @@ import appConfig from '../config/app.config';
 
 export enum EmailTemplates {
 	VERIFY_USER = 'verify-user.mjml',
-	RESET_PASSWORD = 'reset-password.mjml'
+	RESET_PASSWORD = 'reset-password.mjml',
+	TEAM_INVITE = 'team-invite.mjml'
 }
 
 export interface IEmailVariables {
 	link?: string;
+	teamName?: string;
 }
 
 @Injectable()

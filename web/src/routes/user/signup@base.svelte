@@ -59,6 +59,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Create account | UKUE</title>
+</svelte:head>
+
 <div class="my-auto mx-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">
 		<a href="/">

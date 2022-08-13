@@ -29,7 +29,9 @@ model User {
   steam64Id          String?  @unique
   discordId          String?  @unique
 
-  University University? @relation(fields: [universityId], references: [id])
+  University University?  @relation(fields: [universityId], references: [id])
+  UserOnTeam UserOnTeam[]
+
   @@map("user")
 }
 
@@ -39,6 +41,8 @@ model University {
   User User[]
 
   UniversityDomain UniversityDomain[]
+  Team             Team[]
+
   @@map("university")
 }
 
@@ -47,6 +51,62 @@ model UniversityDomain {
   universityId Int
 
   University University @relation(fields: [universityId], references: [id])
+
   @@id([domain, universityId])
   @@map("universityDomain")
+}
+
+model Team {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.Citext
+  universityId Int
+  inviteCode   String?  @unique
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  university       University         @relation(fields: [universityId], references: [id])
+  UserOnTeam       UserOnTeam[]
+  TeamOnTournament TeamOnTournament[]
+
+  @@unique([universityId, name])
+  @@map("team")
+}
+
+model UserOnTeam {
+  user      User     @relation(fields: [userId], references: [id])
+  team      Team     @relation(fields: [teamId], references: [id])
+  captain   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String @db.Uuid
+  teamId Int
+
+  @@id([userId, teamId])
+  @@map("userTeam")
+}
+
+enum TournamentStatus {
+  ANNOUNCED
+  REGISTERATION
+  ONGOING
+  COMPLETED
+}
+
+model Tournament {
+  id               Int                @id @default(autoincrement())
+  state            TournamentStatus
+  TeamOnTournament TeamOnTournament[]
+
+  @@map("tournament")
+}
+
+model TeamOnTournament {
+  team         Team       @relation(fields: [teamId], references: [id])
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  teamId       Int
+  tournamentId Int
+  createdAt    DateTime   @default(now())
+
+  @@id([teamId, tournamentId])
+  @@map("teamTournament")
 }

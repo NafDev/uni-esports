@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { user } from '$lib/stores/auth.store';
-
-	// $: {
-	// 	console.log($user);
-	// }
 </script>
+
+<svelte:head>
+	<title>Home | UKUE</title>
+</svelte:head>
 
 <div class="main text-2xl text-white">
 	<div class="hero relative h-[250px]">

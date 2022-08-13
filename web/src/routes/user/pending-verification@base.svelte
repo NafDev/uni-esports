@@ -42,6 +42,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Verify my account | UKUE</title>
+</svelte:head>
+
 <div class="m-auto w-5/6 md:w-96">
 	<div class="my-10 flex flex-col">
 		<h1 class="flex flex-col justify-center text-center align-middle text-3xl font-bold">

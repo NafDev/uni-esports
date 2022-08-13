@@ -3,7 +3,6 @@ import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-valida
 import type {
 	ICreateUserDto,
 	IEmailDto,
-	INewPasswordDto,
 	IPasswordResetDto,
 	IUserInfoDto,
 	IUserLoginDto
@@ -32,6 +31,7 @@ export class UserInfoDto implements IUserInfoDto {
 	id!: string;
 	email!: string;
 	username!: string;
+	university?: string;
 	steam64?: string;
 	discord?: string;
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import process from 'node:process';
 import { cleanEnv, num, port, str, url } from 'envalid';
 

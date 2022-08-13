@@ -2,7 +2,7 @@ import { atom, type WritableAtom } from 'nanostores';
 
 interface InputHandler {
 	errorText: string;
-	validate: () => boolean;
+	validate: (submit?: boolean) => boolean;
 }
 
 interface InputHandlerParameters<T> {
@@ -15,18 +15,17 @@ interface InputHandlerParameters<T> {
 export function inputHandler<T extends string | number | boolean>(
 	parameters: InputHandlerParameters<T>
 ): [WritableAtom<{ value: T; isValid: boolean }>, InputHandler] {
-	const { initialValue = '', errorText, validator, isValidOnEmptyString = true } = parameters;
+	const { initialValue = '', errorText, validator } = parameters;
 
 	const value = initialValue as T;
-	const isValid = isValidOnEmptyString;
 
-	const state = atom({ value, isValid });
+	const state = atom({ value, isValid: true });
 
-	const validateValue = () => {
+	const validateValue = (submit = true) => {
 		let isValid: boolean;
 		const prevState = state.get();
 
-		if (isValidOnEmptyString && prevState.value === '') {
+		if (!submit && prevState.value === '') {
 			isValid = true;
 		} else {
 			isValid = validator(prevState.value);
@@ -54,7 +53,7 @@ export function formHandler(inputHelpers: Array<InputHandler>) {
 		let isValid = true;
 
 		for (const input of inputHelpers) {
-			if (!input.validate()) {
+			if (!input.validate(true)) {
 				isValid = false;
 			}
 		}

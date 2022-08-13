@@ -1,6 +1,5 @@
 {
-  "name": "@uni-esports/interfaces",
-  "version": "0.0.1",
-  "types": "index.d.ts"
+	"name": "@uni-esports/interfaces",
+	"version": "0.0.1",
+	"types": "index.d.ts"
 }
-

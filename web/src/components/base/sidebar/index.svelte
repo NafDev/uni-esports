@@ -49,7 +49,7 @@
 		},
 		{
 			name: 'My Teams',
-			link: '/user/teams',
+			link: '/teams',
 			icon: UserGroup,
 			signedIn: true
 		},

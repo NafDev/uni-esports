@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import { PageGuard } from '$lib/guards';
 	import type { Load } from '@sveltejs/kit';
-	import { onMount } from 'svelte';
 
 	export const load: Load = (_) => {
 		return new PageGuard(_).signedIn().done();
@@ -13,15 +12,8 @@
 	import steamSignin from '../../images/sits_small.png';
 	import { formHandler, inputHandler } from '$lib/form-inputs';
 	import { performPasswordChange, steamAuthRedirect } from '$lib/api/auth';
-	import { getUserInfo } from '$lib/api/users';
 	import { userInfo } from '$lib/stores/auth.store';
-
-	onMount(async () => {
-		if (userInfo.get().id === undefined) {
-			const info = await getUserInfo();
-			userInfo.set(info);
-		}
-	});
+	import PageTitle from '$components/base/pageTitle.svelte';
 
 	let oldPassword = '';
 	let isLoadingPasswdChange = false;
@@ -56,11 +48,11 @@
 	}
 </script>
 
-<h1
-	class="mb-5 rounded-3xl bg-opacity-5 bg-gradient-to-t from-black/20 p-10 text-left text-5xl font-black uppercase"
->
-	Profile
-</h1>
+<svelte:head>
+	<title>Profile | UKUE</title>
+</svelte:head>
+
+<PageTitle>Profile</PageTitle>
 
 <div class="flex flex-row flex-wrap justify-items-stretch">
 	<!-- Generic Profile Fields -->
@@ -68,11 +60,11 @@
 		<p class="mb-7 text-xl font-bold">Profile Information</p>
 
 		<label for="email">Email address</label>
-		<input class="form mb-5 mt-1" type="email" id="email" value={$userInfo.email ?? ''} disabled />
+		<input class="form mb-5 mt-1" type="email" id="email" value={$userInfo?.email ?? ''} disabled />
 
 		<label for="username">Username</label>
 		<div class="mb-5 mt-1 flex flex-row items-center">
-			<input class="form" type="text" id="username" value={$userInfo.username ?? ''} disabled />
+			<input class="form" type="text" id="username" value={$userInfo?.username ?? ''} disabled />
 		</div>
 
 		<p class="my-5 font-bold">Change password</p>
@@ -106,8 +98,10 @@
 					<button
 						class="btn primary ml-4"
 						class:isLoading={isLoadingPasswdChange}
-						on:click={() => doPasswordChange()}>Update</button
+						on:click={() => doPasswordChange()}
 					>
+						Update
+					</button>
 				</div>
 				<p class="mb-2 text-xs text-danger">
 					{@html (!$newPasswordState.isValid && newPasswordHandler.errorText) || ''}
@@ -125,19 +119,19 @@
 
 		<div class="flex flex-col">
 			<label for="steam64Id">Steam</label>
-			{#if $userInfo.steam64}
+			{#if $userInfo?.steam64}
 				<div class="mb-5 mt-1 flex items-center">
 					<input
 						class="form"
 						type="text"
 						id="steam64Id"
-						href={`https://steamcommunity.com/profiles/${$userInfo.steam64}`}
-						value={$userInfo.steam64}
+						href={`https://steamcommunity.com/profiles/${$userInfo?.steam64}`}
+						value={$userInfo?.steam64}
 						disabled
 					/>
 					<a
 						class="ml-4"
-						href={`https://steamcommunity.com/profiles/${$userInfo.steam64}`}
+						href={`https://steamcommunity.com/profiles/${$userInfo?.steam64}`}
 						target="_blank"
 					>
 						<button class="btn primary-outlined">Profile</button>

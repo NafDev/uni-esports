@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import type { ICreateUserDto, IUserInfoDto } from '@uni-esports/interfaces';
+import type { ICreateUserDto, IUserInfoDto, TeamDto } from '@uni-esports/interfaces';
 import { pushNotification } from '../stores/notifications.store';
 import { makeRequest, HttpMethod } from './http';
 
@@ -17,6 +17,14 @@ export async function signUp(body: ICreateUserDto, redirectOnSuccess?: string | 
 
 export async function getUserInfo() {
 	const res = await makeRequest<IUserInfoDto>(HttpMethod.GET, { url: '/users/me' }, true);
+
+	if (res) {
+		return res.data;
+	}
+}
+
+export async function getUserTeams() {
+	const res = await makeRequest<TeamDto[]>(HttpMethod.GET, { url: '/teams/me' }, true);
 
 	if (res) {
 		return res.data;

@@ -7,6 +7,7 @@ export interface IUserInfoDto {
 	id: string;
 	email: string;
 	username: string;
+	university?: string;
 	steam64?: string;
 	discord?: string;
 }

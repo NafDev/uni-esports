@@ -1,4 +1,4 @@
-<div class="py-24 text-center ">
+<div class="w-screen py-24 text-center">
 	<h1 class="py-12 text-5xl font-bold">There's nothing here...</h1>
 	<h5>
 		The page that you are looking for doesn't exist, or you don't have permission to access it.

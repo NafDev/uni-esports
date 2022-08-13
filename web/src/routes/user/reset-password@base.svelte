@@ -31,6 +31,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Reset password | UKUE</title>
+</svelte:head>
+
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">
 		<a href="/">

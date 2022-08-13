@@ -7,6 +7,7 @@ import { DatabaseModule } from './db/db.module';
 import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
 import { UserModule } from './api/users/users.module';
+import { TeamModule } from './api/teams/teams.module';
 
 @Module({
 	imports: [
@@ -32,6 +33,7 @@ import { UserModule } from './api/users/users.module';
 		}),
 		DatabaseModule,
 		UserModule,
+		TeamModule,
 		EmailModule,
 		AdminModule
 	],

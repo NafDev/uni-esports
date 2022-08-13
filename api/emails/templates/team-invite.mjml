@@ -1,0 +1,27 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text align="center">
+          <h1>{{appName}}</h1>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          Hi there,
+        </mj-text>
+        <mj-text>
+          You recieved an invite to join the team <b>{{teamName}}</b>. Click the button below and sign in to join your new team and play in tournaments.
+        </mj-text>
+        <mj-button href="{{link}}" padding="5%">
+          Join Team
+        </mj-button>
+        <mj-text>
+          If you cannot click the button, copy and paste this link into your browser instead: <a href="{{link}}">{{link}}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
