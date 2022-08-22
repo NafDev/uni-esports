@@ -3,22 +3,21 @@ import {
 	Injectable,
 	InternalServerErrorException,
 	Logger,
-	NotFoundException,
 	UnauthorizedException
 } from '@nestjs/common';
+import type { AccessTokenPayload, INewPasswordDto } from '@uni-esports/interfaces';
+import axios from 'axios';
 import { compare, hash } from 'bcrypt';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import type { AccessTokenPayload, INewPasswordDto } from '@uni-esports/interfaces';
-import axios from 'axios';
 import appConfig from '../../config/app.config';
+import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
 import { createToken, sha265hex } from '../../util/utility';
 import type { UserLoginDto } from '../users/users.dto';
-import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
-import { STEmailVerification, STSession } from './supertokens/supertokens.types';
 import { steamOpenId, SteamOpenIdParameters } from './openid/steam.openid';
+import { STSession } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
