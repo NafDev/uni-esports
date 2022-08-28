@@ -6,7 +6,6 @@
 		"experimentalDecorators": true,
 		"baseUrl": ".",
 		"outDir": "./dist",
-		"rootDir": "src",
 		"incremental": true,
 		"strictNullChecks": true,
 		"resolveJsonModule": true,
@@ -17,6 +16,7 @@
 		"importsNotUsedAsValues": "error",
 		"sourceMap": true
 	},
+	"include": ["src", "test"],
 	"ts-node": {
 		"files": true
 	}

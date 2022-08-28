@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    container_name: integration-tests-prisma
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests
+
+  st_core:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql
+    container_name: supertokens-core
+    ports:
+      - '3567:3567'
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - '1025:1025'
+      - '8025:8025'

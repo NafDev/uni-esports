@@ -8,6 +8,7 @@ import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
 import { UserModule } from './api/users/users.module';
 import { TeamModule } from './api/teams/teams.module';
+import { AppController } from './app.controller';
 
 @Module({
 	imports: [
@@ -37,6 +38,7 @@ import { TeamModule } from './api/teams/teams.module';
 		EmailModule,
 		AdminModule
 	],
-	providers: [PrismaService]
+	providers: [PrismaService],
+	controllers: [AppController]
 })
 export class AppModule {}

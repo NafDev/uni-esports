@@ -7,7 +7,7 @@ import appConfig from '../../config/app.config';
 export class PrismaService extends PrismaClient implements OnModuleInit {
 	constructor() {
 		super({
-			log: appConfig.isDev ? ['query'] : undefined
+			log: appConfig.isProd ? undefined : ['query']
 		});
 	}
 
