@@ -13,5 +13,6 @@
 	"[typescript]": {
 		"editor.defaultFormatter": "samverschueren.linter-xo"
 	},
-	"material-icon-theme.activeIconPack": "nest"
+	"material-icon-theme.activeIconPack": "nest",
+	"cSpell.words": ["esports", "nestjs", "pino", "supertokens"]
 }

@@ -19,12 +19,8 @@ export class UserService {
 	async createUser(createUserDto: CreateUserDto) {
 		const emailDomain = createUserDto.email.split('@').at(1);
 
-		if (emailDomain === undefined) {
-			throw new BadRequestException('Unknown university email domain');
-		}
-
 		const uni = await this.prisma.universityDomain.findUnique({
-			where: { domain: emailDomain },
+			where: { domain: emailDomain ?? '' },
 			select: { universityId: true }
 		});
 
