@@ -1,8 +1,10 @@
 import supertest from 'supertest';
+import mailhog from './scripts/mailhog';
+
+const apiUsers = supertest('http://localhost:3000/users');
+const apiAuth = supertest('http://localhost:3000/auth');
 
 describe('User registration', () => {
-	const app = supertest('http://localhost:3000/users');
-
 	test('Create a new user', async () => {
 		const requestBody = {
 			email: 'test1@brunel.ac.uk',
@@ -10,9 +12,12 @@ describe('User registration', () => {
 			username: 'TestUser1'
 		};
 
-		const resp = await app.post('/create').send(requestBody);
+		const resp = await apiUsers.post('/create').send(requestBody);
 
 		expect(resp.statusCode).toBe(201);
+
+		const mail = await mailhog.latestTo('test1@brunel.ac.uk');
+		expect(mail?.subject).toBe('Verify your email');
 	});
 
 	test('Create new user with existing email', async () => {
@@ -22,7 +27,7 @@ describe('User registration', () => {
 			username: 'TestUser2'
 		};
 
-		const resp = await app.post('/create').send(requestBody);
+		const resp = await apiUsers.post('/create').send(requestBody);
 
 		expect(resp.statusCode).toBe(409);
 		expect(resp.body).toEqual({ message: 'Email already in use' });
@@ -35,7 +40,7 @@ describe('User registration', () => {
 			username: 'TestUser1'
 		};
 
-		const resp = await app.post('/create').send(requestBody);
+		const resp = await apiUsers.post('/create').send(requestBody);
 
 		expect(resp.statusCode).toBe(409);
 		expect(resp.body).toEqual({ message: 'Username already in use' });
@@ -48,7 +53,7 @@ describe('User registration', () => {
 			username: 'TestUser2'
 		};
 
-		const resp = await app.post('/create').send(requestBody);
+		const resp = await apiUsers.post('/create').send(requestBody);
 
 		expect(resp.statusCode).toBe(400);
 	});
@@ -60,22 +65,22 @@ describe('User registration', () => {
 			username: '12'
 		};
 
-		let resp = await app.post('/create').send(requestBody);
+		let resp = await apiUsers.post('/create').send(requestBody);
 		expect(resp.statusCode).toBe(400);
 
 		requestBody.username = 'user#';
 
-		resp = await app.post('/create').send(requestBody);
+		resp = await apiUsers.post('/create').send(requestBody);
 		expect(resp.statusCode).toBe(400);
 
 		requestBody.username = 'a bcd';
 
-		resp = await app.post('/create').send(requestBody);
+		resp = await apiUsers.post('/create').send(requestBody);
 		expect(resp.statusCode).toBe(400);
 
 		requestBody.username = 'aaaaaaaaaaaaaaaaaaaaaaaaa';
 
-		resp = await app.post('/create').send(requestBody);
+		resp = await apiUsers.post('/create').send(requestBody);
 		expect(resp.statusCode).toBe(400);
 	});
 
@@ -86,7 +91,7 @@ describe('User registration', () => {
 			username: 'TestUser2'
 		};
 
-		const resp = await app.post('/create').send(requestBody);
+		const resp = await apiUsers.post('/create').send(requestBody);
 		expect(resp.statusCode).toBe(400);
 	});
 
@@ -97,9 +102,52 @@ describe('User registration', () => {
 			username: 'TestUser2'
 		};
 
-		const resp = await app.post('/create').send(requestBody);
+		const resp = await apiUsers.post('/create').send(requestBody);
 
 		expect(resp.statusCode).toBe(400);
 		expect(resp.body).toEqual({ message: 'Unknown university email domain' });
+	});
+});
+
+describe('User sign-in flow', () => {
+	test('User attempts sign in with incorrect details', async () => {
+		let requestBody: any = {
+			email: 'test@test.com',
+			password: 'password'
+		};
+
+		let resp = await apiAuth.post('/signin').send(requestBody);
+
+		expect(resp.statusCode).toBe(401);
+
+		requestBody = {
+			email: 'test1@brunel.ac.uk',
+			password: undefined
+		};
+
+		resp = await apiAuth.post('/signin').send(requestBody);
+
+		expect(resp.statusCode).toBe(400);
+	});
+
+	test('User signs in and gets profile', async () => {
+		const requestBody = {
+			email: 'test1@brunel.ac.uk',
+			password: 'password'
+		};
+
+		let resp = await apiAuth.post('/signin').send(requestBody);
+
+		const cookies = resp.get('Set-Cookie');
+
+		expect(cookies);
+
+		resp = await apiUsers.get('/me').set('Cookie', cookies).send();
+
+		expect(resp.body).toMatchObject({
+			email: 'test1@brunel.ac.uk',
+			username: 'TestUser1',
+			university: 'Brunel University Uxbridge'
+		});
 	});
 });
