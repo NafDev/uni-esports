@@ -1,23 +1,37 @@
 import supertest from 'supertest';
+import he from 'he';
 import mailhog from './scripts/mailhog';
 
 const apiUsers = supertest('http://localhost:3000/users');
 const apiAuth = supertest('http://localhost:3000/auth');
 
+let cookies: string[];
+
+async function createNewSession(signInBody: Record<string, unknown>) {
+	const resp = await apiAuth.post('/signin').send(signInBody);
+
+	cookies = resp.get('Set-Cookie');
+
+	return resp;
+}
+
+export async function createNewUser(userDetails: { email: string; password: string; username: string }) {
+	const requestBody = userDetails;
+
+	const resp = await apiUsers.post('/create').send(requestBody);
+	expect(resp.statusCode).toBe(201);
+
+	const mail = await mailhog.latestTo('test1@brunel.ac.uk');
+	expect(mail?.subject).toBe('Verify your email');
+}
+
 describe('User registration', () => {
 	test('Create a new user', async () => {
-		const requestBody = {
+		await createNewUser({
 			email: 'test1@brunel.ac.uk',
 			password: 'password',
 			username: 'TestUser1'
-		};
-
-		const resp = await apiUsers.post('/create').send(requestBody);
-
-		expect(resp.statusCode).toBe(201);
-
-		const mail = await mailhog.latestTo('test1@brunel.ac.uk');
-		expect(mail?.subject).toBe('Verify your email');
+		});
 	});
 
 	test('Create new user with existing email', async () => {
@@ -54,7 +68,6 @@ describe('User registration', () => {
 		};
 
 		const resp = await apiUsers.post('/create').send(requestBody);
-
 		expect(resp.statusCode).toBe(400);
 	});
 
@@ -103,7 +116,6 @@ describe('User registration', () => {
 		};
 
 		const resp = await apiUsers.post('/create').send(requestBody);
-
 		expect(resp.statusCode).toBe(400);
 		expect(resp.body).toEqual({ message: 'Unknown university email domain' });
 	});
@@ -117,7 +129,6 @@ describe('User sign-in flow', () => {
 		};
 
 		let resp = await apiAuth.post('/signin').send(requestBody);
-
 		expect(resp.statusCode).toBe(401);
 
 		requestBody = {
@@ -126,7 +137,6 @@ describe('User sign-in flow', () => {
 		};
 
 		resp = await apiAuth.post('/signin').send(requestBody);
-
 		expect(resp.statusCode).toBe(400);
 	});
 
@@ -136,18 +146,55 @@ describe('User sign-in flow', () => {
 			password: 'password'
 		};
 
-		let resp = await apiAuth.post('/signin').send(requestBody);
+		await createNewSession(requestBody);
 
-		const cookies = resp.get('Set-Cookie');
-
-		expect(cookies);
-
-		resp = await apiUsers.get('/me').set('Cookie', cookies).send();
-
+		const resp = await apiUsers.get('/me').set('Cookie', cookies).send();
 		expect(resp.body).toMatchObject({
 			email: 'test1@brunel.ac.uk',
 			username: 'TestUser1',
 			university: 'Brunel University Uxbridge'
 		});
+	});
+});
+
+describe('User password flows', () => {
+	test('User performs password change', async () => {
+		let requestBody: any = {
+			oldPassword: 'password',
+			password: 'password2'
+		};
+
+		let resp = await apiAuth.post('/password/change').set('Cookie', cookies).send(requestBody);
+		expect(resp.statusCode).toBe(201);
+
+		requestBody = {
+			email: 'test1@brunel.ac.uk',
+			password: 'password2'
+		};
+
+		resp = await apiAuth.post('/signin').send(requestBody);
+		expect(resp.statusCode).toBe(201);
+	});
+
+	test('User resets forgotten password', async () => {
+		let resp = await apiAuth.post('/password/reset').send({ email: 'test1@brunel.ac.uk' });
+		expect(resp.statusCode).toBe(201);
+
+		const mail = await mailhog.latestTo('test1@brunel.ac.uk');
+		expect(mail).toBeTruthy();
+		expect(mail?.subject).toBe('Reset your password');
+
+		const rawHtml = he.decode(mail?.html ?? '');
+		const token = /(?<=\/user\/reset-password\?token=)\w{128}/.exec(rawHtml)?.at(0);
+		expect(token).toBeTruthy();
+
+		resp = await apiAuth.post('/password/reset/token').send({
+			password: 'MyNewPassword10!',
+			token
+		});
+		expect(resp.statusCode).toBe(201);
+
+		resp = await createNewSession({ email: 'test1@brunel.ac.uk', password: 'MyNewPassword10!' });
+		expect(resp.statusCode).toBe(201);
 	});
 });
