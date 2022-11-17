@@ -1,39 +1,24 @@
 import supertest from 'supertest';
 import he from 'he';
 import mailhog from './scripts/mailhog';
+import { createNewSession, createNewVerifiedUser } from './common';
 
 const apiUsers = supertest('http://localhost:3000/users');
 const apiAuth = supertest('http://localhost:3000/auth');
 
 let cookies: string[];
 
-async function createNewSession(signInBody: Record<string, unknown>) {
-	const resp = await apiAuth.post('/signin').send(signInBody);
-
-	cookies = resp.get('Set-Cookie');
-
-	return resp;
-}
-
-export async function createNewUser(userDetails: { email: string; password: string; username: string }) {
-	const requestBody = userDetails;
-
-	const resp = await apiUsers.post('/create').send(requestBody);
-	expect(resp.statusCode).toBe(201);
-
-	const mail = await mailhog.latestTo('test1@brunel.ac.uk');
-	expect(mail?.subject).toBe('Verify your email');
-}
-
 describe('User registration', () => {
 	test('Create a new user', async () => {
-		await createNewUser({
+		await createNewVerifiedUser({
 			email: 'test1@brunel.ac.uk',
 			password: 'password',
 			username: 'TestUser1'
 		});
 	});
+});
 
+describe('User registration error handling', () => {
 	test('Create new user with existing email', async () => {
 		const requestBody = {
 			email: 'test1@brunel.ac.uk',
@@ -146,7 +131,7 @@ describe('User sign-in flow', () => {
 			password: 'password'
 		};
 
-		await createNewSession(requestBody);
+		[, cookies] = await createNewSession(requestBody);
 
 		const resp = await apiUsers.get('/me').set('Cookie', cookies).send();
 		expect(resp.body).toMatchObject({
@@ -194,7 +179,7 @@ describe('User password flows', () => {
 		});
 		expect(resp.statusCode).toBe(201);
 
-		resp = await createNewSession({ email: 'test1@brunel.ac.uk', password: 'MyNewPassword10!' });
-		expect(resp.statusCode).toBe(201);
+		const [loginResp] = await createNewSession({ email: 'test1@brunel.ac.uk', password: 'MyNewPassword10!' });
+		expect(loginResp.statusCode).toBe(201);
 	});
 });
