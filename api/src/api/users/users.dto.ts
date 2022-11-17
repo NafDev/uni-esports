@@ -3,6 +3,7 @@ import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 import type {
 	ICreateUserDto,
 	IEmailDto,
+	INewPasswordDto,
 	IPasswordResetDto,
 	IUserInfoDto,
 	IUserLoginDto
@@ -44,5 +45,10 @@ export class EmailDto implements IEmailDto {
 
 export class PasswordDto implements IPasswordResetDto {
 	@MinLength(6) password!: string;
-	token!: string;
+	@IsNotEmpty() token!: string;
+}
+
+export class NewPasswordDto implements INewPasswordDto {
+	@IsNotEmpty() oldPassword!: string;
+	@MinLength(6) password!: string;
 }

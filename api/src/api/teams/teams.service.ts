@@ -1,12 +1,4 @@
-import {
-	BadRequestException,
-	Injectable,
-	InternalServerErrorException,
-	Logger,
-	NotFoundException,
-	UnauthorizedException
-} from '@nestjs/common';
-import type { Prisma } from '@prisma/client';
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import appConfig from '../../config/app.config';
@@ -176,15 +168,10 @@ export class TeamService {
 		const teamInviteCode = captain.team.inviteCode;
 		const playerQuery = inviteBySearch.invitedPlayer;
 
-		const player = playerQuery.includes('@')
-			? await this.prisma.user.findUnique({
-					where: { email: playerQuery.toLowerCase() },
-					select: { email: true, universityId: true }
-			  })
-			: await this.prisma.user.findUnique({
-					where: { username: playerQuery },
-					select: { email: true, universityId: true }
-			  });
+		const player = await this.prisma.user.findUnique({
+			where: playerQuery.includes('@') ? { email: playerQuery.toLowerCase() } : { username: playerQuery },
+			select: { email: true, universityId: true }
+		});
 
 		if (!player || player.universityId !== uniId) {
 			throw new NotFoundException('Could not find that player from your university');

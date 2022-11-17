@@ -27,7 +27,7 @@ async function bootstrap() {
 	app.useGlobalFilters(new SupertokensExceptionFilter());
 	app.useGlobalFilters(new PrismaExceptionFilter());
 
-	app.useGlobalPipes(new ValidationPipe({ transform: true }));
+	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
 	await app.listen(appConfig.PORT);
 }
