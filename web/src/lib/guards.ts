@@ -1,46 +1,81 @@
-import { browser } from '$app/env';
-import type { LoadEvent, LoadOutput } from '@sveltejs/kit';
+import type { RequestEvent } from '.svelte-kit/types/src/routes/teams/$types';
+import { redirect, type Cookies } from '@sveltejs/kit';
 import type { Role } from '@uni-esports/interfaces';
+import { BASE_API_URL } from './config';
 
 export class PageGuard {
-	isAllowed = true;
-	negator = false;
+	private sessionResp: Promise<Response | void> | undefined;
 
-	loadInput: LoadEvent;
-	redirect: string | null;
+	private negator = false;
 
-	constructor(input: LoadEvent) {
-		this.loadInput = input;
-		this.redirect = null;
+	private tokenPayload:
+		| {
+				sessionHandle: string;
+				userId: string;
+				userData: { roles: string[]; pendingEmailVerification?: true };
+		  }
+		| undefined;
+
+	constructor(cookies: Cookies, fetch: RequestEvent['fetch']) {
+		const sessionCookies = cookies.get('sAccessToken');
+
+		if (sessionCookies) {
+			this.sessionResp = fetch(BASE_API_URL + '/session', { credentials: 'include' });
+
+			const b64data = decodeURIComponent(cookies.get('sAccessToken')).split('.').at(1);
+			this.tokenPayload = JSON.parse(Buffer.from(b64data, 'base64').toString());
+		}
 	}
 
-	signedIn() {
-		this.isAllowed = Boolean(this.loadInput.session.user);
-		this.redirect = this.negator ? '/' : '/user/signin';
-		return this.eval();
-	}
+	async signedIn() {
+		const resp = await this.sessionResp;
 
-	verified() {
-		this.isAllowed = Boolean(
-			this.loadInput.session.user && !this.loadInput.session.user.pendingEmailVerification
-		);
-		return this.eval();
-	}
+		const sessionValid = resp && resp.status === 200;
+		const sessionRequired = !this.negator;
 
-	hasRoles(...roles: Role[]) {
-		for (const role of roles) {
-			if (!this.loadInput.session.user.roles.includes(role)) {
-				this.isAllowed = false;
-				return this.eval();
-			}
+		if (!sessionRequired && sessionValid) {
+			throw redirect(302, '/');
+		}
+
+		if (sessionRequired && !sessionValid) {
+			throw redirect(302, 'user/signin');
 		}
 
 		return this.eval();
 	}
 
-	redirection(redirect: string) {
-		this.redirect = redirect;
-		return this;
+	verified() {
+		const isVerified = Boolean(
+			this.tokenPayload && !this.tokenPayload.userData.pendingEmailVerification
+		);
+		const verificationRequired = !this.negator;
+
+		if (!verificationRequired && isVerified) {
+			throw redirect(302, '/');
+		}
+
+		if (verificationRequired && !isVerified) {
+			throw redirect(302, '/user/pending-verification');
+		}
+
+		return this.eval();
+	}
+
+	hasRoles(...roles: Role[]) {
+		let isAllowed = true;
+		if (Array.isArray(this.tokenPayload.userData.roles)) {
+			for (const role of roles) {
+				if (!this.tokenPayload.userData.roles.includes(role)) {
+					isAllowed = false;
+					break;
+				}
+			}
+		}
+
+		if (!isAllowed) {
+			throw redirect(302, '/404');
+		}
+		return this.eval();
 	}
 
 	get not() {
@@ -48,24 +83,8 @@ export class PageGuard {
 		return this;
 	}
 
-	async done(): Promise<LoadOutput> {
-		if (browser || this.isAllowed) return {};
-
-		if (this.redirect) {
-			return {
-				status: 302,
-				redirect: this.redirect
-			};
-		}
-
-		return {
-			status: 404
-		};
-	}
-
 	private eval() {
 		if (this.negator) {
-			this.isAllowed = !this.isAllowed;
 			this.negator = !this.negator;
 		}
 		return this;

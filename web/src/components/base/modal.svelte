@@ -15,6 +15,7 @@
 	>
 		<!-- Modal body -->
 		<div class="app relative z-50 h-auto rounded-md" style="min-height: fit-content;">
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<span
 				on:click={() => (open = false)}
 				class="absolute right-0 top-0 m-2 aspect-square rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-20"
@@ -29,6 +30,7 @@
 		</div>
 
 		<!-- Backdrop -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<div class="absolute top-0 right-0 h-full w-full" on:click={() => (open = false)} />
 	</div>
 {/if}

@@ -1,4 +1,4 @@
-import { hashCode } from '$lib/util';
+import { hashCode } from '$/lib/util';
 import { atom } from 'nanostores';
 
 type NotificationInput = {

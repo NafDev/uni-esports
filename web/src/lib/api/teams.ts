@@ -1,7 +1,7 @@
 import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
 import { HttpMethod, makeRequest } from './http';
-import { playerTeams } from '$lib/stores/teams.store';
-import { pushNotification } from '$lib/stores/notifications.store';
+import { playerTeams } from '$/lib/stores/teams.store';
+import { pushNotification } from '$/lib/stores/notifications.store';
 
 export async function joinTeam(token: string) {
 	const res = await makeRequest<TeamDto>(
@@ -21,6 +21,8 @@ export async function createTeam(body: CreateTeamDto) {
 	if (res) {
 		playerTeams.set([...playerTeams.get(), res.data]);
 	}
+
+	return Boolean(res);
 }
 
 export async function getTeamById(body: { id: number }) {
@@ -49,6 +51,9 @@ export async function invitePlayerBySearch(teamId: number, body: InvitePlayerDto
 	);
 
 	if (res) {
-		pushNotification({ type: 'success', message: 'Sent team invite to player' });
+		pushNotification({
+			type: 'success',
+			message: 'Sent team invite to player'
+		});
 	}
 }

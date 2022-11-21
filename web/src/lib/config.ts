@@ -1,4 +1,4 @@
-import { dev } from '$app/env';
+import { dev } from '$app/environment';
 
 export const BASE_API_URL = dev ? 'http://localhost:3000' : 'https://ukue.app';
 

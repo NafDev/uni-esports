@@ -7,16 +7,14 @@ const config = {
 	// for more information about preprocessors
 	preprocess: [
 		preprocess({
-			postcss: {
-				configFilePath: new URL('./postcss.config.cjs', import.meta.url).pathname
-			}
+			postcss: true
 		})
 	],
 
 	kit: {
 		adapter: adapter(),
 		alias: {
-			$components: 'src/components'
+			'$/*': 'src/*'
 		}
 	}
 };

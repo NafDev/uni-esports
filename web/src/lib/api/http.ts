@@ -1,7 +1,7 @@
 import axios, { type Options, type Response } from 'redaxios';
-import { BASE_API_URL } from '$lib/config';
-import { dev } from '$app/env';
-import { pushNotification } from '$lib/stores/notifications.store';
+import { BASE_API_URL } from '$/lib/config';
+import { dev } from '$app/environment';
+import { pushNotification } from '$/lib/stores/notifications.store';
 
 export const enum HttpMethod {
 	GET,

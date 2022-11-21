@@ -4,7 +4,10 @@ import { pushNotification } from '../stores/notifications.store';
 import { makeRequest, HttpMethod } from './http';
 
 export async function signUp(body: ICreateUserDto, redirectOnSuccess?: string | URL) {
-	const res = await makeRequest<void>(HttpMethod.POST, { url: '/users/create', body });
+	const res = await makeRequest<void>(HttpMethod.POST, {
+		url: '/users/create',
+		body
+	});
 	if (res && redirectOnSuccess) {
 		pushNotification({
 			heading: 'Account created',

@@ -19,6 +19,7 @@
 <div
 	class="notification relative {type} mx-4 my-3 flex max-h-60 min-h-[7.5rem] w-80 flex-row rounded-lg border-l-8 bg-gradient-to-t from-[#1d2132] to-[#222b45] shadow-xl"
 >
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<span
 		on:click={() => removeNotification()}
 		class="absolute top-0 right-0 m-2 rounded-full bg-white bg-opacity-5 hover:bg-opacity-20"

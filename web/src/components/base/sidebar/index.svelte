@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { isSignedIn } from '$lib/stores/auth.store';
+	import { isSignedIn } from '$/lib/stores/auth.store';
 
 	import {
 		Calendar,
@@ -144,7 +143,7 @@
 	<p class="mt-14 text-center font-bold opacity-50">UK UNIVERSITY ESPORTS 2022</p>
 </div>
 
-<style>
+<style lang="postcss">
 	.gameOptions > li {
 		@apply relative flex items-center pb-4 opacity-50 hover:cursor-pointer hover:opacity-100;
 	}

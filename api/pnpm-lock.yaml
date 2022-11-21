@@ -7,7 +7,7 @@ specifiers:
   '@nestjs/platform-express': ^9.0.11
   '@nestjs/schematics': ^9.0.1
   '@nestjs/testing': ^9.0.11
-  '@prisma/client': ^4.0.0
+  '@prisma/client': ^4.6.1
   '@tsconfig/node17': ^1.0.1
   '@types/bcrypt': ^5.0.0
   '@types/express': ^4.17.13
@@ -20,7 +20,7 @@ specifiers:
   '@types/nodemailer': ^6.4.4
   '@types/supertest': ^2.0.12
   '@uni-esports/interfaces': workspace:0.0.1
-  axios: ^0.27.2
+  axios: ^1.1.3
   bcrypt: ^5.0.1
   class-transformer: ^0.5.1
   class-validator: ^0.13.2
@@ -58,9 +58,9 @@ dependencies:
   '@nestjs/common': 9.0.11_kgmvgmqc4iohdboj3f7yqhrie4
   '@nestjs/core': 9.0.11_hav5ryr4vw6njw3crnrxu22qpe
   '@nestjs/platform-express': 9.0.11_khr6mt6ojlxbw7bo55fknouh34
-  '@prisma/client': 4.0.0
+  '@prisma/client': 4.6.1
   '@uni-esports/interfaces': link:../interfaces
-  axios: 0.27.2
+  axios: 1.1.3
   bcrypt: 5.0.1
   class-transformer: 0.5.1
   class-validator: 0.13.2
@@ -1112,8 +1112,8 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: false
 
-  /@prisma/client/4.0.0:
-    resolution: {integrity: sha512-g1h2OGoRo7anBVQ9Cw3gsbjwPtvf7i0pkGxKeZICtwkvE5CZXW+xZF4FZdmrViYkKaAShbISL0teNpu9ecpf4g==}
+  /@prisma/client/4.6.1:
+    resolution: {integrity: sha512-M1+NNrMzqaOIxT7PBGcTs3IZo7d1EW/+gVQd4C4gUgWBDGgD9AcIeZnUSidgWClmpMSgVUdnVORjsWWGUameYA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -1122,11 +1122,11 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 3.16.0-49.da41d2bb3406da22087b849f0e911199ba4fbf11
+      '@prisma/engines-version': 4.6.1-3.694eea289a8462c80264df36757e4fdc129b1b32
     dev: false
 
-  /@prisma/engines-version/3.16.0-49.da41d2bb3406da22087b849f0e911199ba4fbf11:
-    resolution: {integrity: sha512-PiZhdD624SrYEjyLboI0X7OugNbxUzDJx9v/6ldTKuqNDVUCmRH/Z00XwDi/dgM4FlqOSO+YiUsSiSKjxxG8cw==}
+  /@prisma/engines-version/4.6.1-3.694eea289a8462c80264df36757e4fdc129b1b32:
+    resolution: {integrity: sha512-HUCmkXAU2jqp2O1RvNtbE+seLGLyJGEABZS/R38rZjSAafAy0WzBuHq+tbZMnD+b5OSCsTVtIPVcuvx1ySxcWQ==}
     dev: false
 
   /@sinclair/typebox/0.24.28:
@@ -1877,7 +1877,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.1_debug@4.3.4
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
@@ -1885,16 +1885,17 @@ packages:
   /axios/0.26.1_debug@4.3.4:
     resolution: {integrity: sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA==}
     dependencies:
-      follow-redirects: 1.15.1_debug@4.3.4
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /axios/0.27.2:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+  /axios/1.1.3:
+    resolution: {integrity: sha512-00tXVRwKx/FZr/IDVFt4C+f9FYairX517WoGCL6dpOntqLkZofjhu43F/Xl44UOpqa+9sLFDrG/XAnFsUYgkDA==}
     dependencies:
-      follow-redirects: 1.15.1_debug@4.3.4
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
+      proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: false
@@ -3656,8 +3657,8 @@ packages:
     resolution: {integrity: sha512-WIWGi2L3DyTUvUrwRKgGi9TwxQMUEqPOPQBVi71R96jZXJdFskXEmf54BoZaS1kknGODoIGASGEzBUYdyMCBJg==}
     dev: true
 
-  /follow-redirects/1.15.1_debug@4.3.4:
-    resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -3957,7 +3958,7 @@ packages:
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.16.2
+      uglify-js: 3.17.4
     dev: false
 
   /hard-rejection/2.1.0:
@@ -6641,6 +6642,10 @@ packages:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
+  /proxy-from-env/1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+    dev: false
+
   /pseudomap/1.0.2:
     resolution: {integrity: sha512-b/YwNhb8lk1Zz2+bXXpS/LK9OisiZZ1SNsSLxN1x2OXVEhW2Ckr/7mWE5vrC1ZTiJlD9g19jWszTmJsB+oEpFQ==}
     dev: false
@@ -7829,8 +7834,8 @@ packages:
     hasBin: true
     dev: false
 
-  /uglify-js/3.16.2:
-    resolution: {integrity: sha512-AaQNokTNgExWrkEYA24BTNMSjyqEXPSfhqoS0AxmHkCJ4U+Dyy5AvbGV/sqxuxficEfGGoX3zWw9R7QpLFfEsg==}
+  /uglify-js/3.17.4:
+    resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     dev: false

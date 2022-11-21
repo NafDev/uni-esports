@@ -1,10 +1,12 @@
 datasource db {
-  provider = "postgres"
-  url      = env("DATABASE_URI")
+  provider   = "postgres"
+  url        = env("DATABASE_URI")
+  extensions = [citext]
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
   // https://github.com/prisma/prisma/issues/13672
   // output   = ".prisma-client-js"
 }
@@ -37,7 +39,7 @@ model User {
 
 model University {
   id   Int    @id @default(autoincrement())
-  name String @unique
+  name String @unique @db.Citext
   User User[]
 
   UniversityDomain UniversityDomain[]

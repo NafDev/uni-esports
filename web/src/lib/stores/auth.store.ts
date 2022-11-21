@@ -1,7 +1,7 @@
 import { atom, computed, map, onMount, onSet } from 'nanostores';
 import type { AccessTokenPayload, IUserInfoDto } from '@uni-esports/interfaces';
-import { getUserInfo } from '$lib/api/users';
-import { browser } from '$app/env';
+import { getUserInfo } from '$/lib/api/users';
+import { browser } from '$app/environment';
 
 export const user = atom<(AccessTokenPayload & { id: string }) | undefined>();
 export const userInfo = map<IUserInfoDto>();

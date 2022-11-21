@@ -9,11 +9,24 @@ import type {
 } from '@uni-esports/interfaces';
 import { HttpMethod, makeRequest } from './http';
 import { goto } from '$app/navigation';
-import { pushNotification } from '$lib/stores/notifications.store';
-import { isSignedIn, user, userInfo } from '$lib/stores/auth.store';
+import { pushNotification } from '$/lib/stores/notifications.store';
+import { isSignedIn, user, userInfo } from '$/lib/stores/auth.store';
+import type { Cookies } from '@sveltejs/kit';
+
+export async function checkSession(cookies: Cookies): Promise<boolean> {
+	const res = await makeRequest(HttpMethod.GET, {
+		url: '/session',
+		config: { headers: { Cookie: cookies.serialize('sAccessToken', cookies.get('sAccessToken')) } }
+	});
+
+	return Boolean(res);
+}
 
 export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | URL) {
-	const res = await makeRequest<IEmailDto>(HttpMethod.POST, { url: '/auth/signin', body });
+	const res = await makeRequest<IEmailDto>(HttpMethod.POST, {
+		url: '/auth/signin',
+		body
+	});
 	if (!res) return;
 
 	if (redirectOnSuccess) {
@@ -41,7 +54,9 @@ export async function resendVerificationEmail() {
 }
 
 export async function verifyEmail(token: string) {
-	const res = await makeRequest<{ status: 'OK' | 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR' }>(
+	const res = await makeRequest<{
+		status: 'OK' | 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR';
+	}>(
 		HttpMethod.POST,
 		{
 			url: '/user/email/verify',

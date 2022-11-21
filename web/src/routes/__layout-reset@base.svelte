@@ -1,2 +1,0 @@
-<!-- Clean layout reset -->
-<slot />

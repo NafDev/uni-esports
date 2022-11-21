@@ -4,8 +4,8 @@
 	import { Login, Logout, Menu } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 
-	import { isSignedIn, user } from '$lib/stores/auth.store';
-	import { signOut } from '$lib/api/auth';
+	import { isSignedIn, user } from '$/lib/stores/auth.store';
+	import { signOut } from '$/lib/api/auth';
 
 	export let mobileSidebarActive: boolean;
 </script>
