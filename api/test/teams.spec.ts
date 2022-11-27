@@ -65,7 +65,7 @@ describe('Team creation', () => {
 				university: 'Brunel University Uxbridge'
 			})
 		);
-		expect(resp.body.members.length).toBe(1)
+		expect(resp.body.members.length).toBe(1);
 
 		const teamId: number = resp.body.id;
 
@@ -91,12 +91,10 @@ describe('Team creation', () => {
 
 		expect(resp.statusCode).toBe(201);
 
-		const invite1 = await mailhog.latestTo('player-test-1@brunel.ac.uk')
-		expect(invite1?.subject).toBe("Invite to join team test-team-2")
+		const invite1 = await mailhog.latestTo('player-test-1@brunel.ac.uk');
+		expect(invite1?.subject).toBe('Invite to join team test-team-2');
 
-		const invite2 = await mailhog.latestTo('player-test-2@brunel.ac.uk')
-		expect(invite2?.subject).toBe("Invite to join team test-team-2")
-
-
+		const invite2 = await mailhog.latestTo('player-test-2@brunel.ac.uk');
+		expect(invite2?.subject).toBe('Invite to join team test-team-2');
 	});
 });
