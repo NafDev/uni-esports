@@ -9,8 +9,8 @@ import type {
 } from '@uni-esports/interfaces';
 import { HttpMethod, makeRequest } from './http';
 import { goto } from '$app/navigation';
-import { pushNotification } from '$/lib/stores/notifications.store';
-import { isSignedIn, user, userInfo } from '$/lib/stores/auth.store';
+import { pushNotification } from '$lib/stores/notifications';
+import { isSignedIn, user, userInfo } from '$lib/stores/auth';
 import type { Cookies } from '@sveltejs/kit';
 
 export async function checkSession(cookies: Cookies): Promise<boolean> {
@@ -41,7 +41,7 @@ export async function signOut() {
 
 export async function resendVerificationEmail() {
 	const res = await makeRequest<void>(HttpMethod.POST, {
-		url: '/user/email/verify/token',
+		url: '/user/email/verify/token', // ST-exposed endpoint
 		config: { headers: { rid: 'emailverification' } }
 	});
 
@@ -59,7 +59,7 @@ export async function verifyEmail(token: string) {
 	}>(
 		HttpMethod.POST,
 		{
-			url: '/user/email/verify',
+			url: '/user/email/verify', // ST-exposed endpoint
 			body: { method: 'token', token },
 			config: {
 				headers: { rid: 'emailverification' }
@@ -75,10 +75,12 @@ export async function verifyEmail(token: string) {
 		});
 	}
 
-	pushNotification({
-		message: 'Email successfully verified',
-		type: 'success'
-	});
+	if (res) {
+		pushNotification({
+			message: 'Email successfully verified',
+			type: 'success'
+		});
+	}
 
 	if (isSignedIn.get()) {
 		await makeRequest<IUserInfoDto>(HttpMethod.GET, { url: '/users/me' });
@@ -109,7 +111,7 @@ export async function performPasswordReset(body: IPasswordResetDto) {
 			message: 'Password reset successful. Please sign in again.',
 			type: 'success'
 		});
-		goto('/user/signin');
+		goto('/users/signin');
 	}
 }
 
@@ -153,5 +155,5 @@ export async function steamAuthLink(body: SteamOpenIdParameters) {
 		userInfo.setKey('steam64', res.data.steam64Id);
 	}
 
-	goto('/user/me');
+	goto('/users/me');
 }

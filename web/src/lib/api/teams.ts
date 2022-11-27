@@ -1,18 +1,10 @@
 import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
 import { HttpMethod, makeRequest } from './http';
-import { playerTeams } from '$/lib/stores/teams.store';
-import { pushNotification } from '$/lib/stores/notifications.store';
+import { playerTeams } from '$lib/stores/teams';
+import { pushNotification } from '$lib/stores/notifications';
 
 export async function joinTeam(token: string) {
-	const res = await makeRequest<TeamDto>(
-		HttpMethod.PATCH,
-		{ url: `/teams/join?token=${token}` },
-		true
-	);
-
-	if (res) {
-		playerTeams.set([...playerTeams.get(), res.data]);
-	}
+	await makeRequest<TeamDto>(HttpMethod.PATCH, { url: `/teams/join?token=${token}` }, true);
 }
 
 export async function createTeam(body: CreateTeamDto) {

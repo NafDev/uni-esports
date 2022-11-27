@@ -3,7 +3,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import type { AccessTokenPayload } from '@uni-esports/interfaces';
 import { hash } from 'bcrypt';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import appConfig, { emailVerificationUrl } from '../../config/app.config';
+import appConfig, { WEB_EMAIL_VERIFY } from '../../config/app.config';
 import { classifyPrismaError, normalizeConflictError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
@@ -46,7 +46,7 @@ export class UserService {
 			}
 
 			await STEmailVerification.sendEmail({
-				emailVerifyLink: `${emailVerificationUrl}?token=${verificationToken.token}`,
+				emailVerifyLink: `${WEB_EMAIL_VERIFY}?token=${verificationToken.token}`,
 				user: {
 					email: user.email,
 					id: user.id

@@ -7,15 +7,15 @@ interface InputHandler {
 
 interface InputHandlerParameters<T> {
 	initialValue?: T;
-	errorText: string;
+	errorText?: string;
 	isValidOnEmptyString?: boolean;
-	validator: (newValue: T) => boolean;
+	validator?: (newValue: T) => boolean;
 }
 
 export function inputHandler<T extends string | number | boolean>(
 	parameters: InputHandlerParameters<T>
 ): [WritableAtom<{ value: T; isValid: boolean }>, InputHandler] {
-	const { initialValue = '', errorText, validator } = parameters;
+	const { initialValue = '', errorText = '', validator = () => true } = parameters;
 
 	const value = initialValue as T;
 

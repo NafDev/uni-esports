@@ -1,15 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import supertokens from 'supertokens-node';
-import { emailVerificationUrl } from '../../../config/app.config';
+import appConfig, { WEB_EMAIL_VERIFY } from '../../../config/app.config';
 import { PrismaService } from '../../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../../email/smtp.service';
-import { AuthModuleConfig, ConfigInjectionToken } from '../config.interface';
+import { AuthConfigService } from '../auth.config';
 import { STEmailVerification, STSession } from './supertokens.types';
 
 @Injectable()
 export class SupertokensService {
 	constructor(
-		@Inject(ConfigInjectionToken) private readonly config: AuthModuleConfig,
+		private readonly config: AuthConfigService,
 		private readonly prisma: PrismaService,
 		private readonly smtpService: SmtpService
 	) {
@@ -17,7 +17,12 @@ export class SupertokensService {
 			appInfo: config.appInfo,
 			supertokens: { connectionURI: config.connectionURI },
 			recipeList: [
-				STSession.init({ antiCsrf: 'NONE', cookieSameSite: 'strict', sessionExpiredStatusCode: 511 }),
+				STSession.init({
+					antiCsrf: 'NONE',
+					cookieSameSite: 'strict',
+					sessionExpiredStatusCode: 511,
+					cookieSecure: appConfig.isProd
+				}),
 				STEmailVerification.init({
 					emailDelivery: {
 						override(oI) {
@@ -46,9 +51,8 @@ export class SupertokensService {
 
 						return user.email;
 					},
-
 					async getEmailVerificationURL() {
-						return emailVerificationUrl;
+						return WEB_EMAIL_VERIFY;
 					},
 
 					override: {

@@ -2,7 +2,7 @@
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import { Users } from '@steeze-ui/heroicons';
-	import { playerTeams } from '$/lib/stores/teams.store';
+	import { playerTeams } from '$lib/stores/teams';
 	import NewTeamModal from '$/components/teams/newTeamModal.svelte';
 
 	let newTeamModalOpen = false;

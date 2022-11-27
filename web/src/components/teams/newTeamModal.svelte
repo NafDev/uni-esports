@@ -26,20 +26,20 @@
 	}
 </script>
 
-<Modal {open}>
-	<div class="w-80 md:w-96">
+<Modal bind:open>
+	<div class="flex w-full flex-col">
 		<h1 class="mb-5 text-xl font-bold">Create a team</h1>
 
-		<form on:submit|preventDefault={() => doCreateTeam()}>
+		<form class="w-full self-center" on:submit|preventDefault={() => doCreateTeam()}>
 			<label for="teamName">Team name</label>
 			<input
 				id="teamName"
 				type="text"
-				class="form mb-4"
+				class="form mb-4 w-full"
 				bind:value={$nameState.value}
 				on:blur={() => nameHelpers.validate()}
 			/>
-			<p class="mb-4 text-xs text-danger">
+			<p class="mb-6 text-xs text-danger">
 				{$nameState.isValid ? '' : nameHelpers.errorText}
 			</p>
 			<button class="btn primary" class:isLoading>Create</button>

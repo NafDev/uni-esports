@@ -4,10 +4,11 @@
 	import { Login, Logout, Menu } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 
-	import { isSignedIn, user } from '$/lib/stores/auth.store';
+	import { user } from '$lib/stores/auth';
 	import { signOut } from '$/lib/api/auth';
 
 	export let mobileSidebarActive: boolean;
+	export let signedIn: boolean;
 </script>
 
 <div class="my-5 flex h-20 w-full items-center justify-between">
@@ -18,7 +19,7 @@
 		<Icon src={Menu} size="28" />
 	</button>
 
-	{#if $isSignedIn}
+	{#if signedIn}
 		<div class="flex w-auto items-center">
 			<button
 				class="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/25"
@@ -34,7 +35,7 @@
 		</div>
 	{:else}
 		<div class="flex flex-col">
-			<button class="btn primary" on:click={() => goto('/user/signin')}>
+			<button class="btn primary" on:click={() => goto('/users/signin')}>
 				<span class="pr-2"><Icon class="stroke-white" src={Login} size="16" /></span>
 				Sign In
 			</button>

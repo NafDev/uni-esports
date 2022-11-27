@@ -10,7 +10,7 @@ import axios from 'axios';
 import { compare, hash } from 'bcrypt';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import appConfig from '../../config/app.config';
+import appConfig, { WEB_RESET_PASSWORD } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
@@ -77,7 +77,7 @@ export class AuthService {
 
 		if (user) {
 			await this.smtpService.sendEmail(email, 'Reset your password', EmailTemplates.RESET_PASSWORD, {
-				link: `${appConfig.WEB_DOMAIN}/user/reset-password?token=${token}`
+				link: `${WEB_RESET_PASSWORD}?token=${token}`
 			});
 		}
 

@@ -1,7 +1,6 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import startCase from 'lodash.startcase';
 import capitalize from 'lodash.capitalize';
-import { ConflictException } from '@nestjs/common';
 
 export const enum PrismaError {
 	UNKNOWN,

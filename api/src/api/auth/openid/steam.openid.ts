@@ -1,5 +1,5 @@
 import { Equals, IsNotEmpty } from 'class-validator';
-import appConfig from '../../../config/app.config';
+import appConfig, { WEB_STEAM_REDIRECT } from '../../../config/app.config';
 
 // https://stackoverflow.com/questions/53573820/steam-openid-signature-validation/63652502#63652502
 export class SteamOpenIdParameters {
@@ -10,7 +10,7 @@ export class SteamOpenIdParameters {
 	@IsNotEmpty() @Equals('http://specs.openid.net/auth/2.0') 'openid.ns': string;
 	@IsNotEmpty() @Equals('https://steamcommunity.com/openid/login') 'openid.op_endpoint': string;
 	@IsNotEmpty() 'openid.response_nonce': string;
-	@IsNotEmpty() @Equals(`${appConfig.WEB_DOMAIN}/user/link/steam`) 'openid.return_to': string;
+	@IsNotEmpty() @Equals(WEB_STEAM_REDIRECT) 'openid.return_to': string;
 	@IsNotEmpty() 'openid.sig': string;
 	@IsNotEmpty() 'openid.signed': string;
 }

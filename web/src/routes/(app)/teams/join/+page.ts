@@ -1,12 +1,16 @@
 import { joinTeam } from '$/lib/api/teams';
-import type { PageData } from './$types';
+import { browser } from '$app/environment';
+import { goto } from '$app/navigation';
+import type { PageLoad } from './$types';
 
-export const load: PageData = async ({ url }) => {
-	const inviteCode = url.searchParams.get('code');
+export const load: PageLoad = async ({ url }) => {
+	if (browser) {
+		const inviteCode = url.searchParams.get('code');
 
-	if (inviteCode) {
-		await joinTeam(inviteCode);
+		if (inviteCode) {
+			await joinTeam(inviteCode);
+		}
+
+		goto('/teams');
 	}
-
-	return {};
 };

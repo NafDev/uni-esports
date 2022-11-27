@@ -28,6 +28,12 @@ const appConfig = cleanEnv(process.env, {
 
 export default appConfig;
 
-export const emailVerificationUrl = `${appConfig.WEB_DOMAIN.replace(/\/$/, '')}${
+export const WEB_EMAIL_VERIFY = `${appConfig.WEB_DOMAIN.replace(/\/$/, '')}${
 	appConfig.API_BASE_PATH
-}user/verify-email`;
+}users/verify-email`;
+
+export const WEB_STEAM_REDIRECT = `${appConfig.WEB_DOMAIN}/users/link/steam`;
+
+export const WEB_TEAM_INVITE = `${appConfig.WEB_DOMAIN}/teams/join`;
+
+export const WEB_RESET_PASSWORD = `${appConfig.WEB_DOMAIN}/users/reset-password`;

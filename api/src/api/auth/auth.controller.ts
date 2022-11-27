@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Post, Res, Session, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { VerifiedGuard } from '../../common/guards/user/verified.guard';
-import appConfig from '../../config/app.config';
+import appConfig, { WEB_STEAM_REDIRECT } from '../../config/app.config';
 import { EmailDto, NewPasswordDto, PasswordDto, UserLoginDto } from '../users/users.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -23,6 +24,7 @@ export class AuthController {
 		return this.authService.logout(session);
 	}
 
+	@Throttle(5, 120)
 	@Post('password/reset')
 	async resetPassword(@Body() emailDto: EmailDto) {
 		return this.authService.sendPasswordResetTokenEmail(emailDto.email);
@@ -44,7 +46,7 @@ export class AuthController {
 	@UseGuards(AuthGuard, VerifiedGuard)
 	steamAuthRedirect() {
 		return {
-			url: steamOpenId.authRedirectUrl(`${appConfig.WEB_DOMAIN}/user/link/steam`, appConfig.WEB_DOMAIN)
+			url: steamOpenId.authRedirectUrl(`${WEB_STEAM_REDIRECT}`, appConfig.WEB_DOMAIN)
 		};
 	}
 

@@ -1,5 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import { ThrottlerException } from '@nestjs/throttler';
+import capitalize from 'lodash.capitalize';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -20,7 +22,22 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
 		const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-		const responseBody = exception instanceof HttpException ? { message: exception.message } : undefined;
+		let responseBody;
+
+		if (exception instanceof HttpException) {
+			const exceptionResp = exception.getResponse();
+
+			responseBody =
+				typeof exceptionResp === 'string'
+					? { message: exceptionResp }
+					: { ...exceptionResp, statusCode: undefined, error: undefined };
+		}
+
+		if (exception instanceof ThrottlerException) {
+			responseBody = { message: 'Too many requests' };
+		}
+
+		responseBody = { ...responseBody, message: capitalize(responseBody?.message) };
 
 		httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
 	}

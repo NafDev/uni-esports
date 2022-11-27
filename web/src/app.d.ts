@@ -6,16 +6,8 @@ import type { AccessTokenPayload } from '@uni-esports/interfaces';
 // for information about these interfaces
 declare global {
 	declare namespace App {
-		interface Locals {
-			userid: string;
-		}
-
+		// interface Locals {}
 		// interface Platform {}
-
-		interface Session {
-			user?: AccessTokenPayload;
-		}
-
 		// interface Stuff {}
 	}
 }

@@ -33,7 +33,7 @@
 		"prettier": "^2.7.1",
 		"prettier-plugin-tailwindcss": "^0.1.13",
 		"redaxios": "^0.5.1",
-		"supertokens-website": "^13.1.1",
+		"supertokens-website": "^14.0.2",
 		"svelte": "^3.53.1",
 		"svelte-check": "^2.9.2",
 		"svelte-preprocess": "^4.10.7",

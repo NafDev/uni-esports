@@ -12,3 +12,16 @@ export function hashCode(value: string) {
 	}
 	return hash;
 }
+
+export class Deferred {
+	promise: Promise<unknown>;
+	reject: (reason?: any) => void;
+	resolve: (value: unknown) => void;
+
+	constructor() {
+		this.promise = new Promise((resolve, reject) => {
+			this.reject = reject;
+			this.resolve = resolve;
+		});
+	}
+}

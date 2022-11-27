@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { isSignedIn } from '$/lib/stores/auth.store';
+	import { isSignedIn, user } from '$lib/stores/auth';
 
 	import {
 		Calendar,
@@ -8,7 +8,11 @@
 		Home,
 		ViewBoards,
 		User,
-		UserGroup
+		UserGroup,
+		Users,
+		AcademicCap,
+		ChartBar,
+		ClipboardCheck
 	} from '@steeze-ui/heroicons';
 	import type { IconSource } from '@steeze-ui/heroicons/types';
 	import { Icon } from '@steeze-ui/svelte-icon';
@@ -54,9 +58,37 @@
 		},
 		{
 			name: 'Profile',
-			link: '/user/me',
+			link: '/users/me',
 			icon: User,
 			signedIn: true
+		}
+	];
+
+	const adminLinks: Array<QuickLink> = [
+		{
+			name: 'Manage Users',
+			link: '/admin/users/list',
+			icon: Users
+		},
+		{
+			name: 'Manage Universities',
+			link: '/admin/universities/list',
+			icon: AcademicCap
+		},
+		{
+			name: 'Manage Tournaments',
+			link: '/admin/tournaments/list',
+			icon: ChartBar
+		},
+		{
+			name: 'Manage Matches',
+			link: '/admin/matches/list',
+			icon: ClipboardCheck
+		},
+		{
+			name: 'Manage Teams',
+			link: '/admin/teams/list',
+			icon: UserGroup
 		}
 	];
 
@@ -90,17 +122,31 @@
 		<img class="h-8 w-8" src={logo} alt="logo" />
 	</div>
 
-	<div class="quickLinks p-12 text-lg font-bold">
-		{#each quickLinks as quickLink}
-			{#if !quickLink.signedIn || $isSignedIn}
-				<a href={quickLink.link} class:selected={activeLink === quickLink.link}>
-					<div class="flex items-center">
-						<span class="pr-2"><Icon src={quickLink.icon} size="24" theme="solid" /></span>
-						<p>{quickLink.name}</p>
-					</div>
-				</a>
-			{/if}
-		{/each}
+	<div class="quickLinks p-10 text-lg font-bold">
+		<div class="py-2">
+			{#each quickLinks as quickLink}
+				{#if !quickLink.signedIn || $isSignedIn}
+					<a href={quickLink.link} class:selected={activeLink === quickLink.link}>
+						<div class="flex items-center">
+							<span class="pr-2"><Icon src={quickLink.icon} size="24" theme="solid" /></span>
+							<p>{quickLink.name}</p>
+						</div>
+					</a>
+				{/if}
+			{/each}
+		</div>
+		{#if $isSignedIn && $user.roles.includes('ADMIN')}
+			<div class="py-2">
+				{#each adminLinks as quickLink}
+					<a href={quickLink.link} class:selected={activeLink === quickLink.link}>
+						<div class="flex items-center">
+							<span class="pr-2"><Icon src={quickLink.icon} size="24" theme="solid" /></span>
+							<p>{quickLink.name}</p>
+						</div>
+					</a>
+				{/each}
+			</div>
+		{/if}
 	</div>
 
 	<p class="pl-12 text-lg font-bold">ACTIVE GAMES</p>
@@ -160,10 +206,10 @@
 		@apply absolute -left-8 inline-block h-6 w-6 rounded-md p-1;
 	}
 
-	.quickLinks > a {
+	.quickLinks > div > a {
 		@apply relative flex items-start pb-4 opacity-50 hover:cursor-pointer hover:opacity-100;
 	}
-	.quickLinks > a.selected {
+	.quickLinks > div > a.selected {
 		@apply opacity-100 before:absolute before:-left-12 before:-top-1 before:h-8 before:w-1 before:bg-primary;
 	}
 </style>

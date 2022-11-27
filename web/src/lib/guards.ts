@@ -1,44 +1,41 @@
-import type { RequestEvent } from '.svelte-kit/types/src/routes/teams/$types';
 import { redirect, type Cookies } from '@sveltejs/kit';
 import type { Role } from '@uni-esports/interfaces';
-import { BASE_API_URL } from './config';
 
 export class PageGuard {
-	private sessionResp: Promise<Response | void> | undefined;
-
+	private hasSessionCookies = false;
 	private negator = false;
 
-	private tokenPayload:
-		| {
-				sessionHandle: string;
-				userId: string;
-				userData: { roles: string[]; pendingEmailVerification?: true };
-		  }
-		| undefined;
+	private tokenPayload?: {
+		sessionHandle: string;
+		uid: string;
+		up: { roles: string[]; pendingEmailVerification?: true };
+	};
 
-	constructor(cookies: Cookies, fetch: RequestEvent['fetch']) {
-		const sessionCookies = cookies.get('sAccessToken');
+	constructor(cookies: Cookies) {
+		const sessionCookies = cookies.get('sFrontToken');
 
 		if (sessionCookies) {
-			this.sessionResp = fetch(BASE_API_URL + '/session', { credentials: 'include' });
+			this.hasSessionCookies = true;
 
-			const b64data = decodeURIComponent(cookies.get('sAccessToken')).split('.').at(1);
+			const b64data = decodeURIComponent(cookies.get('sFrontToken'));
 			this.tokenPayload = JSON.parse(Buffer.from(b64data, 'base64').toString());
 		}
 	}
 
-	async signedIn() {
-		const resp = await this.sessionResp;
-
-		const sessionValid = resp && resp.status === 200;
+	signedIn(redirectAfterAuthentication?: string) {
 		const sessionRequired = !this.negator;
 
-		if (!sessionRequired && sessionValid) {
+		if (!sessionRequired && this.hasSessionCookies) {
 			throw redirect(302, '/');
 		}
 
-		if (sessionRequired && !sessionValid) {
-			throw redirect(302, 'user/signin');
+		if (sessionRequired && !this.hasSessionCookies) {
+			let redirection = '/users/signin';
+			if (redirectAfterAuthentication) {
+				redirection += `?redirect=${redirectAfterAuthentication}`;
+			}
+
+			throw redirect(302, redirection);
 		}
 
 		return this.eval();
@@ -46,7 +43,7 @@ export class PageGuard {
 
 	verified() {
 		const isVerified = Boolean(
-			this.tokenPayload && !this.tokenPayload.userData.pendingEmailVerification
+			this.tokenPayload?.up && !this.tokenPayload.up.pendingEmailVerification
 		);
 		const verificationRequired = !this.negator;
 
@@ -55,21 +52,22 @@ export class PageGuard {
 		}
 
 		if (verificationRequired && !isVerified) {
-			throw redirect(302, '/user/pending-verification');
+			throw redirect(302, '/users/pending-verification');
 		}
 
 		return this.eval();
 	}
 
 	hasRoles(...roles: Role[]) {
-		let isAllowed = true;
-		if (Array.isArray(this.tokenPayload.userData.roles)) {
+		let isAllowed = false;
+
+		if (this.tokenPayload?.up?.roles && Array.isArray(this.tokenPayload?.up?.roles)) {
 			for (const role of roles) {
-				if (!this.tokenPayload.userData.roles.includes(role)) {
-					isAllowed = false;
+				if (!this.tokenPayload.up.roles.includes(role)) {
 					break;
 				}
 			}
+			isAllowed = true;
 		}
 
 		if (!isAllowed) {

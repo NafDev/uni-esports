@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import appConfig from '../../config/app.config';
+import appConfig, { WEB_TEAM_INVITE } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
@@ -183,7 +183,7 @@ export class TeamService {
 
 		await this.smtpService.sendEmail(player.email, `Invite to join team ${teamName}`, EmailTemplates.TEAM_INVITE, {
 			teamName,
-			link: `${appConfig.WEB_DOMAIN}/teams/join?code=${teamInviteCode}`
+			link: `${WEB_TEAM_INVITE}?code=${teamInviteCode}`
 		});
 	}
 
