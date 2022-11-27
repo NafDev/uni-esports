@@ -170,7 +170,7 @@ describe('User password flows', () => {
 		expect(mail?.subject).toBe('Reset your password');
 
 		const rawHtml = he.decode(mail?.html ?? '');
-		const token = /(?<=\/user\/reset-password\?token=)\w{128}/.exec(rawHtml)?.at(0);
+		const token = /(?<=\/users\/reset-password\?token=)\w{128}/.exec(rawHtml)?.at(0);
 		expect(token).toBeTruthy();
 
 		resp = await apiAuth.post('/password/reset/token').send({

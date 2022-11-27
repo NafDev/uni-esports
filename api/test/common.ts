@@ -38,7 +38,7 @@ export async function createNewVerifiedUser(userDetails: { email: string; passwo
 	expect(mail?.subject).toBe('Verify your email');
 
 	const rawHtml = he.decode(mail?.html ?? '');
-	const token = /(?<=\/user\/verify-email\?token=)\w{128}/.exec(rawHtml)?.at(0);
+	const token = /(?<=\/users\/verify-email\?token=)\w{128}/.exec(rawHtml)?.at(0);
 	expect(token).toBeTruthy();
 
 	// Different sub-base because it's a ST core exposed endpoint
