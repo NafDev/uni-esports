@@ -65,7 +65,7 @@ export class TeamController {
 		return this.teamsService.joinPlayerOnTeam(token, session);
 	}
 
-	@Patch(':teamId/user/:userId/remove')
+	@Patch(':teamId/users/:userId/remove')
 	@UseGuards(AuthGuard)
 	async removeUserFromTeam(
 		@Param('teamId', ParseIntPipe) teamId: number,
