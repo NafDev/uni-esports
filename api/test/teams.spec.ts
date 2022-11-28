@@ -115,10 +115,16 @@ describe('Team creation', () => {
 			password: 'Password10'
 		});
 
-		resp = await apiTeams.patch(`/join?token=${inviteToken1 ?? ''}`).set('Cookie', authCookiesPlayerTest1).send();
+		resp = await apiTeams
+			.patch(`/join?token=${inviteToken1 ?? ''}`)
+			.set('Cookie', authCookiesPlayerTest1)
+			.send();
 		expect(resp.statusCode).toBe(200);
 
-		resp = await apiTeams.patch(`/join?token=${inviteToken2 ?? ''}`).set('Cookie', authCookiesPlayerTest2).send();
+		resp = await apiTeams
+			.patch(`/join?token=${inviteToken2 ?? ''}`)
+			.set('Cookie', authCookiesPlayerTest2)
+			.send();
 		expect(resp.statusCode).toBe(200);
 
 		resp = await apiTeams.get(`/${teamId}`).set('Cookie', authCookiesCaptainTest2).send(requestBody);
@@ -174,7 +180,10 @@ describe('Team creation', () => {
 		resp = await apiUsers.get('/me').set('Cookie', authCookiesPlayerTest3).send();
 		const playerUserId: string = resp.body.id;
 
-		resp = await apiTeams.patch(`/join?token=${inviteToken ?? ''}`).set('Cookie', authCookiesPlayerTest3).send();
+		resp = await apiTeams
+			.patch(`/join?token=${inviteToken ?? ''}`)
+			.set('Cookie', authCookiesPlayerTest3)
+			.send();
 		expect(resp.statusCode).toBe(200);
 
 		resp = await apiTeams
