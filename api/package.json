@@ -15,7 +15,7 @@
 		"lint": "xo --prettier --fix"
 	},
 	"engines": {
-		"node": "^17.9"
+		"node": "^18.12"
 	},
 	"prisma": {
 		"schema": "src/db/prisma/schema.prisma",
