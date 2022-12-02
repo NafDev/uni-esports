@@ -47,7 +47,8 @@
 	}
 
 	function doUpdateUniName() {
-		doActionWithConfirm()
+		// @ts-expect-error todo
+		doActionWithConfirm();
 	}
 </script>
 
