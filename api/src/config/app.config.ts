@@ -28,6 +28,8 @@ const appConfig = cleanEnv(process.env, {
 
 export default appConfig;
 
+export const DEFAULT_PAGE_LEN = 20;
+
 export const WEB_EMAIL_VERIFY = `${appConfig.WEB_DOMAIN.replace(/\/$/, '')}${
 	appConfig.API_BASE_PATH
 }users/verify-email`;

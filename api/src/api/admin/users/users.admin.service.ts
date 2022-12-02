@@ -3,6 +3,7 @@ import type { IUserDetails, IUsers, Pagination } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { WEB_EMAIL_VERIFY } from '../../../config/app.config';
 import { PrismaService } from '../../../db/prisma/prisma.service';
+import { prismaPaginationSkipTake } from '../../../util/utility';
 import { AuthService } from '../../auth/auth.service';
 import { STEmailVerification } from '../../auth/supertokens/supertokens.types';
 import type { UserFiltersDto } from './users.admin.dto';
@@ -26,8 +27,7 @@ export class UserService {
 			this.prisma.user.findMany({
 				where,
 				select: { id: true, email: true, username: true },
-				take: 20,
-				skip: 20 * (page - 1)
+				...prismaPaginationSkipTake(page)
 			})
 		]);
 
@@ -45,7 +45,7 @@ export class UserService {
 				username: true,
 				id: true,
 				verified: true,
-				University: { select: { name: true } }
+				universityId: true
 			}
 		});
 
@@ -68,9 +68,24 @@ export class UserService {
 	}
 
 	async updateEmail(userId: string, email: string, session: SessionContainer) {
+		const newDomain = email.toLowerCase().split('@').at(1);
+
+		if (!newDomain) {
+			throw new BadRequestException('Malformed email domain');
+		}
+
+		const newUni = await this.prisma.universityDomain.findFirst({
+			where: { domain: newDomain },
+			select: { universityId: true }
+		});
+
+		if (!newUni) {
+			throw new BadRequestException("Couldn't find a university associated with provided email domain");
+		}
+
 		const user = await this.prisma.user.update({
 			where: { id: userId },
-			data: { email, verified: false },
+			data: { email, verified: false, universityId: newUni.universityId },
 			select: { id: true, email: true }
 		});
 

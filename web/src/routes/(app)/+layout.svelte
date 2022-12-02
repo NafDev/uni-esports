@@ -31,7 +31,7 @@
 		on:click={() => (mobileSidebarActive = false)}
 	/>
 
-	<div class="col-span-2 flex h-full w-full flex-col overflow-y-auto px-12 lg:col-span-2">
+	<div class="col-span-2 flex h-full w-full flex-col overflow-y-auto px-12 pb-12 lg:col-span-2">
 		<!-- Hamburger menu & profile menu -->
 		<Header bind:mobileSidebarActive bind:signedIn />
 

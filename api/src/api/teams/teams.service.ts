@@ -5,7 +5,7 @@ import appConfig, { WEB_TEAM_INVITE } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
-import { createToken } from '../../util/utility';
+import { createToken, prismaPaginationSkipTake } from '../../util/utility';
 
 const TEAM_PUBLIC_DTO_SELECT = {
 	id: true,
@@ -27,8 +27,7 @@ export class TeamService {
 				universityId
 			},
 			select: TEAM_PUBLIC_DTO_SELECT,
-			take: 10,
-			skip: 10 * (page - 1)
+			...prismaPaginationSkipTake(page, 10)
 		});
 
 		return teams.map((team) => ({

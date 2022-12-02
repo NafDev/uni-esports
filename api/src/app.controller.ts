@@ -1,16 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { AuthGuard } from './api/auth/auth.guard';
+import { Controller, Get } from '@nestjs/common';
 
 @Controller()
 export class AppController {
 	@Get('ping')
 	ping() {
-		return 'OK';
-	}
-
-	@Get('session')
-	@UseGuards(AuthGuard)
-	async validateSession() {
 		return 'OK';
 	}
 }

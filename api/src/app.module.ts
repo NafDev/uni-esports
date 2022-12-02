@@ -5,6 +5,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AdminModule } from './api/admin/admin.module';
 import { AuthModule } from './api/auth/auth.module';
 import { TeamModule } from './api/teams/teams.module';
+import { UniversityModule } from './api/universities/uni.module';
 import { UserModule } from './api/users/users.module';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './db/db.module';
@@ -31,6 +32,7 @@ import { EmailModule } from './email/email.module';
 		DatabaseModule,
 		UserModule,
 		TeamModule,
+		UniversityModule,
 		EmailModule,
 		AdminModule
 	],
