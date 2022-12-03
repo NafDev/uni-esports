@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { customAlphabet } from 'nanoid';
 import { DEFAULT_PAGE_LEN } from '../config/app.config';
+import capitalize from 'lodash.capitalize';
 
 /**
  * @param input String to hash
@@ -25,3 +26,8 @@ export const createToken = customAlphabet(alphanumericChars, 128);
 export const prismaPaginationSkipTake = (page = 1, pageLength = DEFAULT_PAGE_LEN) => {
 	return { take: pageLength, skip: pageLength * (page - 1) };
 };
+
+export const capitalizeFirstLetter = (input: string | undefined) => {
+	if (!input) return;
+	return input.charAt(0).toUpperCase() + input.slice(1)
+}

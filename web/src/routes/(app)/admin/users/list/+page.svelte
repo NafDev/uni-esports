@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 
 	const tableData = atom<IUsers[]>([]);
+	const pageSize = 20;
 
 	const table = createTable(
 		tableData,
@@ -28,20 +29,29 @@
 				heading: 'Email'
 			}
 		],
-		20
+		pageSize
 	);
 
 	const { headings, cellRows, pagination } = table;
-	const { pageIndex, pageCount } = pagination;
+	const { dataLength, pageIndex, pageCount, nextPageAvailable, prevPageAvailable } = pagination;
 
 	if (browser) {
-		pageIndex.subscribe((page) => {
-			getAllUsers(page + 1).then((newData) => {
-				pageCount.set(newData[0]);
-				tableData.set([...tableData.get(), ...newData[1]]);
-			});
-		});
+		pageIndex.subscribe(async (value) => {
+			const [totalEntries, pageData] = await getAllUsers(value + 1);
+
+			tableData.set(pageData)
+			dataLength.set(totalEntries)
+		})
 	}
+
+	function nextPage() {
+		pageIndex.set(pageIndex.get() + 1)
+	}
+
+	function prevPage() {
+		pageIndex.set(pageIndex.get() -1 )
+	}
+
 </script>
 
 <PageTitle>User Management</PageTitle>
@@ -74,3 +84,19 @@
 		{/each}
 	</tbody>
 </table>
+
+
+
+<div class="flex flex-col items-center gap-4 justify-center mt-5">
+  <span class="text-sm">
+      Page <span class="font-semibold">{$pageIndex + 1}</span> of <span class="font-semibold">{$pageCount}</span>
+  </span>
+  <div class="inline-flex">
+      <button class="px-4 py-2 text-sm font-medium bg-white/5 border rounded-l-md hover:bg-white/20 disabled:hover:bg-white/5" on:click={() => prevPage()} disabled={!$prevPageAvailable}>
+          Prev
+      </button>
+      <button class="px-4 py-2 text-sm font-medium bg-white/5 border border-l-0 rounded-r-md hover:bg-white/20 disabled:hover:bg-white/5" on:click={() => nextPage()} disabled={!$nextPageAvailable}>
+          Next
+      </button>
+  </div>
+</div>

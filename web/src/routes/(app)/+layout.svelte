@@ -1,13 +1,10 @@
 <script lang="ts">
-	import type { LayoutData } from './$types';
-	import Sidebar from '$/components/base/sidebar/index.svelte';
 	import Header from '$/components/base/header.svelte';
 	import NotificationOverlay from '$/components/base/notificationOverlay.svelte';
+	import Sidebar from '$/components/base/sidebar/index.svelte';
 
 	import '$/css/base.css';
-
-	export let data: LayoutData;
-	let signedIn = Boolean(data.id);
+	import { isSignedIn } from '$lib/stores/auth';
 
 	let mobileSidebarActive = false;
 </script>
@@ -33,7 +30,7 @@
 
 	<div class="col-span-2 flex h-full w-full flex-col overflow-y-auto px-12 pb-12 lg:col-span-2">
 		<!-- Hamburger menu & profile menu -->
-		<Header bind:mobileSidebarActive bind:signedIn />
+		<Header bind:mobileSidebarActive bind:signedIn={$isSignedIn} />
 
 		<!-- Main Page Content -->
 		<div class="w-full max-w-screen-xl self-center">
