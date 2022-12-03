@@ -51,10 +51,7 @@ export class UniversityService {
 				classifyPrismaError(error)[0] === PrismaError.CONSTRAINT_FAILED
 			) {
 				const message = normalizeConflictError(error);
-				if (message)
-					throw new ConflictException(
-						'Another university is already using this name.'
-					);
+				if (message) throw new ConflictException('Another university is already using this name.');
 			}
 
 			throw error;
@@ -82,11 +79,11 @@ export class UniversityService {
 				const message = normalizeConflictError(error);
 				if (message)
 					throw new ConflictException('This domain is already associated with this university, or another university.');
-			
-					throw error
-				}
 
-				throw error
+				throw error;
+			}
+
+			throw error;
 		}
 	}
 

@@ -39,19 +39,18 @@
 		pageIndex.subscribe(async (value) => {
 			const [totalEntries, pageData] = await getAllUsers(value + 1);
 
-			tableData.set(pageData)
-			dataLength.set(totalEntries)
-		})
+			tableData.set(pageData);
+			dataLength.set(totalEntries);
+		});
 	}
 
 	function nextPage() {
-		pageIndex.set(pageIndex.get() + 1)
+		pageIndex.set(pageIndex.get() + 1);
 	}
 
 	function prevPage() {
-		pageIndex.set(pageIndex.get() -1 )
+		pageIndex.set(pageIndex.get() - 1);
 	}
-
 </script>
 
 <PageTitle>User Management</PageTitle>
@@ -85,18 +84,25 @@
 	</tbody>
 </table>
 
-
-
-<div class="flex flex-col items-center gap-4 justify-center mt-5">
-  <span class="text-sm">
-      Page <span class="font-semibold">{$pageIndex + 1}</span> of <span class="font-semibold">{$pageCount}</span>
-  </span>
-  <div class="inline-flex">
-      <button class="px-4 py-2 text-sm font-medium bg-white/5 border rounded-l-md hover:bg-white/20 disabled:hover:bg-white/5" on:click={() => prevPage()} disabled={!$prevPageAvailable}>
-          Prev
-      </button>
-      <button class="px-4 py-2 text-sm font-medium bg-white/5 border border-l-0 rounded-r-md hover:bg-white/20 disabled:hover:bg-white/5" on:click={() => nextPage()} disabled={!$nextPageAvailable}>
-          Next
-      </button>
-  </div>
+<div class="mt-5 flex flex-col items-center justify-center gap-4">
+	<span class="text-sm">
+		Page <span class="font-semibold">{$pageIndex + 1}</span> of
+		<span class="font-semibold">{$pageCount}</span>
+	</span>
+	<div class="inline-flex">
+		<button
+			class="rounded-l-md border bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/20 disabled:hover:bg-white/5"
+			on:click={() => prevPage()}
+			disabled={!$prevPageAvailable}
+		>
+			Prev
+		</button>
+		<button
+			class="rounded-r-md border border-l-0 bg-white/5 px-4 py-2 text-sm font-medium hover:bg-white/20 disabled:hover:bg-white/5"
+			on:click={() => nextPage()}
+			disabled={!$nextPageAvailable}
+		>
+			Next
+		</button>
+	</div>
 </div>

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import ConfirmationModal from '$/components/base/confirmationModal.svelte';
-	import { addUniDomain, getUniDetails, removeUniDomain, updateUniName } from '$lib/api/universities';
+	import {
+		addUniDomain,
+		getUniDetails,
+		removeUniDomain,
+		updateUniName
+	} from '$lib/api/universities';
 	import { inputHandler } from '$lib/form-inputs';
 	import { Deferred } from '$lib/util';
 	import type { IUniversity, IUniversityAdminView } from '@uni-esports/interfaces';
@@ -49,27 +54,48 @@
 	}
 
 	function doUpdateUniName() {
-		doActionWithConfirm({
-			confirmBtnType: 'primary',
-			body: `Are you sure you want to rename this university from <b>${uniDetails.name}</b> to <b>${name.get().value}</b>?`,
-			confirmBtnText: 'Rename'
-		}, updateUniName, uniDetails.id, name.get().value)
+		doActionWithConfirm(
+			{
+				confirmBtnType: 'primary',
+				body: `Are you sure you want to rename this university from <b>${
+					uniDetails.name
+				}</b> to <b>${name.get().value}</b>?`,
+				confirmBtnText: 'Rename'
+			},
+			updateUniName,
+			uniDetails.id,
+			name.get().value
+		);
 	}
 
 	function doAddDomain() {
-		doActionWithConfirm({
-			confirmBtnType: 'primary',
-			body: `Are you sure you want to associate <b>${domainInput.get().value}</b> as a domain for ${uniDetails.name}?`,
-			confirmBtnText: 'Add'
-		}, addUniDomain, uniDetails.id, domainInput.get().value)
+		doActionWithConfirm(
+			{
+				confirmBtnType: 'primary',
+				body: `Are you sure you want to associate <b>${
+					domainInput.get().value
+				}</b> as a domain for ${uniDetails.name}?`,
+				confirmBtnText: 'Add'
+			},
+			addUniDomain,
+			uniDetails.id,
+			domainInput.get().value
+		);
 	}
 
 	function doRemoveDomain(domain: string) {
-		doActionWithConfirm({
-			confirmBtnType: 'danger',
-			body: `Are you sure you want to remove <b>${domainInput.get().value}</b> as a domain for ${uniDetails.name}?`,
-			confirmBtnText: 'Remove'
-		}, removeUniDomain, uniDetails.id, domain)
+		doActionWithConfirm(
+			{
+				confirmBtnType: 'danger',
+				body: `Are you sure you want to remove <b>${domainInput.get().value}</b> as a domain for ${
+					uniDetails.name
+				}?`,
+				confirmBtnText: 'Remove'
+			},
+			removeUniDomain,
+			uniDetails.id,
+			domain
+		);
 	}
 </script>
 
@@ -104,8 +130,17 @@
 		<label for="username">Domains</label>
 		<div class="flex flex-col items-center gap-4">
 			<div class="flex w-full flex-row items-center gap-4">
-				<input type="text" class="form grow" placeholder="Add new domain" bind:value={$domainInput.value} />
-				<button class="btn primary" disabled={!$domainInput.value.length} on:click={() => doAddDomain()}>Update</button>
+				<input
+					type="text"
+					class="form grow"
+					placeholder="Add new domain"
+					bind:value={$domainInput.value}
+				/>
+				<button
+					class="btn primary"
+					disabled={!$domainInput.value.length}
+					on:click={() => doAddDomain()}>Update</button
+				>
 			</div>
 
 			{#each uniDetails.domains as domain}
