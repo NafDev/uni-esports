@@ -1,8 +1,11 @@
 import type { IUserFilters } from '@uni-esports/interfaces';
-import { IsEmail, Matches } from 'class-validator';
+import { Allow, IsEmail, Matches } from 'class-validator';
 
 export class UserFiltersDto implements IUserFilters {
+	@Allow()
 	email?: string;
+
+	@Allow()
 	username?: string;
 }
 

@@ -36,8 +36,6 @@ export const load: LayoutLoad = async () => {
 
 			const userStore = { ...payload, id };
 			user.set(userStore);
-
-			return userStore;
 		} catch (error) {
 			if (dev) {
 				console.warn(error);

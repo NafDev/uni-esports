@@ -6,6 +6,8 @@
 	import { Deferred } from '$lib/util';
 	import { inputHandler } from '$lib/form-inputs';
 	import { USERNAME_CHECK } from '$lib/config';
+	import { universityStore } from '$lib/stores/universities';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	export let data: PageData;
 
@@ -98,6 +100,8 @@
 	}
 </script>
 
+<PageTitle title={`${userDetails.username} - User Management`} hasHeading={false} />
+
 <ConfirmationModal
 	bind:open={modalOpen}
 	{...modalProps}
@@ -132,7 +136,7 @@
 		</div>
 
 		<label for="username">Username</label>
-		<div class="mb-5 flex flex-row items-center">
+		<div class="mb-5 flex flex-row items-center gap-4">
 			<input
 				class="form"
 				type="text"
@@ -140,13 +144,23 @@
 				bind:value={$username.value}
 				on:input={() => usernameHandler.validate()}
 			/>
-			<button
-				class="btn primary ml-4"
-				disabled={!$username.isValid}
-				on:click={() => doUpdateUsername()}
-			>
+			<button class="btn primary" disabled={!$username.isValid} on:click={() => doUpdateUsername()}>
 				Update
 			</button>
+		</div>
+
+		<label for="university">University</label>
+		<div class="flex flex-row items-center gap-4">
+			<input
+				class="form"
+				type="text"
+				id="university"
+				value={$universityStore.get(userDetails.universityId).name}
+				disabled
+			/>
+			<a href={`/admin/universities/${userDetails.universityId}`}>
+				<button class="btn primary">Manage</button>
+			</a>
 		</div>
 
 		<p class="my-5 font-bold">User Actions</p>

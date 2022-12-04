@@ -11,7 +11,7 @@
 	export let signedIn: boolean;
 </script>
 
-<div class="my-5 flex h-20 w-full items-center justify-between">
+<div class="my-5 flex h-20 w-full shrink-0 items-center justify-between">
 	<button
 		class="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/25 lg:invisible"
 		on:click={() => (mobileSidebarActive = true)}

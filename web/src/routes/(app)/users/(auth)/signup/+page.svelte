@@ -4,6 +4,7 @@
 	import { PASSWORD_CHECK, PASSWORD_PROMPT, USERNAME_CHECK, USERNAME_PROMPT } from '$/lib/config';
 	import { formHandler, inputHandler } from '$/lib/form-inputs';
 	import logo from '$/images/logo.png';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	let isLoading = false;
 
@@ -50,9 +51,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Create account | UKUE</title>
-</svelte:head>
+<PageTitle title="Create account" hasHeading={false} />
 
 <div class="my-auto mx-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

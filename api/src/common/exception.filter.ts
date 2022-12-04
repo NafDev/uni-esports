@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ThrottlerException } from '@nestjs/throttler';
-import capitalize from 'lodash.capitalize';
+import { capitalizeFirstLetter } from '../util/utility';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -37,7 +37,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 			responseBody = { message: 'Too many requests' };
 		}
 
-		responseBody = { ...responseBody, message: capitalize(responseBody?.message) };
+		responseBody = { ...responseBody, message: capitalizeFirstLetter(responseBody?.message) };
 
 		httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
 	}

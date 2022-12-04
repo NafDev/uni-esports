@@ -7,16 +7,15 @@ export interface IUsers {
 export interface IUserDetails {
 	id: string;
 	email: string;
-    username: string;
-    createdAt: Date;
+	username: string;
+	createdAt: Date;
 	verified: boolean;
 	discordId: string | null;
 	steam64Id: string | null;
-	University: { name: string } | null;
+	universityId: number | null;
 }
 
 export interface IUserFilters {
 	email?: string;
 	username?: string;
 }
-
