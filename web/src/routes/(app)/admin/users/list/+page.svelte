@@ -63,7 +63,7 @@
 	}
 </script>
 
-<PageTitle title={"User Management"} />
+<PageTitle title={'User Management'} />
 
 <form
 	class="mb-5 flex flex-row items-center gap-5"

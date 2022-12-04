@@ -53,7 +53,6 @@
 
 <PageTitle title="Create account" hasHeading={false} />
 
-
 <div class="my-auto mx-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">
 		<a href="/">
