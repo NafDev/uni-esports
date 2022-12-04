@@ -36,7 +36,7 @@
 	}
 </script>
 
-<PageTitle>University Management</PageTitle>
+<PageTitle title="University Management" />
 
 <table class="w-full table-auto text-left">
 	<thead>

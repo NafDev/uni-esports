@@ -5,6 +5,7 @@
 	import logo from '$/images/logo.png';
 	import { onMount } from 'svelte';
 	import { pushNotification } from '$lib/stores/notifications';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	let redirect: string;
 
@@ -31,9 +32,8 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Sign in | UKUE</title>
-</svelte:head>
+<PageTitle title="Sign in" hasHeading={false} />
+
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { sendPasswordResetEmail } from '$/lib/api/auth';
 	import logo from '$/images/logo.png';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	let email: string;
 
@@ -12,9 +13,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Forgot password | UKUE</title>
-</svelte:head>
+<PageTitle title="Forgot password" hasHeading={false} />
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

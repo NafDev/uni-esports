@@ -1,12 +1,8 @@
-import { persistentAtom } from '@nanostores/persistent';
 import type { IUniversity } from '@uni-esports/interfaces';
-import { keepMount, onMount, task } from 'nanostores';
+import { atom, keepMount, onMount, task } from 'nanostores';
 import { getUniList } from '../api/universities';
 
-export const universityStore = persistentAtom<Map<number, IUniversity>>('universities', new Map(), {
-	encode: (map) => JSON.stringify([...map]),
-	decode: (strValue) => new Map(JSON.parse(strValue))
-});
+export const universityStore = atom<Map<number, IUniversity>>(new Map());
 
 onMount(universityStore, () => {
 	task(async () => {

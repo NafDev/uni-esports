@@ -39,11 +39,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Profile | UKUE</title>
-</svelte:head>
-
-<PageTitle>Profile</PageTitle>
+<PageTitle title="Profile" />
 
 <div class="flex flex-row flex-wrap justify-items-stretch">
 	<!-- Generic Profile Fields -->

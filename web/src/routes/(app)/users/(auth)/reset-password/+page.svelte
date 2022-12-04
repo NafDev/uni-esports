@@ -4,6 +4,7 @@
 	import { performPasswordReset } from '$/lib/api/auth';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$/lib/config';
 	import { formHandler, inputHandler } from '$/lib/form-inputs';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	const token = $page.url.searchParams.get('token');
 
@@ -32,9 +33,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Reset password | UKUE</title>
-</svelte:head>
+<PageTitle title="Reset password" hasHeading={false} />
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

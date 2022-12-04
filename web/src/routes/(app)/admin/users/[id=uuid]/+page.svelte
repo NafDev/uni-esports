@@ -7,6 +7,7 @@
 	import { inputHandler } from '$lib/form-inputs';
 	import { USERNAME_CHECK } from '$lib/config';
 	import { universityStore } from '$lib/stores/universities';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	export let data: PageData;
 
@@ -98,6 +99,8 @@
 		);
 	}
 </script>
+
+<PageTitle title={`${userDetails.username} - User Management`} hasHeading={false} />
 
 <ConfirmationModal
 	bind:open={modalOpen}

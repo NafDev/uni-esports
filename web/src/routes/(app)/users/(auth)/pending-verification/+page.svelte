@@ -3,6 +3,7 @@
 	import { InboxIn } from '@steeze-ui/heroicons';
 	import { resendVerificationEmail } from '$/lib/api/auth';
 	import { pushNotification } from '$lib/stores/notifications';
+	import PageTitle from '$/components/base/pageTitle.svelte';
 
 	let isLoading = false;
 	let canResend = true;
@@ -25,9 +26,8 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Verify my account | UKUE</title>
-</svelte:head>
+<PageTitle title="Verify my account" hasHeading={false} />
+
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="my-10 flex flex-col">

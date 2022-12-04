@@ -8,11 +8,7 @@
 	let newTeamModalOpen = false;
 </script>
 
-<svelte:head>
-	<title>Teams | UKUE</title>
-</svelte:head>
-
-<PageTitle>Teams</PageTitle>
+<PageTitle title="Teams" />
 
 <NewTeamModal bind:open={newTeamModalOpen} />
 

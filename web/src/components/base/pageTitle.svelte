@@ -1,5 +1,16 @@
+<script lang="ts">
+	export let title: string
+	export let hasHeading = true;
+</script>
+
+{#if hasHeading}
 <h1
-	class="mb-5 rounded-3xl bg-opacity-5 bg-gradient-to-t from-black/5 p-10 text-left text-5xl font-black uppercase"
+class="mb-5 rounded-3xl bg-opacity-5 bg-gradient-to-t from-black/5 p-10 text-left text-4xl overflow-x-auto font-black uppercase"
 >
-	<slot />
+{title}
 </h1>
+{/if}
+
+<svelte:head>
+	<title>{title} | UKUE</title>
+</svelte:head>
