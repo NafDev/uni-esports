@@ -28,6 +28,6 @@ export const prismaPaginationSkipTake = (page = 1, pageLength = DEFAULT_PAGE_LEN
 };
 
 export const capitalizeFirstLetter = (input: string | undefined) => {
-	if (!input) return;
+	if (typeof input !== 'string' || input.length === 0) return;
 	return input.charAt(0).toUpperCase() + input.slice(1);
 };
