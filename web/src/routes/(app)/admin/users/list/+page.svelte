@@ -2,13 +2,18 @@
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { browser } from '$app/environment';
 
-	import type { IUsers } from '@uni-esports/interfaces';
+	import { goto } from '$app/navigation';
 	import { getAllUsers } from '$lib/api/admin/users';
 	import { createTable } from '$lib/data-table';
-	import { atom } from 'nanostores';
-	import { Icon } from '@steeze-ui/svelte-icon';
+	import { inputHandler } from '$lib/form-inputs';
 	import { ChevronRight } from '@steeze-ui/heroicons';
-	import { goto } from '$app/navigation';
+	import { Icon } from '@steeze-ui/svelte-icon';
+	import type { IUserFilters, IUsers } from '@uni-esports/interfaces';
+	import { atom } from 'nanostores';
+
+	const [usernameQuery] = inputHandler<string>()
+	const [emailQuery] = inputHandler<string>()
+	const filters = atom<IUserFilters>()
 
 	const tableData = atom<IUsers[]>([]);
 	const pageSize = 20;
@@ -37,7 +42,7 @@
 
 	if (browser) {
 		pageIndex.subscribe(async (value) => {
-			const [totalEntries, pageData] = await getAllUsers(value + 1);
+			const [totalEntries, pageData] = await getAllUsers(value + 1, filters.get());
 
 			tableData.set(pageData);
 			dataLength.set(totalEntries);
@@ -51,17 +56,26 @@
 	function prevPage() {
 		pageIndex.set(pageIndex.get() - 1);
 	}
+
+	function updateFitlers() {
+		filters.set({email: emailQuery.get().value, username: usernameQuery.get().value})
+		pageIndex.set(0);
+	}
 </script>
 
 <PageTitle>User Management</PageTitle>
+
+<form class="flex flex-row gap-5 mb-5 items-center" id="filters" on:submit|preventDefault={() => updateFitlers()}>
+	<input type="text" class="form" placeholder="Username query" bind:value={$usernameQuery.value} />
+	<input type="text" class="form" placeholder="Email query" bind:value={$emailQuery.value} />
+	<button class="btn primary">Search</button>
+</form>
 
 <table class="w-full table-auto text-left">
 	<thead>
 		<tr>
 			{#each headings as heading}
-				<th class="p-2">
-					{heading}
-				</th>
+				<th class="p-2">{heading}</th>
 			{/each}
 		</tr>
 	</thead>
@@ -71,14 +85,10 @@
 				class="cursor-pointer hover:bg-black/10"
 				on:click={() => goto(`/admin/users/${row.get('id')}`)}
 			>
-				{#each Array.from(row.values()) as cell}
-					<td class="p-2">
-						{cell}
-					</td>
-				{/each}
-				<td>
-					<Icon src={ChevronRight} size="18" />
-				</td>
+				<td class="p-2 w-2/5">{row.get('id')}</td>
+				<td class="p-2 w-1/5">{row.get('username')}</td>
+				<td class="p-2 w-2/5">{row.get('email')}</td>
+				<td><Icon src={ChevronRight} size="18" /></td>
 			</tr>
 		{/each}
 	</tbody>

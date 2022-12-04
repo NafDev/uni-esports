@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
 import type { IUserDetails, IUsers, Pagination } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { WEB_EMAIL_VERIFY } from '../../../config/app.config';
@@ -17,9 +18,9 @@ export class UserService {
 	async findAllUsers(page: number, filters: UserFiltersDto): Promise<Pagination<IUsers>> {
 		page = page < 1 ? 1 : page;
 
-		const where = {
-			email: filters.email ? { startsWith: filters.email.toLowerCase() } : undefined,
-			username: filters.username ? { startsWith: filters.username } : undefined
+		const where: Prisma.Enumerable<Prisma.UserWhereInput> = {
+			email: filters.email ? { contains: filters.email.toLowerCase() } : undefined,
+			username: filters.username ? { contains: filters.username } : undefined
 		};
 
 		const resp = await this.prisma.$transaction([
