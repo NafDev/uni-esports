@@ -4,6 +4,7 @@ import { Allow, IsEmail, Matches } from 'class-validator';
 export class UserFiltersDto implements IUserFilters {
 	@Allow()
 	email?: string;
+
 	@Allow()
 	username?: string;
 }

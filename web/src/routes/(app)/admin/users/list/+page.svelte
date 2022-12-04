@@ -11,9 +11,9 @@
 	import type { IUserFilters, IUsers } from '@uni-esports/interfaces';
 	import { atom } from 'nanostores';
 
-	const [usernameQuery] = inputHandler<string>()
-	const [emailQuery] = inputHandler<string>()
-	const filters = atom<IUserFilters>()
+	const [usernameQuery] = inputHandler<string>();
+	const [emailQuery] = inputHandler<string>();
+	const filters = atom<IUserFilters>();
 
 	const tableData = atom<IUsers[]>([]);
 	const pageSize = 20;
@@ -58,14 +58,18 @@
 	}
 
 	function updateFitlers() {
-		filters.set({email: emailQuery.get().value, username: usernameQuery.get().value})
+		filters.set({ email: emailQuery.get().value, username: usernameQuery.get().value });
 		pageIndex.set(0);
 	}
 </script>
 
 <PageTitle>User Management</PageTitle>
 
-<form class="flex flex-row gap-5 mb-5 items-center" id="filters" on:submit|preventDefault={() => updateFitlers()}>
+<form
+	class="mb-5 flex flex-row items-center gap-5"
+	id="filters"
+	on:submit|preventDefault={() => updateFitlers()}
+>
 	<input type="text" class="form" placeholder="Username query" bind:value={$usernameQuery.value} />
 	<input type="text" class="form" placeholder="Email query" bind:value={$emailQuery.value} />
 	<button class="btn primary">Search</button>
@@ -85,9 +89,9 @@
 				class="cursor-pointer hover:bg-black/10"
 				on:click={() => goto(`/admin/users/${row.get('id')}`)}
 			>
-				<td class="p-2 w-2/5">{row.get('id')}</td>
-				<td class="p-2 w-1/5">{row.get('username')}</td>
-				<td class="p-2 w-2/5">{row.get('email')}</td>
+				<td class="w-2/5 p-2">{row.get('id')}</td>
+				<td class="w-1/5 p-2">{row.get('username')}</td>
+				<td class="w-2/5 p-2">{row.get('email')}</td>
 				<td><Icon src={ChevronRight} size="18" /></td>
 			</tr>
 		{/each}
