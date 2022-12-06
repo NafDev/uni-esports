@@ -18,13 +18,13 @@ import { Roles } from '../../../common/guards/roles/roles.decorator';
 import { RolesGuard } from '../../../common/guards/roles/roles.guard';
 import { ParsePositiveIntPipe } from '../../../common/pipes/positive-int.pipe';
 import { UserFiltersDto, UserUpdateEmail, UserUpdateUsername } from './users.admin.dto';
-import { UserService } from './users.admin.service';
+import { UserAdminService } from './users.admin.service';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles('ADMIN')
 @Controller('admin/users')
 export class UserController {
-	constructor(private readonly userService: UserService) {}
+	constructor(private readonly userService: UserAdminService) {}
 
 	@Post('list')
 	@HttpCode(200)

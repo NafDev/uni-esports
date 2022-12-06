@@ -15,14 +15,17 @@
 	async function doPlayerInvite() {
 		if (team && playerSearch !== '' && !playerSearchIsLoading) {
 			playerSearchIsLoading = true;
-			invitePlayerBySearch(team.id, { invitedPlayer: playerSearch }).finally(
-				() => (playerSearchIsLoading = false)
-			);
+
+			try {
+				await invitePlayerBySearch(team.id, { invitedPlayer: playerSearch });
+			} finally {
+				playerSearchIsLoading = false;
+			}
 		}
 	}
 </script>
 
-<PageTitle>Team Details</PageTitle>
+<PageTitle title={`Team - ${team.name}`} hasHeading={false} />
 
 {#if team}
 	<div class="my-8 flex flex-row flex-wrap items-end justify-between">
@@ -33,8 +36,8 @@
 		</div>
 	</div>
 
-	<div class="box flex flex-row flex-wrap">
-		<div class="flex flex-col">
+	<div class="flex flex-row flex-wrap">
+		<div class="flex basis-full flex-col px-4 pb-6 md:basis-1/2">
 			<p class="class mb-3 text-xl font-bold">Players</p>
 			{#each team.members as member}
 				<div
@@ -47,7 +50,7 @@
 		</div>
 
 		{#if isCaptain}
-			<div>
+			<div class="basis-full px-4 pb-2 md:basis-1/2">
 				<p class="text-bold mb-3 text-xl font-bold">Invite players</p>
 				<label for="invitePlayer">Invite player by search</label>
 				<div class="mb-2 flex flex-row items-center">
@@ -70,9 +73,3 @@
 {:else}
 	<p class="my-20 text-center text-3xl">This team cannot be found</p>
 {/if}
-
-<style lang="postcss">
-	.box > div {
-		@apply basis-full p-3 md:basis-1/2;
-	}
-</style>

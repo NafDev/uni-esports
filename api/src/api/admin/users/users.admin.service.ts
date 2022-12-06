@@ -10,8 +10,8 @@ import { STEmailVerification } from '../../auth/supertokens/supertokens.types';
 import type { UserFiltersDto } from './users.admin.dto';
 
 @Injectable()
-export class UserService {
-	private readonly logger = new Logger(UserService.name);
+export class UserAdminService {
+	private readonly logger = new Logger(UserAdminService.name);
 
 	constructor(private readonly prisma: PrismaService, private readonly authService: AuthService) {}
 

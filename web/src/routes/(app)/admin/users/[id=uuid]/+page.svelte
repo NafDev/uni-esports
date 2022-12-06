@@ -100,7 +100,7 @@
 	}
 </script>
 
-<PageTitle title={`${userDetails.username} - User Management`} hasHeading={false} />
+<PageTitle title={`${userDetails.username} ~ User Management`} hasHeading={false} />
 
 <ConfirmationModal
 	bind:open={modalOpen}

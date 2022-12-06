@@ -104,7 +104,7 @@
 		{#each $cellRows as row}
 			<tr
 				class="cursor-pointer hover:bg-black/10"
-				on:click={() => goto(`/admin/users/${row.get('id')}`)}
+				on:click={() => goto(`/admin/teams/${row.get('id')}`)}
 			>
 				<td class="w-1/5 p-2">{row.get('id')}</td>
 				<td class="w-2/5 p-2">{row.get('name')}</td>
