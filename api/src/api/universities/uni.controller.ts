@@ -1,4 +1,4 @@
-import { Controller, Get, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { UniversityService } from './uni.service';
 
 @Controller('universities')

@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
 import { customAlphabet } from 'nanoid';
-import capitalize from 'lodash.capitalize';
 import { DEFAULT_PAGE_LEN } from '../config/app.config';
 
 /**

@@ -4,6 +4,7 @@
 
 	import { goto } from '$app/navigation';
 	import { getAllUsers } from '$lib/api/admin/users';
+	import { DEFAULT_PAGE_LEN } from '$lib/config';
 	import { createTable } from '$lib/data-table';
 	import { inputHandler } from '$lib/form-inputs';
 	import { ChevronRight } from '@steeze-ui/heroicons';
@@ -16,7 +17,6 @@
 	const filters = atom<IUserFilters>();
 
 	const tableData = atom<IUsers[]>([]);
-	const pageSize = 20;
 
 	const table = createTable(
 		tableData,
@@ -34,7 +34,7 @@
 				heading: 'Email'
 			}
 		],
-		pageSize
+		DEFAULT_PAGE_LEN
 	);
 
 	const { headings, cellRows, pagination } = table;
@@ -57,7 +57,7 @@
 		pageIndex.set(pageIndex.get() - 1);
 	}
 
-	function updateFitlers() {
+	function updateFilters() {
 		filters.set({ email: emailQuery.get().value, username: usernameQuery.get().value });
 		pageIndex.set(0);
 	}
@@ -68,7 +68,7 @@
 <form
 	class="mb-5 flex flex-row items-center gap-5"
 	id="filters"
-	on:submit|preventDefault={() => updateFitlers()}
+	on:submit|preventDefault={() => updateFilters()}
 >
 	<input type="text" class="form" placeholder="Username query" bind:value={$usernameQuery.value} />
 	<input type="text" class="form" placeholder="Email query" bind:value={$emailQuery.value} />

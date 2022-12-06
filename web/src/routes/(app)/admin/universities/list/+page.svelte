@@ -2,13 +2,12 @@
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { browser } from '$app/environment';
 
-	import { getAllUsers } from '$lib/api/admin/users';
-	import { createTable } from '$lib/data-table';
-	import { atom } from 'nanostores';
-	import { Icon } from '@steeze-ui/svelte-icon';
-	import { ChevronRight } from '@steeze-ui/heroicons';
 	import { goto } from '$app/navigation';
+	import { createTable } from '$lib/data-table';
 	import { universityStore } from '$lib/stores/universities';
+	import { ChevronRight } from '@steeze-ui/heroicons';
+	import { Icon } from '@steeze-ui/svelte-icon';
+	import { atom } from 'nanostores';
 
 	let tableData = atom([]);
 

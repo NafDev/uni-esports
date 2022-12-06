@@ -2,6 +2,8 @@ import { dev } from '$app/environment';
 
 export const BASE_API_URL = dev ? 'http://localhost:3000' : 'https://ukue.app';
 
+export const DEFAULT_PAGE_LEN = 20;
+
 export const USERNAME_PROMPT =
 	'Your username should be 3-24 characters long and may only include alphanumeric characters, underscores, hypens, and full stops';
 export const USERNAME_CHECK = /^[\w-.]{3,24}$/;

@@ -18,3 +18,8 @@ export interface TeamDto {
 	members: TeamMemberDto[];
 	university: string;
 }
+
+export interface TeamListItemDto {
+	id: number;
+	name: string;
+}

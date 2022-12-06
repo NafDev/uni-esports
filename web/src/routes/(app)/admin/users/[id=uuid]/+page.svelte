@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	import type { IUserDetails } from '@uni-esports/interfaces';
 	import ConfirmationModal from '$/components/base/confirmationModal.svelte';
-	import { getUser, unlinkSteamId, updateUserEmail, updateUsername } from '$lib/api/admin/users';
-	import { Deferred } from '$lib/util';
-	import { inputHandler } from '$lib/form-inputs';
-	import { USERNAME_CHECK } from '$lib/config';
-	import { universityStore } from '$lib/stores/universities';
 	import PageTitle from '$/components/base/pageTitle.svelte';
+	import { getUser, unlinkSteamId, updateUserEmail, updateUsername } from '$lib/api/admin/users';
+	import { USERNAME_CHECK } from '$lib/config';
+	import { inputHandler } from '$lib/form-inputs';
+	import { universityStore } from '$lib/stores/universities';
+	import { Deferred } from '$lib/util';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 
-	let userDetails: IUserDetails = data.userDetails;
+	let userDetails = data.userDetails;
+	let userTeams = data.userTeams;
 
 	let deferredAction: Deferred;
 	let modalOpen = false;
@@ -110,7 +110,7 @@
 	on:dismiss={() => deferredAction.resolve('DISMISS')}
 />
 
-<div class="flex flex-row flex-wrap justify-items-stretch">
+<div class="flex flex-row flex-wrap justify-items-stretch gap-y-8">
 	<!-- Generic Profile Fields -->
 	<div class="flex grow basis-full flex-col p-3 md:basis-1/2">
 		<p class="mb-7 text-xl font-bold">Profile Information</p>
@@ -200,5 +200,24 @@
 				{/if}
 			</div>
 		</div>
+	</div>
+
+	<!-- Player Teams -->
+	<div class="flex basis-full flex-col p-3 md:basis-1/2">
+		<p class="mb-7 text-xl font-bold">Teams</p>
+
+		{#if !userTeams.length}
+			<p>User is not a part of any teams</p>
+		{:else}
+			<div class="flex flex-col">
+				{#each userTeams as team}
+					<div class="border-t border-secondary p-3 last-of-type:border-b hover:bg-black/5">
+						<a href={`/admin/teams/${team.id}`}>
+							<p>{team.name}</p>
+						</a>
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>

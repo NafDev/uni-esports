@@ -1,11 +1,20 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
+import type { Prisma } from '@prisma/client';
+import type {
+	CreateTeamDto,
+	InvitePlayerDto,
+	ITeamListSearchItem,
+	Pagination,
+	TeamDto,
+	TeamListItemDto
+} from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import appConfig, { WEB_TEAM_INVITE } from '../../config/app.config';
+import { WEB_TEAM_INVITE } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
 import { createToken, prismaPaginationSkipTake } from '../../util/utility';
+import type { TeamListSearch } from '../admin/teams/teams.admin.dto';
 
 const TEAM_PUBLIC_DTO_SELECT = {
 	id: true,
@@ -60,6 +69,44 @@ export class TeamService {
 		}));
 	}
 
+	async getTeamListByPlayer(userId: string): Promise<TeamListItemDto[]> {
+		const teams = await this.prisma.userOnTeam.findMany({
+			where: { userId },
+			select: { team: { select: { id: true, name: true } } },
+			orderBy: { team: { createdAt: 'desc' } }
+		});
+
+		return teams.map((team) => ({
+			id: team.team.id,
+			name: team.team.name
+		}));
+	}
+
+	async getTeamListBySearch(query: TeamListSearch, page: number): Promise<Pagination<ITeamListSearchItem>> {
+		const { name, universityId } = query;
+		const where: Prisma.TeamWhereInput = {};
+
+		if (name && name.length > 0) {
+			where.name = { contains: name };
+		}
+
+		if (universityId) {
+			where.universityId = universityId;
+		}
+
+		const [count, teamList] = await this.prisma.$transaction([
+			this.prisma.team.count({ where }),
+			this.prisma.team.findMany({
+				where,
+				select: { id: true, name: true, universityId: true },
+				orderBy: { createdAt: 'desc' },
+				...prismaPaginationSkipTake(page)
+			})
+		]);
+
+		return [count, teamList];
+	}
+
 	async getTeam(id: number): Promise<TeamDto> {
 		const team = await this.prisma.team.findUnique({
 			where: { id },
@@ -73,12 +120,12 @@ export class TeamService {
 		const dto: TeamDto = {
 			id: team.id,
 			name: team.name,
+			university: team.university.name,
 			members: team.UserOnTeam.map((user) => ({
 				id: user.user.id,
 				username: user.user.username,
 				captain: user.captain || undefined
-			})),
-			university: team.university.name
+			}))
 		};
 
 		return dto;
@@ -132,12 +179,12 @@ export class TeamService {
 			const dto: TeamDto = {
 				id: team.id,
 				name: team.name,
+				university: team.university.name,
 				members: team.UserOnTeam.map((user) => ({
 					id: user.user.id,
 					username: user.user.username,
 					captain: user.captain || undefined
-				})),
-				university: team.university.name
+				}))
 			};
 
 			return dto;

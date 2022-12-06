@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { VerifiedGuard } from '../../common/guards/user/verified.guard';
+import { ParsePositiveIntPipe } from '../../common/pipes/positive-int.pipe';
 import { AuthGuard } from '../auth/auth.guard';
 import { CreateTeamDto, InvitePlayerDto } from './teams.dto';
 import { TeamService } from './teams.service';
@@ -49,7 +50,10 @@ export class TeamController {
 	}
 
 	@Get('university/:id')
-	async getTeamsByUniversity(@Param('id', ParseIntPipe) uniId: number, @Query('page', ParseIntPipe) page: number) {
+	async getTeamsByUniversity(
+		@Param('id', ParseIntPipe) uniId: number,
+		@Query('page', ParsePositiveIntPipe) page: number
+	) {
 		return this.teamsService.findTeamsByUni(uniId, page);
 	}
 

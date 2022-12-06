@@ -1,5 +1,4 @@
-import type { Pagination } from '@uni-esports/interfaces';
-import { action, atom, computed, type WritableAtom } from 'nanostores';
+import { atom, computed, type WritableAtom } from 'nanostores';
 
 type ValuesOf<T> = T[keyof T];
 

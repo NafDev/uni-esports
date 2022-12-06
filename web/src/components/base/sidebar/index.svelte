@@ -17,13 +17,13 @@
 	import type { IconSource } from '@steeze-ui/heroicons/types';
 	import { Icon } from '@steeze-ui/svelte-icon';
 
-	import csgo from './images/csgo.png';
-	import league from './images/league.png';
-	import logo from './images/logo.png';
-	import overwatch from './images/overwatch.png';
-	import rocket from './images/rocket.png';
-	import siege from './images/siege.png';
-	import valorant from './images/valorant.png';
+	import csgo from './images/csgo.png?w=25&imagetools';
+	import league from './images/league.png?w=25&imagetools';
+	import logo from './images/logo.png?w=25&imagetools';
+	import overwatch from './images/overwatch.png?w=25&imagetools';
+	import rocket from './images/rocket.png?w=25&imagetools';
+	import siege from './images/siege.png?w=25&imagetools';
+	import valorant from './images/valorant.png?w=25&imagetools';
 
 	export let mobileSidebarActive: boolean;
 

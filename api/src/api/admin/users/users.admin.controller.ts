@@ -16,6 +16,7 @@ import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../../auth/auth.guard';
 import { Roles } from '../../../common/guards/roles/roles.decorator';
 import { RolesGuard } from '../../../common/guards/roles/roles.guard';
+import { ParsePositiveIntPipe } from '../../../common/pipes/positive-int.pipe';
 import { UserFiltersDto, UserUpdateEmail, UserUpdateUsername } from './users.admin.dto';
 import { UserService } from './users.admin.service';
 
@@ -27,7 +28,7 @@ export class UserController {
 
 	@Post('list')
 	@HttpCode(200)
-	async allUsersList(@Query('page', ParseIntPipe) page: number, @Body() findQuery: UserFiltersDto) {
+	async allUsersList(@Query('page', ParsePositiveIntPipe) page: number, @Body() findQuery: UserFiltersDto) {
 		return this.userService.findAllUsers(page, findQuery);
 	}
 
