@@ -3,7 +3,9 @@ import { goto } from '$app/navigation';
 import { getTeamById } from '$lib/api/teams';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params }) => {
+export const load: PageLoad = async ({ params, depends }) => {
+	depends('data:team');
+
 	if (browser) {
 		try {
 			const teamData = await getTeamById({

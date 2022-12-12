@@ -46,9 +46,6 @@
 			const nameFilter = nameQuery.get().value;
 			const uniFilter = parseInt(uniIdQuery, 10) ?? undefined;
 
-			console.log(typeof uniFilter);
-
-			console.log(uniFilter);
 			const [count, data] = await getAllTeams(value + 1, {
 				name: nameFilter,
 				universityId: uniFilter

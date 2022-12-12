@@ -65,3 +65,37 @@ export async function addPlayerToTeam(teamId: number, userId: string) {
 		});
 	}
 }
+
+export async function removePlayerFromTeam(teamId: number, userId: string) {
+	const res = await makeRequest<void>(
+		HttpMethod.PATCH,
+		{
+			url: `admin/teams/${teamId}/users/${userId}/remove`
+		},
+		true
+	);
+
+	if (res) {
+		pushNotification({
+			type: 'success',
+			message: 'Player removed from team'
+		});
+	}
+}
+
+export async function reassignPlayerAsCaptain(teamId: number, userId: string) {
+	const res = await makeRequest<void>(
+		HttpMethod.PATCH,
+		{
+			url: `admin/teams/${teamId}/users/${userId}/assign-captain`
+		},
+		true
+	);
+
+	if (res) {
+		pushNotification({
+			type: 'success',
+			message: 'Team captain reassigned'
+		});
+	}
+}

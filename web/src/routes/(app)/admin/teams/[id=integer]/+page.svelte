@@ -2,27 +2,43 @@
 	import ConfirmationModal from '$/components/base/confirmationModal.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import Crown from '$/icons/Crown.svelte';
-	import { getTeamById, invitePlayerBySearch } from '$/lib/api/teams';
-	import { addPlayerToTeam } from '$lib/api/admin/teams';
+	import { invitePlayerBySearch } from '$/lib/api/teams';
+	import { invalidate } from '$app/navigation';
+	import {
+		addPlayerToTeam,
+		reassignPlayerAsCaptain,
+		removePlayerFromTeam
+	} from '$lib/api/admin/teams';
 	import { inputHandler } from '$lib/form-inputs';
 	import { Deferred } from '$lib/util';
 	import { AcademicCap } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
+	import type { TeamMemberDto } from '@uni-esports/interfaces';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	let { team } = data;
+	$: team = data.team;
 
 	const [inviteSearch, inviteSearchHelpers] = inputHandler<string>();
 	const [userId, userIdHelpers] = inputHandler<string>();
-	let userJoinConfirmDialogOpen = false;
+	let confirmDialogOpen = false;
+	let confirmDialogProps: {
+		body: string;
+		btnText: string;
+		btnType: 'primary' | 'danger' | 'warning';
+	} = {
+		body: '',
+		btnText: '',
+		btnType: 'primary'
+	};
+
 	let deferred: Deferred;
 
 	let playerSearchIsLoading = false;
 	let playerJoinIsLoading = false;
 
 	async function reloadTeamData() {
-		team = await getTeamById({ id: team.id });
+		return invalidate('data:team');
 	}
 
 	async function doPlayerInvite() {
@@ -40,12 +56,18 @@
 
 	async function doPlayerJoin() {
 		if (userIdHelpers.validate(true) && !playerJoinIsLoading) {
-			userJoinConfirmDialogOpen = true;
+			confirmDialogProps = {
+				body: `Are you sure you want to join user with ID ${$userId.value} to this team?`,
+				btnText: 'Add player',
+				btnType: 'primary'
+			};
+
+			confirmDialogOpen = true;
 			deferred = new Deferred();
 			const confirm = await deferred.promise;
 
 			if (confirm !== 'OK') {
-				userJoinConfirmDialogOpen = false;
+				confirmDialogOpen = false;
 				return;
 			}
 
@@ -55,9 +77,57 @@
 				await addPlayerToTeam(team.id, $userId.value);
 				reloadTeamData();
 			} finally {
-				userJoinConfirmDialogOpen = false;
+				confirmDialogOpen = false;
 				playerJoinIsLoading = false;
 			}
+		}
+	}
+
+	async function doPlayerRemove(player: TeamMemberDto) {
+		confirmDialogProps = {
+			body: `Are you sure you want to remove user ${player.username} from this team?`,
+			btnText: 'Remove player',
+			btnType: 'danger'
+		};
+
+		confirmDialogOpen = true;
+		deferred = new Deferred();
+		const confirm = await deferred.promise;
+
+		if (confirm !== 'OK') {
+			confirmDialogOpen = false;
+			return;
+		}
+
+		try {
+			await removePlayerFromTeam(team.id, player.id);
+			reloadTeamData();
+		} finally {
+			confirmDialogOpen = false;
+		}
+	}
+
+	async function doReassignCaptain(player: TeamMemberDto) {
+		confirmDialogProps = {
+			body: `Are you sure you want to reassign user ${player.username} as captain of this team?`,
+			btnText: 'Reassign captain',
+			btnType: 'primary'
+		};
+
+		confirmDialogOpen = true;
+		deferred = new Deferred();
+		const confirm = await deferred.promise;
+
+		if (confirm !== 'OK') {
+			confirmDialogOpen = false;
+			return;
+		}
+
+		try {
+			await reassignPlayerAsCaptain(team.id, player.id);
+			reloadTeamData();
+		} finally {
+			confirmDialogOpen = false;
 		}
 	}
 </script>
@@ -65,6 +135,16 @@
 <PageTitle title={`${team?.name ?? 'Team Not Found'} ~ Team Management`} hasHeading={false} />
 
 {#if team}
+	<ConfirmationModal
+		open={confirmDialogOpen}
+		body={confirmDialogProps.body}
+		confirmBtnText={confirmDialogProps.btnText}
+		confirmBtnType={confirmDialogProps.btnType}
+		on:clickConfirm={() => deferred.resolve('OK')}
+		on:clickCancel={() => deferred.resolve('CANCEL')}
+		on:dismiss={() => deferred.resolve('DISMISS')}
+	/>
+
 	<div class="my-8 flex flex-row flex-wrap items-end justify-between">
 		<p class="text-2xl font-bold">{team.name}</p>
 		<div class="flex flex-row items-center">
@@ -75,15 +155,28 @@
 
 	<div class="flex flex-row flex-wrap">
 		<div class="flex basis-full flex-col px-4 pb-6 md:basis-1/2">
-			<p class="class mb-3 text-xl font-bold">Players</p>
-			{#each team.members as member}
-				<div
-					class="flex flex-row justify-between border-t border-greyText/50 p-5 last-of-type:border-b"
-				>
-					<p>{member.username}</p>
-					{#if member.captain}<Crown />{/if}
-				</div>
-			{/each}
+			{#key team}
+				<p class="class mb-3 text-xl font-bold">Players</p>
+				{#each team.members as member}
+					<div
+						class="flex flex-row items-center justify-between border-t border-greyText/50 p-5 last-of-type:border-b"
+					>
+						<p>{member.username}</p>
+						<div class="flex flex-row gap-2">
+							{#if member.captain}
+								<div class="flex h-8 items-center">
+									<Crown />
+								</div>
+							{:else}
+								<button class="btn primary" on:click={() => doReassignCaptain(member)}
+									>Make Captain</button
+								>
+								<button class="btn danger" on:click={() => doPlayerRemove(member)}>Remove</button>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			{/key}
 		</div>
 
 		<div class="basis-full px-4 pb-2 md:basis-1/2">
@@ -103,16 +196,6 @@
 					on:click={() => doPlayerInvite()}>Invite</button
 				>
 			</div>
-
-			<ConfirmationModal
-				open={userJoinConfirmDialogOpen}
-				body={`Are you sure you want to join user with ID ${$userId.value} to this team?`}
-				confirmBtnText={'Add player'}
-				confirmBtnType={'primary'}
-				on:clickConfirm={() => deferred.resolve('OK')}
-				on:clickCancel={() => deferred.resolve('CANCEL')}
-				on:dismiss={() => deferred.resolve('DISMISS')}
-			/>
 
 			<label for="joinPlayer">Add player by user ID</label>
 			<div class="mb-2 flex flex-row items-center">

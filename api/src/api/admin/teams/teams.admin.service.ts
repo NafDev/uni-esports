@@ -83,4 +83,49 @@ export class TeamAdminService {
 
 		this.logger.log(`Admin ${session.getUserId()} joined player ${userId} to team ${teamId}`);
 	}
+
+	async removePlayerFromTeam(teamId: number, userId: string, session: SessionContainer) {
+		const { count } = await this.prisma.userOnTeam.deleteMany({
+			where: { captain: false, teamId, userId }
+		});
+
+		if (!count || count === 0) {
+			throw new BadRequestException('You must change the captain of the team before you can remove this player.');
+		}
+
+		this.logger.log(`Admin ${session.getUserId()} remove user ${userId} from team ${teamId}`);
+	}
+
+	async changeCaptain(teamId: number, userId: string, session: SessionContainer) {
+		try {
+			await this.prisma.$transaction([
+				this.prisma.userOnTeam.updateMany({
+					where: { teamId, captain: true },
+					data: { captain: false }
+				}),
+				this.prisma.userOnTeam.update({
+					where: { userId_teamId: { teamId, userId } },
+					data: { captain: true }
+				})
+			]);
+
+			this.logger.log(`Admin ${session.getUserId()} changed captain to user ${userId} for team ${teamId}`);
+		} catch (error: unknown) {
+			if (error instanceof PrismaClientKnownRequestError) {
+				const [prismaError] = classifyPrismaError(error);
+
+				switch (prismaError) {
+					case PrismaError.CONSTRAINT_FAILED:
+					case PrismaError.INVALID_REQUEST:
+						throw new BadRequestException();
+					case PrismaError.NOT_FOUND:
+						throw new NotFoundException();
+					default:
+						this.logger.error('Uncased known prisma error: ' + error.message, error.stack);
+				}
+			}
+
+			throw error;
+		}
+	}
 }

@@ -32,6 +32,7 @@
 		link: string;
 		icon: IconSource;
 		signedIn?: true;
+		disabled?: true;
 	};
 
 	const quickLinks: Array<QuickLink> = [
@@ -43,12 +44,14 @@
 		{
 			name: 'Tournaments',
 			link: '/tournaments',
-			icon: ViewBoards
+			icon: ViewBoards,
+			disabled: true
 		},
 		{
 			name: 'Calender',
 			link: '/calender',
-			icon: Calendar
+			icon: Calendar,
+			disabled: true
 		},
 		{
 			name: 'My Teams',
@@ -119,14 +122,20 @@
 
 	<!-- Sidebar top logo -->
 	<div class="pl-12 pb-4 text-3xl font-bold text-white ">
-		<img class="h-8 w-8" src={logo} alt="logo" />
+		<a href="/">
+			<img class="h-8 w-8" src={logo} alt="logo" />
+		</a>
 	</div>
 
 	<div class="quickLinks p-10 text-lg font-bold">
 		<div class="py-2">
 			{#each quickLinks as quickLink}
 				{#if !quickLink.signedIn || $isSignedIn}
-					<a href={quickLink.link} class:selected={activeLink === quickLink.link}>
+					<a
+						href={quickLink.link}
+						class:selected={activeLink === quickLink.link}
+						class:disabled={quickLink.disabled}
+					>
 						<div class="flex items-center">
 							<span class="pr-2"><Icon src={quickLink.icon} size="24" theme="solid" /></span>
 							<p>{quickLink.name}</p>
@@ -135,6 +144,7 @@
 				{/if}
 			{/each}
 		</div>
+
 		{#if $isSignedIn && $user.roles.includes('ADMIN')}
 			<div class="py-2">
 				{#each adminLinks as quickLink}
@@ -152,7 +162,7 @@
 	<p class="pl-12 text-lg font-bold">ACTIVE GAMES</p>
 
 	<ul class="gameOptions text-md pl-20 pt-4 font-bold">
-		<li href="/games/csgo" class:selected={activeLink === '/games/csgo'}>
+		<li class:selected={activeLink === '/games/csgo'}>
 			<span class="bg-[#E29A11]">
 				<img src={csgo} class="h-4 w-4 self-center" alt="img" />
 			</span>CS: Global Offensive
@@ -211,5 +221,8 @@
 	}
 	.quickLinks > div > a.selected {
 		@apply opacity-100 before:absolute before:-left-12 before:-top-1 before:h-8 before:w-1 before:bg-primary;
+	}
+	.disabled {
+		@apply pointer-events-none;
 	}
 </style>

@@ -54,4 +54,22 @@ export class TeamController {
 	) {
 		return this.teamsAdminService.joinPlayerToTeam(teamId, userId, session);
 	}
+
+	@Patch(':teamId/users/:userId/remove')
+	async removeUserFromTeam(
+		@Param('teamId', ParsePositiveIntPipe) teamId: number,
+		@Param('userId', ParseUUIDPipe) userId: string,
+		@Session() session: SessionContainer
+	) {
+		return this.teamsAdminService.removePlayerFromTeam(teamId, userId, session);
+	}
+
+	@Patch(':teamId/users/:userId/assign-captain')
+	async changeTeamCaptain(
+		@Param('teamId', ParsePositiveIntPipe) teamId: number,
+		@Param('userId', ParseUUIDPipe) userId: string,
+		@Session() session: SessionContainer
+	) {
+		return this.teamsAdminService.changeCaptain(teamId, userId, session);
+	}
 }
