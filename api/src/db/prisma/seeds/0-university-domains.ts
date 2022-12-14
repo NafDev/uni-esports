@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@prisma/client';
-import universities from './universities.json';
+import universities from './data/universities.json';
 
 export async function run(prisma: PrismaClient) {
 	const queries = [];
@@ -9,7 +9,7 @@ export async function run(prisma: PrismaClient) {
 			prisma.university.create({
 				data: {
 					name: uni.name,
-					UniversityDomain: {
+					domains: {
 						createMany: {
 							data: uni.domains.map((domain) => {
 								return { domain };

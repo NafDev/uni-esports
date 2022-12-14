@@ -18,6 +18,22 @@ enum Role {
   MODERATOR
 }
 
+// Must be indentical to user attribute names
+enum LinkedIdentities {
+  steam64Id
+  discordId
+}
+
+enum Day {
+  mon
+  tue
+  wed
+  thu
+  fri
+  sat
+  sun
+}
+
 model User {
   id                 String   @id @default(uuid()) @db.Uuid
   email              String   @unique
@@ -25,14 +41,14 @@ model User {
   passwordResetToken String?  @unique
   verified           Boolean  @default(false)
   username           String   @unique @db.Citext
-  createdAt          DateTime @default(now())
+  createdAt          DateTime @default(now()) @db.Timestamptz()
   roles              Role[]
   universityId       Int?
   steam64Id          String?  @unique
   discordId          String?  @unique
 
-  University University?  @relation(fields: [universityId], references: [id])
-  UserOnTeam UserOnTeam[]
+  university University?  @relation(fields: [universityId], references: [id])
+  teams      UserOnTeam[]
 
   @@map("user")
 }
@@ -42,8 +58,8 @@ model University {
   name String @unique @db.Citext
   User User[]
 
-  UniversityDomain UniversityDomain[]
-  Team             Team[]
+  domains UniversityDomain[]
+  teams   Team[]
 
   @@map("university")
 }
@@ -52,7 +68,7 @@ model UniversityDomain {
   domain       String @unique
   universityId Int
 
-  University University @relation(fields: [universityId], references: [id])
+  university University @relation(fields: [universityId], references: [id])
 
   @@id([domain, universityId])
   @@map("universityDomain")
@@ -64,11 +80,12 @@ model Team {
   universityId Int
   inviteCode   String?  @unique
   active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
+  createdAt    DateTime @default(now()) @db.Timestamptz()
 
-  university       University         @relation(fields: [universityId], references: [id])
-  UserOnTeam       UserOnTeam[]
-  TeamOnTournament TeamOnTournament[]
+  university  University         @relation(fields: [universityId], references: [id])
+  users       UserOnTeam[]
+  tournaments TeamOnTournament[]
+  matches     TeamOnMatch[]
 
   @@unique([universityId, name])
   @@map("team")
@@ -78,13 +95,13 @@ model UserOnTeam {
   user      User     @relation(fields: [userId], references: [id])
   team      Team     @relation(fields: [teamId], references: [id])
   captain   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz()
 
   userId String @db.Uuid
   teamId Int
 
   @@id([userId, teamId])
-  @@map("userTeam")
+  @@map("teamUser")
 }
 
 enum TournamentStatus {
@@ -95,9 +112,14 @@ enum TournamentStatus {
 }
 
 model Tournament {
-  id               Int                @id @default(autoincrement())
-  state            TournamentStatus
-  TeamOnTournament TeamOnTournament[]
+  id             Int      @id @default(autoincrement())
+  gameId         String
+  matchStartTime DateTime @db.Timestamptz()
+  matchDay       Day
+
+  game  Game               @relation(fields: [gameId], references: [id])
+  state TournamentStatus
+  teams TeamOnTournament[]
 
   @@map("tournament")
 }
@@ -107,8 +129,48 @@ model TeamOnTournament {
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
   teamId       Int
   tournamentId Int
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime   @default(now()) @db.Timestamptz()
 
   @@id([teamId, tournamentId])
-  @@map("teamTournament")
+  @@map("tournamentTeam")
+}
+
+model Game {
+  id             String             @id @unique
+  displayName    String
+  teamsPerMatch  Int
+  playersPerTeam Int
+  requiredIds    LinkedIdentities[]
+
+  tournaments Tournament[]
+
+  @@map("game")
+}
+
+enum MatchStatus {
+  Scheduled
+  Ongoing
+  Completed
+}
+
+model Match {
+  id String @id @default(uuid()) @db.Uuid
+
+  status    MatchStatus
+  startTime DateTime    @default(now()) @db.Timestamptz()
+
+  teams TeamOnMatch[]
+
+  @@map("match")
+}
+
+model TeamOnMatch {
+  teamId  Int
+  matchId String @db.Uuid
+
+  team  Team  @relation(fields: [teamId], references: [id])
+  match Match @relation(fields: [matchId], references: [id])
+
+  @@id([teamId, matchId])
+  @@map("matchTeam")
 }

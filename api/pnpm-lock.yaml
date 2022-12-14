@@ -26,6 +26,7 @@ specifiers:
   class-transformer: ^0.5.1
   class-validator: ^0.13.2
   concurrently: ^7.3.0
+  date-fns: ^2.29.3
   dotenv: ^16.0.1
   envalid: ^7.3.1
   handlebars: ^4.7.7
@@ -66,6 +67,7 @@ dependencies:
   bcrypt: 5.0.1
   class-transformer: 0.5.1
   class-validator: 0.13.2
+  date-fns: 2.29.3
   envalid: 7.3.1
   handlebars: 4.7.7
   helmet: 5.1.0
@@ -2475,7 +2477,7 @@ packages:
     hasBin: true
     dependencies:
       chalk: 4.1.2
-      date-fns: 2.29.2
+      date-fns: 2.29.3
       lodash: 4.17.21
       rxjs: 7.5.5
       shell-quote: 1.7.3
@@ -2616,10 +2618,9 @@ packages:
     engines: {node: '>= 6'}
     dev: false
 
-  /date-fns/2.29.2:
-    resolution: {integrity: sha512-0VNbwmWJDS/G3ySwFSJA3ayhbURMTJLtwM2DTxf9CWondCnh6DTNlO9JgRSq6ibf4eD0lfMJNBxUdEAHHix+bA==}
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
     engines: {node: '>=0.11'}
-    dev: true
 
   /dateformat/4.6.3:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}

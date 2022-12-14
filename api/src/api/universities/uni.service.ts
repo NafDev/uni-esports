@@ -23,7 +23,7 @@ export class UniversityService {
 			select: {
 				id: true,
 				name: true,
-				UniversityDomain: { select: { domain: true } }
+				domains: { select: { domain: true } }
 			}
 		});
 
@@ -34,7 +34,7 @@ export class UniversityService {
 		return {
 			id: resp.id,
 			name: resp.name,
-			domains: resp.UniversityDomain.map((domainKey) => domainKey.domain)
+			domains: resp.domains.map((domainKey) => domainKey.domain)
 		};
 	}
 

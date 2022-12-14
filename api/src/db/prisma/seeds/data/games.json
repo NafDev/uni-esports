@@ -1,0 +1,9 @@
+[
+	{
+		"id": "csgo",
+		"displayName": "Counter-Strike: Global Offensive",
+		"teamsPerMatch": 2,
+		"playersPerTeam": 5,
+		"requiredIds": ["steam64Id"]
+	}
+]

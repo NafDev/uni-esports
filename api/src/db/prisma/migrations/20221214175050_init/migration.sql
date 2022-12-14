@@ -5,7 +5,16 @@ CREATE EXTENSION IF NOT EXISTS "citext";
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER', 'MODERATOR');
 
 -- CreateEnum
+CREATE TYPE "LinkedIdentities" AS ENUM ('steam64Id', 'discordId');
+
+-- CreateEnum
+CREATE TYPE "Day" AS ENUM ('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun');
+
+-- CreateEnum
 CREATE TYPE "TournamentStatus" AS ENUM ('ANNOUNCED', 'REGISTERATION', 'ONGOING', 'COMPLETED');
+
+-- CreateEnum
+CREATE TYPE "MatchStatus" AS ENUM ('Scheduled', 'Ongoing', 'Completed');
 
 -- CreateTable
 CREATE TABLE "user" (
@@ -15,7 +24,7 @@ CREATE TABLE "user" (
     "passwordResetToken" TEXT,
     "verified" BOOLEAN NOT NULL DEFAULT false,
     "username" CITEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "roles" "Role"[],
     "universityId" INTEGER,
     "steam64Id" TEXT,
@@ -47,36 +56,67 @@ CREATE TABLE "team" (
     "universityId" INTEGER NOT NULL,
     "inviteCode" TEXT,
     "active" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "team_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "userTeam" (
+CREATE TABLE "teamUser" (
     "captain" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" UUID NOT NULL,
     "teamId" INTEGER NOT NULL,
 
-    CONSTRAINT "userTeam_pkey" PRIMARY KEY ("userId","teamId")
+    CONSTRAINT "teamUser_pkey" PRIMARY KEY ("userId","teamId")
 );
 
 -- CreateTable
 CREATE TABLE "tournament" (
     "id" SERIAL NOT NULL,
+    "gameId" TEXT NOT NULL,
+    "matchStartTime" TIMESTAMPTZ NOT NULL,
+    "matchDay" "Day" NOT NULL,
     "state" "TournamentStatus" NOT NULL,
 
     CONSTRAINT "tournament_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "teamTournament" (
+CREATE TABLE "tournamentTeam" (
     "teamId" INTEGER NOT NULL,
     "tournamentId" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "teamTournament_pkey" PRIMARY KEY ("teamId","tournamentId")
+    CONSTRAINT "tournamentTeam_pkey" PRIMARY KEY ("teamId","tournamentId")
+);
+
+-- CreateTable
+CREATE TABLE "game" (
+    "id" TEXT NOT NULL,
+    "displayName" TEXT NOT NULL,
+    "teamsPerMatch" INTEGER NOT NULL,
+    "playersPerTeam" INTEGER NOT NULL,
+    "requiredIds" "LinkedIdentities"[],
+
+    CONSTRAINT "game_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "match" (
+    "id" UUID NOT NULL,
+    "status" "MatchStatus" NOT NULL,
+    "startTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "match_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "matchTeam" (
+    "teamId" INTEGER NOT NULL,
+    "matchId" UUID NOT NULL,
+
+    CONSTRAINT "matchTeam_pkey" PRIMARY KEY ("teamId","matchId")
 );
 
 -- CreateIndex
@@ -106,6 +146,9 @@ CREATE UNIQUE INDEX "team_inviteCode_key" ON "team"("inviteCode");
 -- CreateIndex
 CREATE UNIQUE INDEX "team_universityId_name_key" ON "team"("universityId", "name");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "game_id_key" ON "game"("id");
+
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_universityId_fkey" FOREIGN KEY ("universityId") REFERENCES "university"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -116,13 +159,22 @@ ALTER TABLE "universityDomain" ADD CONSTRAINT "universityDomain_universityId_fke
 ALTER TABLE "team" ADD CONSTRAINT "team_universityId_fkey" FOREIGN KEY ("universityId") REFERENCES "university"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "userTeam" ADD CONSTRAINT "userTeam_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "teamUser" ADD CONSTRAINT "teamUser_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "userTeam" ADD CONSTRAINT "userTeam_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "teamUser" ADD CONSTRAINT "teamUser_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "teamTournament" ADD CONSTRAINT "teamTournament_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tournament" ADD CONSTRAINT "tournament_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "teamTournament" ADD CONSTRAINT "teamTournament_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "tournament"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tournamentTeam" ADD CONSTRAINT "tournamentTeam_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tournamentTeam" ADD CONSTRAINT "tournamentTeam_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "tournament"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "matchTeam" ADD CONSTRAINT "matchTeam_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "matchTeam" ADD CONSTRAINT "matchTeam_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "match"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

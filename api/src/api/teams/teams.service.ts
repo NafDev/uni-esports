@@ -20,7 +20,7 @@ const TEAM_PUBLIC_DTO_SELECT = {
 	id: true,
 	name: true,
 	university: { select: { name: true } },
-	UserOnTeam: { select: { captain: true, user: { select: { id: true, username: true } } } }
+	users: { select: { captain: true, user: { select: { id: true, username: true } } } }
 };
 
 @Injectable()
@@ -43,7 +43,7 @@ export class TeamService {
 			id: team.id,
 			name: team.name,
 			university: team.university.name,
-			members: team.UserOnTeam.map((user) => ({
+			members: team.users.map((user) => ({
 				id: user.user.id,
 				username: user.user.username,
 				captain: user.captain || undefined
@@ -61,7 +61,7 @@ export class TeamService {
 			id: userOnTeam.team.id,
 			name: userOnTeam.team.name,
 			university: userOnTeam.team.university.name,
-			members: userOnTeam.team.UserOnTeam.map((user) => ({
+			members: userOnTeam.team.users.map((user) => ({
 				id: user.user.id,
 				username: user.user.username,
 				captain: user.captain || undefined
@@ -121,7 +121,7 @@ export class TeamService {
 			id: team.id,
 			name: team.name,
 			university: team.university.name,
-			members: team.UserOnTeam.map((user) => ({
+			members: team.users.map((user) => ({
 				id: user.user.id,
 				username: user.user.username,
 				captain: user.captain || undefined
@@ -136,13 +136,13 @@ export class TeamService {
 			where: { id },
 			select: {
 				inviteCode: true,
-				UserOnTeam: { where: { captain: true }, select: { userId: true } }
+				users: { where: { captain: true }, select: { userId: true } }
 			}
 		});
 
 		if (!team) throw new NotFoundException();
 
-		if (team?.UserOnTeam.at(0)?.userId !== session.getUserId()) {
+		if (team?.users.at(0)?.userId !== session.getUserId()) {
 			throw new UnauthorizedException();
 		}
 
@@ -167,7 +167,7 @@ export class TeamService {
 					name: teamName,
 					inviteCode: createToken(10),
 					universityId: userUni.universityId,
-					UserOnTeam: {
+					users: {
 						create: { captain: true, userId: session.getUserId() }
 					}
 				},
@@ -180,7 +180,7 @@ export class TeamService {
 				id: team.id,
 				name: team.name,
 				university: team.university.name,
-				members: team.UserOnTeam.map((user) => ({
+				members: team.users.map((user) => ({
 					id: user.user.id,
 					username: user.user.username,
 					captain: user.captain || undefined
@@ -241,8 +241,8 @@ export class TeamService {
 				where: { inviteCode },
 				select: {
 					id: true,
-					TeamOnTournament: { where: { tournament: { state: 'ONGOING' } } },
-					UserOnTeam: { where: { captain: true }, select: { user: { select: { universityId: true } } } }
+					tournaments: { where: { tournament: { state: 'ONGOING' } } },
+					users: { where: { captain: true }, select: { user: { select: { universityId: true } } } }
 				}
 			})
 		]);
@@ -251,11 +251,11 @@ export class TeamService {
 			throw new BadRequestException('Invalid token');
 		}
 
-		if (team.TeamOnTournament.length > 0) {
+		if (team.tournaments.length > 0) {
 			throw new BadRequestException("You cannot join this team as it's participating in an ongoing tournament");
 		}
 
-		if (team.UserOnTeam.at(0)?.user.universityId !== user.universityId) {
+		if (team.users.at(0)?.user.universityId !== user.universityId) {
 			throw new BadRequestException('You cannot join this team as you are not a student of the same university');
 		}
 
@@ -275,15 +275,15 @@ export class TeamService {
 
 		const userToKick = await this.prisma.userOnTeam.findUnique({
 			where: { userId_teamId: { teamId, userId } },
-			select: { team: { select: { UserOnTeam: true } } }
+			select: { team: { select: { users: true } } }
 		});
 
 		if (!userToKick) {
 			throw new NotFoundException();
 		}
 
-		const teamMembers = userToKick.team.UserOnTeam;
-		const captain = userToKick.team.UserOnTeam.find((user) => user.captain);
+		const teamMembers = userToKick.team.users;
+		const captain = userToKick.team.users.find((user) => user.captain);
 
 		if (isKick && captain?.userId !== session.getUserId()) {
 			this.logger.warn(`Unauthorised user ${session.getUserId()} attempted to kick user ${userId} from team ${teamId}`);
