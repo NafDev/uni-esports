@@ -1,12 +1,18 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@tsconfig/node18': ^1.0.1
   husky: ^8.0.2
 
 devDependencies:
+  '@tsconfig/node18': 1.0.1
   husky: 8.0.2
 
 packages:
+
+  /@tsconfig/node18/1.0.1:
+    resolution: {integrity: sha512-sNFeK6X2ATlhlvzyH4kKYQlfHXE2f2/wxtB9ClvYXevWpmwkUT7VaSrjIN9E76Qebz8qP5JOJJ9jD3QoD/Z9TA==}
+    dev: true
 
   /husky/8.0.2:
     resolution: {integrity: sha512-Tkv80jtvbnkK3mYWxPZePGFpQ/tT3HNSs/sasF9P2YfkMezDl3ON37YN6jUUI4eTg5LcyVynlb6r4eyvOmspvg==}
