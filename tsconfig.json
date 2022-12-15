@@ -1,0 +1,22 @@
+{
+	"extends": "@tsconfig/node18",
+	"compilerOptions": {
+		"removeComments": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"baseUrl": ".",
+		"outDir": "./dist",
+		"incremental": true,
+		"strictNullChecks": true,
+		"resolveJsonModule": true,
+		"allowSyntheticDefaultImports": true,
+		"pretty": true,
+		"stripInternal": true,
+		"noEmitOnError": true,
+		"importsNotUsedAsValues": "error",
+		"sourceMap": true
+	},
+	"ts-node": {
+		"files": true
+	}
+}

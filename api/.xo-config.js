@@ -1,6 +1,7 @@
+const config = require('../.xo-config.js')
+
 module.exports = {
-	prettier: true,
-	envs: ['es2022', 'node'],
+	...config,
 	rules: {
 		'import/extensions': 'off',
 		'new-cap': [

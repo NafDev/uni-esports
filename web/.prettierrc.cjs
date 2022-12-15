@@ -1,7 +1,7 @@
+const config = require('../.prettierrc.js');
+
 module.exports = {
-	singleQuote: true,
-	useTabs: true,
-	trailingComma: 'none',
+	...config,
 	printWidth: 100,
 	plugins: [require('prettier-plugin-tailwindcss')],
 	tailwindConfig: './tailwind.config.cjs',
