@@ -1,8 +1,9 @@
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { getAllCORSHeaders } from 'supertokens-node';
 import helmet from 'helmet';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
 import { SupertokensExceptionFilter } from './api/auth/auth.filter';
 import { AllExceptionsFilter } from './common/exception.filter';
@@ -29,7 +30,20 @@ async function bootstrap() {
 
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
+	await startMicroservices(app);
+
 	await app.listen(appConfig.PORT);
+}
+
+async function startMicroservices(app: INestApplication) {
+	app.connectMicroservice<MicroserviceOptions>({
+		transport: Transport.NATS,
+		options: {
+			servers: appConfig.NATS_SERVER_URL
+		}
+	});
+
+	await app.startAllMicroservices();
 }
 
 void bootstrap();

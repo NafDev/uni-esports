@@ -11,6 +11,8 @@ import { AppController } from './app.controller';
 import { DatabaseModule } from './db/db.module';
 import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
+import { NatsModule } from './services/clients/nats.module';
+import { MatchSchedulingModule } from './services/match-scheduling/match-scheduling.module';
 
 @Module({
 	imports: [
@@ -28,13 +30,15 @@ import { EmailModule } from './email/email.module';
 			ttl: 60,
 			limit: 100
 		}),
+		NatsModule,
 		AuthModule,
 		DatabaseModule,
 		UserModule,
 		TeamModule,
 		UniversityModule,
 		EmailModule,
-		AdminModule
+		AdminModule,
+		MatchSchedulingModule
 	],
 	providers: [PrismaService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 	controllers: [AppController]
