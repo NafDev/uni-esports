@@ -1,5 +1,7 @@
 export type Pagination<T> = [count: number, data: T[]];
 
+export * from "./services/index"
+
 export * from "./auth";
 export * from "./roles";
 export * from "./users";

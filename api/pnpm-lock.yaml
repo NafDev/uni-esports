@@ -38,6 +38,7 @@ specifiers:
   mailhog: ^4.16.0
   mjml: ^4.12.0
   nanoid: 3.3.4
+  nats: ^2.9.2
   nestjs-pino: ^3.1.1
   nodemailer: ^6.7.5
   nodemon: ^2.0.15
@@ -59,7 +60,7 @@ specifiers:
 dependencies:
   '@nestjs/common': 9.0.11_kgmvgmqc4iohdboj3f7yqhrie4
   '@nestjs/core': 9.0.11_3h4pevckebn34ohxcfvkqvphw4
-  '@nestjs/microservices': 9.2.1_w7eeql6odqpqho5tkvnpcx2354
+  '@nestjs/microservices': 9.2.1_yivngz4rp5krerdrbbr6i5ys6i
   '@nestjs/platform-express': 9.0.11_khr6mt6ojlxbw7bo55fknouh34
   '@nestjs/throttler': 3.1.0_fvppslgepxggj3fnmtlnh4cori
   '@prisma/client': 4.7.1
@@ -76,6 +77,7 @@ dependencies:
   lodash.startcase: 4.4.0
   mjml: 4.12.0
   nanoid: 3.3.4
+  nats: 2.9.2
   nestjs-pino: 3.1.1_i6unz6wuqvgkfrilibx2liv5zi
   nodemailer: 6.7.5
   pino-http: 8.2.0
@@ -1001,7 +1003,7 @@ packages:
         optional: true
     dependencies:
       '@nestjs/common': 9.0.11_kgmvgmqc4iohdboj3f7yqhrie4
-      '@nestjs/microservices': 9.2.1_w7eeql6odqpqho5tkvnpcx2354
+      '@nestjs/microservices': 9.2.1_yivngz4rp5krerdrbbr6i5ys6i
       '@nestjs/platform-express': 9.0.11_khr6mt6ojlxbw7bo55fknouh34
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
@@ -1015,7 +1017,7 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/microservices/9.2.1_w7eeql6odqpqho5tkvnpcx2354:
+  /@nestjs/microservices/9.2.1_yivngz4rp5krerdrbbr6i5ys6i:
     resolution: {integrity: sha512-ve4dqgoIaUG9VtinHHGCvf6SvtPjd3I44Mj8z8mSkcB8BEPfJnf4FNOShFBgsedtxLaiZyjpv8NCLcNVv5KKGg==}
     peerDependencies:
       '@grpc/grpc-js': '*'
@@ -1054,6 +1056,7 @@ packages:
       '@nestjs/common': 9.0.11_kgmvgmqc4iohdboj3f7yqhrie4
       '@nestjs/core': 9.0.11_3h4pevckebn34ohxcfvkqvphw4
       iterare: 1.2.1
+      nats: 2.9.2
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
       tslib: 2.4.1
@@ -1119,7 +1122,7 @@ packages:
     dependencies:
       '@nestjs/common': 9.0.11_kgmvgmqc4iohdboj3f7yqhrie4
       '@nestjs/core': 9.0.11_3h4pevckebn34ohxcfvkqvphw4
-      '@nestjs/microservices': 9.2.1_w7eeql6odqpqho5tkvnpcx2354
+      '@nestjs/microservices': 9.2.1_yivngz4rp5krerdrbbr6i5ys6i
       '@nestjs/platform-express': 9.0.11_khr6mt6ojlxbw7bo55fknouh34
       tslib: 2.4.0
     dev: true
@@ -6060,6 +6063,13 @@ packages:
     hasBin: true
     dev: false
 
+  /nats/2.9.2:
+    resolution: {integrity: sha512-Ee1HVq/FsQrHSh0hvYJ1PhG+DtAhVG0kCXVvqEj8iL/qUge5IgGrwgXcXCBIlvp26PlWYyoMydMiIefYTD0aNw==}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      nkeys.js: 1.0.3
+      web-streams-polyfill: 3.2.1
+
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
@@ -6086,6 +6096,12 @@ packages:
   /nice-try/1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
     dev: true
+
+  /nkeys.js/1.0.3:
+    resolution: {integrity: sha512-p5Bpb/acPaQmCrbe4gNmMBY/naZJV8Q7m2B9UkXT8BQRC6wjX8zqD2ya8eZu9mpSXQffodV46HCP9OckmxcwYA==}
+    engines: {node: '>=10.0.0'}
+    dependencies:
+      tweetnacl: 1.0.3
 
   /no-case/2.3.2:
     resolution: {integrity: sha512-rmTZ9kz+f3rCvK2TD1Ue/oZlns7OGoIWP4fc3llxxRXlOkHKoWPPWJOfFYpITabSow43QJbRIoHQXtt10VldyQ==}
@@ -7824,6 +7840,9 @@ packages:
       typescript: 4.7.4
     dev: true
 
+  /tweetnacl/1.0.3:
+    resolution: {integrity: sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==}
+
   /twilio/3.79.0_debug@4.3.4:
     resolution: {integrity: sha512-Vn4J3tklWGL5YpNG9H7tRT8FfnYrzvh3ORotJsE+AlN9oXWFPE8ALzbl24x3FfPqJ2Pja0eepfamb3pQKGdNzA==}
     engines: {node: '>=6.0'}
@@ -8109,6 +8128,10 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
+
+  /web-streams-polyfill/3.2.1:
+    resolution: {integrity: sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==}
+    engines: {node: '>= 8'}
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}

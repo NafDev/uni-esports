@@ -105,6 +105,7 @@ CREATE TABLE "game" (
 -- CreateTable
 CREATE TABLE "match" (
     "id" UUID NOT NULL,
+    "gameId" TEXT NOT NULL,
     "status" "MatchStatus" NOT NULL,
     "startTime" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -172,6 +173,9 @@ ALTER TABLE "tournamentTeam" ADD CONSTRAINT "tournamentTeam_teamId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "tournamentTeam" ADD CONSTRAINT "tournamentTeam_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "tournament"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "match" ADD CONSTRAINT "match_gameId_fkey" FOREIGN KEY ("gameId") REFERENCES "game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "matchTeam" ADD CONSTRAINT "matchTeam_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

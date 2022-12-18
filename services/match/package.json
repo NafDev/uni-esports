@@ -1,0 +1,43 @@
+{
+	"name": "@uniesports/match-service",
+	"version": "1.0.0",
+	"author": "NafDev",
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "nodemon --config",
+		"prod": "node dist/main",
+		"lint": "xo --prettier --fix"
+	},
+	"dependencies": {
+		"@nestjs/common": "^9.2.1",
+		"@nestjs/core": "^9.2.1",
+		"@nestjs/microservices": "^9.2.1",
+		"@nestjs/schedule": "^2.1.0",
+		"@uni-esports/interfaces": "workspace:0.0.1",
+		"date-fns": "^2.29.3",
+		"envalid": "^7.3.1",
+		"nats": "^2.9.2",
+		"nestjs-pino": "^3.1.1",
+		"pino-http": "^8.3.0",
+		"postgres": "^3.3.2",
+		"reflect-metadata": "^0.1.13",
+		"rxjs": "^7.6.0",
+		"supertokens-node": "^11.3.0"
+	},
+	"devDependencies": {
+		"@nestjs/cli": "^9.1.5",
+		"@nestjs/schematics": "^9.0.3",
+		"@nestjs/testing": "^9.2.1",
+		"@types/cron": "^2.0.0",
+		"@types/node": "^18.11.15",
+		"dotenv": "^16.0.1",
+		"nodemon": "^2.0.20",
+		"pino-pretty": "^8.1.0",
+		"prettier": "^2.8.1",
+		"source-map-support": "^0.5.21",
+		"ts-node": "^10.9.1",
+		"tsconfig-paths": "^4.1.1",
+		"typescript": "^4.9.4",
+		"xo": "^0.53.1"
+	}
+}
