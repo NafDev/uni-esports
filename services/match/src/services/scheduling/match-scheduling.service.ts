@@ -1,23 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { add, formatISO, parseISO } from 'date-fns';
+import { add, formatISO } from 'date-fns';
 import { PostgresError } from 'postgres';
+import type { GameId } from '@uni-esports/interfaces';
 import { DatabaseService } from '../../db/db.service';
 import type { Match } from './scheduling';
-import { SchedulingPublisher } from './scheduling.publisher';
+import { MatchSchedulingPublisher } from './match-scheduling.publisher';
 
 @Injectable()
-export class SchedulingService {
-	private readonly logger = new Logger(SchedulingService.name);
+export class MatchSchedulingService {
+	private readonly logger = new Logger(MatchSchedulingService.name);
 
 	constructor(
 		private readonly db: DatabaseService,
 		private readonly schedulerRegistry: SchedulerRegistry,
-		private readonly schedulingPublisher: SchedulingPublisher
+		private readonly schedulingPublisher: MatchSchedulingPublisher
 	) {}
 
-	// @Cron(CronExpression.EVERY_DAY_AT_1AM)
-	@Cron(CronExpression.EVERY_MINUTE)
+	@Cron(CronExpression.EVERY_DAY_AT_1AM)
 	async queueUpcomingMatches() {
 		this.logger.log('Starting scheduled job for upcoming matches');
 
@@ -37,7 +37,8 @@ export class SchedulingService {
 				this.schedulingPublisher.queuedMatches.set(match.id, match);
 
 				const callback = async () => {
-					this.schedulingPublisher.publishQueuedGame(match.id, match.gameId);
+					this.schedulingPublisher.publishQueuedGame({ matchId: match.id, gameId: match.gameId as GameId });
+					this.schedulerRegistry.deleteTimeout(`queued-match-${match.id}`);
 				};
 
 				const delay = match.startTime.getTime() - Date.now();

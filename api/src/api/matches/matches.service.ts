@@ -10,11 +10,34 @@ export class MatchService {
 
 	constructor(private readonly prisma: PrismaService) {}
 
+	async startScheduledMatch(matchId: string, gameId: GameId) {
+		const resp = await this.prisma.match.updateMany({
+			where: { id: matchId, status: 'Scheduled' },
+			data: { status: 'Ongoing' }
+		});
+
+		if (resp.count === 0) {
+			this.logger.log({ msg: 'Scheduled match not found or is already being processed', matchId });
+			return;
+		}
+
+		this.logger.log({ msg: 'Scheduled match starting processing', matchId });
+
+		switch (gameId) {
+			case 'csgo':
+				// Call relevant services here
+				break;
+			default:
+				this.logger.warn({ msg: 'Unknown game ID', gameId });
+		}
+	}
+
 	async createNewMatch(matchDto: CreateNewMatchDto) {
 		await this.validateMatchDto(matchDto);
 
 		const match = await this.prisma.match.create({
 			data: {
+				gameId: matchDto.gameId,
 				status: 'Scheduled',
 				startTime: matchDto.scheduledStart,
 				teams: {
@@ -24,24 +47,6 @@ export class MatchService {
 		});
 
 		return match;
-	}
-
-	async startScheduledMatch(matchId: string, gameId: GameId) {
-		switch (gameId) {
-			case 'csgo':
-				// Call relevant services here
-				break;
-			default:
-				if (!(await this.prisma.game.findUnique({ where: { id: gameId }, select: { id: true } }))) {
-					this.logger.error(`Invalid scheduled game ID - ${gameId as string}`);
-					return;
-				}
-		}
-
-		await this.prisma.match.update({
-			where: { id: matchId },
-			data: { status: 'Ongoing' }
-		});
 	}
 
 	private async validateMatchDto(matchDto: CreateNewMatchDto) {
