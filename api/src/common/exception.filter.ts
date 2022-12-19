@@ -12,7 +12,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
 	catch(exception: unknown, host: ArgumentsHost): void {
 		if (exception instanceof HttpException) {
-			this.logger.log('Request error', { message: exception.message });
+			this.logger.log('HTTP Exception', { message: exception.message });
 		} else if (exception instanceof Error) {
 			this.logger.error('Uncaught error', { message: exception.message }, exception.stack);
 		} else {
