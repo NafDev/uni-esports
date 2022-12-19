@@ -1,13 +1,14 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import type { IUniversityAdminView, IUniversity } from '@uni-esports/interfaces';
+import type { IUniversity, IUniversityAdminView } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
+import { LoggerService } from '../../common/logger-wrapper';
 import { classifyPrismaError, normalizeConflictError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 
 @Injectable()
 export class UniversityService {
-	private readonly logger = new Logger(UniversityService.name);
+	private readonly logger = new LoggerService(UniversityService.name);
 
 	constructor(private readonly prisma: PrismaService) {}
 
@@ -44,7 +45,11 @@ export class UniversityService {
 		try {
 			await this.prisma.university.update({ where: { id: universityId }, data: { name } });
 
-			this.logger.log(`Admin ${session.getUserId()} changed name to "${name}" for university ID ${universityId}`);
+			this.logger.log(`Admin changed university name`, {
+				adminId: session.getUserId(),
+				universityId,
+				universityName: name
+			});
 		} catch (error: unknown) {
 			if (
 				error instanceof PrismaClientKnownRequestError &&
@@ -70,7 +75,11 @@ export class UniversityService {
 				select: { universityId: true }
 			});
 
-			this.logger.log(`Admin ${session.getUserId()} added domain "${domain}" to university ID ${universityId}`);
+			this.logger.log(`Admin added university domain`, {
+				adminId: session.getUserId(),
+				domain,
+				universityId
+			});
 		} catch (error: unknown) {
 			if (
 				error instanceof PrismaClientKnownRequestError &&
@@ -107,6 +116,10 @@ export class UniversityService {
 
 		await this.prisma.universityDomain.delete({ where: { domain_universityId: { domain, universityId } } });
 
-		this.logger.log(`Admin ${session.getUserId()} deleted domain ${domain} from university ID ${universityId}`);
+		this.logger.log(`Admin deleted university domain`, {
+			adminId: session.getUserId(),
+			domain,
+			universityId
+		});
 	}
 }

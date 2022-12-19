@@ -1,15 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import type { GameId } from '@uni-esports/interfaces';
 import { add, formatISO } from 'date-fns';
 import { PostgresError } from 'postgres';
-import type { GameId } from '@uni-esports/interfaces';
+import { LoggerService } from '../../common/logger-wrapper';
 import { DatabaseService } from '../../db/db.service';
-import type { Match } from './scheduling';
 import { MatchSchedulingPublisher } from './match-scheduling.publisher';
+import type { Match } from './scheduling';
 
 @Injectable()
 export class MatchSchedulingService {
-	private readonly logger = new Logger(MatchSchedulingService.name);
+	private readonly logger = new LoggerService(MatchSchedulingService.name);
 
 	constructor(
 		private readonly db: DatabaseService,
@@ -30,7 +31,7 @@ export class MatchSchedulingService {
 				const existingKey = this.schedulingPublisher.queuedMatches.get(match.id);
 
 				if (existingKey) {
-					this.logger.warn({ msg: `Existing match ID key in queued matches map`, matchId: match.id });
+					this.logger.warn(`Existing match ID key in queued matches map`, { matchId: match.id });
 					continue;
 				}
 
@@ -78,7 +79,11 @@ export class MatchSchedulingService {
 			}
 		} catch (error: unknown) {
 			if (error instanceof PostgresError) {
-				this.logger.error(error.message, error.stack);
+				this.logger.error(
+					'Error while polling for scheduled games',
+					{ query: error.internal_query, message: error.message },
+					error.stack
+				);
 				return;
 			}
 

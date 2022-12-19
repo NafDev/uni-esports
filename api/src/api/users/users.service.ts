@@ -1,18 +1,19 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import type { AccessTokenPayload } from '@uni-esports/interfaces';
 import { hash } from 'bcrypt';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
+import { LoggerService } from '../../common/logger-wrapper';
 import appConfig, { WEB_EMAIL_VERIFY } from '../../config/app.config';
 import { classifyPrismaError, normalizeConflictError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
-import { EmailTemplates, SmtpService } from '../../email/smtp.service';
+import { SmtpService } from '../../email/smtp.service';
 import { STEmailVerification } from '../auth/supertokens/supertokens.types';
 import type { CreateUserDto, UserInfoDto } from './users.dto';
 
 @Injectable()
 export class UserService {
-	private readonly logger = new Logger(UserService.name);
+	private readonly logger = new LoggerService(UserService.name);
 
 	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
 
@@ -27,6 +28,8 @@ export class UserService {
 		if (uni === null) {
 			throw new BadRequestException('Unknown university email domain');
 		}
+
+		let userId;
 
 		try {
 			const user = await this.prisma.user.create({
@@ -65,6 +68,8 @@ export class UserService {
 
 			throw error;
 		}
+
+		this.logger.log('User created', { userId });
 	}
 
 	async getUserInfo(session: SessionContainer): Promise<UserInfoDto> {
@@ -82,7 +87,10 @@ export class UserService {
 			}
 		});
 
-		if (!user) throw new NotFoundException('User not found');
+		if (!user) {
+			this.logger.warn('User not found from session user ID', { userId: session.getUserId() });
+			throw new NotFoundException('User not found');
+		}
 
 		const updatedPayload: AccessTokenPayload = {
 			roles: user.roles,

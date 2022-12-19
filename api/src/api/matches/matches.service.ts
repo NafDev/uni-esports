@@ -1,12 +1,13 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import type { GameId } from '@uni-esports/interfaces';
 import { isBefore } from 'date-fns';
+import { LoggerService } from '../../common/logger-wrapper';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import type { CreateNewMatchDto } from './matches.dto';
 
 @Injectable()
 export class MatchService {
-	private readonly logger = new Logger(MatchService.name);
+	private readonly logger = new LoggerService(MatchService.name);
 
 	constructor(private readonly prisma: PrismaService) {}
 
@@ -17,18 +18,20 @@ export class MatchService {
 		});
 
 		if (resp.count === 0) {
-			this.logger.log({ msg: 'Scheduled match not found or is already being processed', matchId });
+			this.logger.log('Scheduled match not found or is already being processed', { matchId });
 			return;
 		}
 
-		this.logger.log({ msg: 'Scheduled match starting processing', matchId });
+		this.logger.log('Scheduled match starting processing', { matchId });
 
 		switch (gameId) {
 			case 'csgo':
 				// Call relevant services here
 				break;
 			default:
-				this.logger.warn({ msg: 'Unknown game ID', gameId });
+				this.logger.warn('Unknown game ID found while starting scheduled match - has been marked "Ongoing" anyway', {
+					gameId
+				});
 		}
 	}
 

@@ -1,6 +1,7 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
+import { LoggerService } from '../../../common/logger-wrapper';
 import { WEB_TEAM_INVITE } from '../../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../../db/prisma/prisma.errors';
 import { PrismaService } from '../../../db/prisma/prisma.service';
@@ -8,7 +9,7 @@ import { EmailTemplates, SmtpService } from '../../../email/smtp.service';
 
 @Injectable()
 export class TeamAdminService {
-	private readonly logger = new Logger(TeamAdminService.name);
+	private readonly logger = new LoggerService(TeamAdminService.name);
 
 	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
 
@@ -41,7 +42,7 @@ export class TeamAdminService {
 			link: `${WEB_TEAM_INVITE}?code=${team.inviteCode}`
 		});
 
-		this.logger.log(`Admin ${session.getUserId()} sent invite to user ${userId} for team ${teamId}`);
+		this.logger.log('Admin sent team invite to user', { adminId: session.getUserId(), userId, teamId });
 	}
 
 	async joinPlayerToTeam(teamId: number, userId: string, session: SessionContainer) {
@@ -81,7 +82,7 @@ export class TeamAdminService {
 			}
 		}
 
-		this.logger.log(`Admin ${session.getUserId()} joined player ${userId} to team ${teamId}`);
+		this.logger.log('Admin directly added player onto team', { adminId: session.getUserId(), userId, teamId });
 	}
 
 	async removePlayerFromTeam(teamId: number, userId: string, session: SessionContainer) {
@@ -93,7 +94,7 @@ export class TeamAdminService {
 			throw new BadRequestException('You must change the captain of the team before you can remove this player.');
 		}
 
-		this.logger.log(`Admin ${session.getUserId()} remove user ${userId} from team ${teamId}`);
+		this.logger.log('Admin removed player from team', { adminId: session.getUserId(), userId, teamId });
 	}
 
 	async changeCaptain(teamId: number, userId: string, session: SessionContainer) {
@@ -109,7 +110,7 @@ export class TeamAdminService {
 				})
 			]);
 
-			this.logger.log(`Admin ${session.getUserId()} changed captain to user ${userId} for team ${teamId}`);
+			this.logger.log('Admin manually changed captain of team', { adminId: session.getUserId(), userId, teamId });
 		} catch (error: unknown) {
 			if (error instanceof PrismaClientKnownRequestError) {
 				const [prismaError] = classifyPrismaError(error);
@@ -121,7 +122,7 @@ export class TeamAdminService {
 					case PrismaError.NOT_FOUND:
 						throw new NotFoundException();
 					default:
-						this.logger.error('Uncased known prisma error: ' + error.message, error.stack);
+						this.logger.error('Uncased known prisma error', { errorMsg: error.message }, error.stack);
 				}
 			}
 

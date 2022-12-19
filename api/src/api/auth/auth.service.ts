@@ -10,6 +10,7 @@ import axios from 'axios';
 import { compare, hash } from 'bcrypt';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
+import { LoggerService } from '../../common/logger-wrapper';
 import appConfig, { WEB_RESET_PASSWORD } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
@@ -21,7 +22,7 @@ import { STSession } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
-	private readonly logger = new Logger(AuthService.name);
+	private readonly logger = new LoggerService(AuthService.name);
 
 	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
 
@@ -81,7 +82,7 @@ export class AuthService {
 			});
 		}
 
-		this.logger.log(`User ${user.email} requested password reset`);
+		this.logger.log(`User requested password reset`, { userId: user.id });
 	}
 
 	async performPasswordReset(token: string, newPassword: string) {
@@ -98,7 +99,7 @@ export class AuthService {
 			data: { passwordHash: await hash(newPassword, appConfig.PASSWORD_SALT_ROUNDS), passwordResetToken: null }
 		});
 
-		this.logger.log(`User ${user.id} successfully performed password reset`);
+		this.logger.log(`User successfully performed password reset`, { userId: user.id });
 	}
 
 	async performChangePasswordRequest(session: SessionContainer, body: INewPasswordDto) {
@@ -111,7 +112,7 @@ export class AuthService {
 		});
 
 		if (!user) {
-			this.logger.error(`Unexpected not found user ${id}`);
+			this.logger.error(`Not found user ID on password change request`, { userId: id });
 			throw new InternalServerErrorException();
 		}
 

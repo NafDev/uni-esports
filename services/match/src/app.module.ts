@@ -11,7 +11,8 @@ import { MatchSchedulingModule } from './services/scheduling/match-scheduling.mo
 			useFactory() {
 				return {
 					pinoHttp: {
-						transport: { target: 'pino-pretty' }
+						transport: { target: 'pino-pretty' },
+						autoLogging: false
 					}
 				};
 			}

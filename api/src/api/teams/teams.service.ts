@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import type {
 	CreateTeamDto,
@@ -9,6 +9,7 @@ import type {
 	TeamListItemDto
 } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
+import { LoggerService } from '../../common/logger-wrapper';
 import { WEB_TEAM_INVITE } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
@@ -25,7 +26,7 @@ const TEAM_PUBLIC_DTO_SELECT = {
 
 @Injectable()
 export class TeamService {
-	private readonly logger = new Logger(TeamService.name);
+	private readonly logger = new LoggerService(TeamService.name);
 
 	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
 
@@ -174,7 +175,7 @@ export class TeamService {
 				select: TEAM_PUBLIC_DTO_SELECT
 			});
 
-			this.logger.log(`User ${session.getUserId()} created team "${teamName}"`);
+			this.logger.log(`User created team`, { userId: session.getUserId(), teamName });
 
 			const dto: TeamDto = {
 				id: team.id,
@@ -261,7 +262,7 @@ export class TeamService {
 
 		try {
 			await this.prisma.userOnTeam.create({ data: { teamId: team.id, userId: session.getUserId() } });
-			this.logger.log(`User ${session.getUserId()} joined team ${team.id}`);
+			this.logger.log(`User joined team`, { userId: session.getUserId(), teamId: team.id });
 		} catch (error: unknown) {
 			const [prismaError] = classifyPrismaError(error);
 			if (prismaError === PrismaError.CONSTRAINT_FAILED) {
@@ -286,7 +287,11 @@ export class TeamService {
 		const captain = userToKick.team.users.find((user) => user.captain);
 
 		if (isKick && captain?.userId !== session.getUserId()) {
-			this.logger.warn(`Unauthorised user ${session.getUserId()} attempted to kick user ${userId} from team ${teamId}`);
+			this.logger.warn(`Unauthorised user attempted to kick user from team`, {
+				sessionUserId: session.getUserId(),
+				kickUserId: userId,
+				teamId
+			});
 			throw new UnauthorizedException();
 		}
 

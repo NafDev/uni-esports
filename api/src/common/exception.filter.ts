@@ -1,19 +1,22 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ThrottlerException } from '@nestjs/throttler';
 import { capitalizeFirstLetter } from '../util/utility';
+import { LoggerService } from './logger-wrapper';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-	private readonly logger = new Logger(AllExceptionsFilter.name);
+	private readonly logger = new LoggerService(AllExceptionsFilter.name);
 
 	constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
 	catch(exception: unknown, host: ArgumentsHost): void {
 		if (exception instanceof HttpException) {
-			this.logger.error('Request error', exception.stack);
+			this.logger.log('Request error', { message: exception.message });
+		} else if (exception instanceof Error) {
+			this.logger.error('Uncaught error', { message: exception.message }, exception.stack);
 		} else {
-			this.logger.error('Uncaught error', exception);
+			this.logger.error('Uncaught error', { thrown: exception });
 		}
 
 		const { httpAdapter } = this.httpAdapterHost;
