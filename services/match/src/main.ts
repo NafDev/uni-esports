@@ -5,11 +5,14 @@ import { AppModule } from './app.module';
 import appConfig from './config/app.config';
 
 async function bootstrap() {
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+	appConfig;
 	const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
 		bufferLogs: true,
 		transport: Transport.NATS,
 		options: {
-			servers: appConfig.NATS_SERVER_URL
+			servers: appConfig.NATS_SERVER_URL,
+			queue: 'match_service'
 		}
 	});
 

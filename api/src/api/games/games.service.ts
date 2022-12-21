@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import type { CreateNewGameDto } from './games.dto';
 

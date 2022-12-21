@@ -1,15 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import type { GameId } from '@uni-esports/interfaces';
-import { isBefore } from 'date-fns';
+import type { GameId, MatchService as MatchServicePayload } from '@uni-esports/interfaces';
+import { add, isBefore } from 'date-fns';
+import { firstValueFrom } from 'rxjs';
+import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { LoggerService } from '../../common/logger-wrapper';
 import { PrismaService } from '../../db/prisma/prisma.service';
+import { NatsService } from '../../services/clients/nats.service';
 import type { CreateNewMatchDto } from './matches.dto';
 
 @Injectable()
 export class MatchService {
 	private readonly logger = new LoggerService(MatchService.name);
 
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly natsClient: NatsService) {}
 
 	async startScheduledMatch(matchId: string, gameId: GameId) {
 		const resp = await this.prisma.match.updateMany({
@@ -35,6 +38,35 @@ export class MatchService {
 		}
 	}
 
+	async fetchVetoStatus(matchId: string) {
+		type MessageReturn = MatchServicePayload['match.veto.status']['res'];
+		const source = this.natsClient.send<MessageReturn>('match.veto.status', { matchId });
+
+		return firstValueFrom(source);
+	}
+
+	async publishVetoRequest(payload: MatchServicePayload['match.veto._gameId.request'], gameId: GameId) {
+		this.natsClient.emit(`match.veto.${gameId}.request`, { ...payload });
+	}
+
+	async validateUserVetoRequest(matchId: string, teamId: number, veto: string, session: SessionContainer) {
+		const found = await this.prisma.userOnTeam.count({
+			where: {
+				userId: session.getUserId(),
+				teamId,
+				captain: true,
+				team: {
+					matches: { some: { matchId } }
+				}
+			}
+		});
+
+		if (found !== 1) {
+			this.logger.warn('Received invalid veto request', { userId: session.getUserId(), matchId, teamId, veto });
+			throw new BadRequestException();
+		}
+	}
+
 	async createNewMatch(matchDto: CreateNewMatchDto) {
 		await this.validateMatchDto(matchDto);
 
@@ -53,8 +85,8 @@ export class MatchService {
 	}
 
 	private async validateMatchDto(matchDto: CreateNewMatchDto) {
-		if (isBefore(matchDto.scheduledStart, Date.now())) {
-			throw new BadRequestException('Match must be scheduled in the future');
+		if (isBefore(matchDto.scheduledStart, add(Date.now(), { days: 1 }))) {
+			throw new BadRequestException('Match must be scheduled at least 24 hours from now');
 		}
 
 		const game = await this.prisma.game.findUnique({

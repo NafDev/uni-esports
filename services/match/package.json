@@ -16,6 +16,7 @@
 		"@uni-esports/interfaces": "workspace:0.0.1",
 		"date-fns": "^2.29.3",
 		"envalid": "^7.3.1",
+		"ms": "3.0.0-canary.1",
 		"nats": "^2.9.2",
 		"nestjs-pino": "^3.1.1",
 		"pino-http": "^8.3.0",
