@@ -1,7 +1,7 @@
 datasource db {
   provider   = "postgres"
   url        = env("DATABASE_URI")
-  extensions = [citext]
+  extensions = [citext, pgcrypto]
 }
 
 generator client {
@@ -34,7 +34,7 @@ enum Day {
 }
 
 model User {
-  id                 String   @id @default(uuid()) @db.Uuid
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email              String   @unique
   passwordHash       String?  @map("password_hash")
   passwordResetToken String?  @unique @map("password_hash_token")
@@ -156,7 +156,7 @@ enum MatchStatus {
 }
 
 model Match {
-  id String @id @default(uuid()) @db.Uuid
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   gameId    String      @map("game_id")
   status    MatchStatus
