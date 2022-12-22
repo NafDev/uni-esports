@@ -18,10 +18,9 @@ enum Role {
   MODERATOR
 }
 
-// Must be indentical to user attribute names
 enum LinkedIdentities {
-  steam64Id
-  discordId
+  steam64
+  discord
 }
 
 enum Day {
@@ -37,15 +36,15 @@ enum Day {
 model User {
   id                 String   @id @default(uuid()) @db.Uuid
   email              String   @unique
-  passwordHash       String?
-  passwordResetToken String?  @unique
+  passwordHash       String?  @map("password_hash")
+  passwordResetToken String?  @unique @map("password_hash_token")
   verified           Boolean  @default(false)
   username           String   @unique @db.Citext
-  createdAt          DateTime @default(now()) @db.Timestamptz()
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz()
   roles              Role[]
-  universityId       Int?
-  steam64Id          String?  @unique
-  discordId          String?  @unique
+  universityId       Int?     @map("university_id")
+  steam64Id          String?  @unique @map("steam_64_id")
+  discordId          String?  @unique @map("discord_id")
 
   university University?  @relation(fields: [universityId], references: [id])
   teams      UserOnTeam[]
@@ -66,21 +65,21 @@ model University {
 
 model UniversityDomain {
   domain       String @unique
-  universityId Int
+  universityId Int    @map("university_id")
 
   university University @relation(fields: [universityId], references: [id])
 
   @@id([domain, universityId])
-  @@map("universityDomain")
+  @@map("university_domain")
 }
 
 model Team {
   id           Int      @id @default(autoincrement())
   name         String   @db.Citext
-  universityId Int
-  inviteCode   String?  @unique
+  universityId Int      @map("university_id")
+  inviteCode   String?  @unique @map("invite_code")
   active       Boolean  @default(true)
-  createdAt    DateTime @default(now()) @db.Timestamptz()
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
 
   university  University         @relation(fields: [universityId], references: [id])
   users       UserOnTeam[]
@@ -95,13 +94,13 @@ model UserOnTeam {
   user      User     @relation(fields: [userId], references: [id])
   team      Team     @relation(fields: [teamId], references: [id])
   captain   Boolean  @default(false)
-  createdAt DateTime @default(now()) @db.Timestamptz()
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
 
-  userId String @db.Uuid
-  teamId Int
+  userId String @map("user_id") @db.Uuid
+  teamId Int    @map("team_id")
 
   @@id([userId, teamId])
-  @@map("teamUser")
+  @@map("team_user")
 }
 
 enum TournamentStatus {
@@ -113,9 +112,9 @@ enum TournamentStatus {
 
 model Tournament {
   id             Int      @id @default(autoincrement())
-  gameId         String
-  matchStartTime DateTime @db.Timestamptz()
-  matchDay       Day
+  gameId         String   @map("game_id")
+  matchStartTime DateTime @map("match_start_time") @db.Timestamptz()
+  matchDay       Day      @map("match_day")
 
   game  Game               @relation(fields: [gameId], references: [id])
   state TournamentStatus
@@ -127,20 +126,21 @@ model Tournament {
 model TeamOnTournament {
   team         Team       @relation(fields: [teamId], references: [id])
   tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  teamId       Int
-  tournamentId Int
-  createdAt    DateTime   @default(now()) @db.Timestamptz()
+  teamId       Int        @map("team_id")
+  tournamentId Int        @map("tournament_id")
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz()
 
   @@id([teamId, tournamentId])
-  @@map("tournamentTeam")
+  @@map("tournament_team")
 }
 
 model Game {
   id             String             @id @unique
-  displayName    String
-  teamsPerMatch  Int
-  playersPerTeam Int
-  requiredIds    LinkedIdentities[]
+  displayName    String             @map("display_name")
+  teamsPerMatch  Int                @map("teams_per_match")
+  playersPerTeam Int                @map("players_per_team")
+  hasVeto        Boolean            @map("has_veto")
+  requiredIds    LinkedIdentities[] @map("required_ids")
 
   tournaments Tournament[]
   match       Match[]
@@ -150,6 +150,7 @@ model Game {
 
 enum MatchStatus {
   Scheduled
+  Setup
   Ongoing
   Completed
 }
@@ -157,23 +158,44 @@ enum MatchStatus {
 model Match {
   id String @id @default(uuid()) @db.Uuid
 
-  gameId    String
+  gameId    String      @map("game_id")
   status    MatchStatus
-  startTime DateTime    @default(now()) @db.Timestamptz()
+  startTime DateTime    @default(now()) @map("start_time") @db.Timestamptz()
 
-  game  Game          @relation(fields: [gameId], references: [id])
-  teams TeamOnMatch[]
+  game Game @relation(fields: [gameId], references: [id])
+
+  teams            TeamOnMatch[]
+  matchDetailsCsgo MatchDetailsCsgo[] @ignore
 
   @@map("match")
 }
 
 model TeamOnMatch {
-  teamId  Int
-  matchId String @db.Uuid
+  id Int @unique @default(autoincrement())
+
+  teamId     Int    @map("team_id")
+  matchId    String @map("match_id") @db.Uuid
+  teamNumber Int    @map("team_number")
 
   team  Team  @relation(fields: [teamId], references: [id])
   match Match @relation(fields: [matchId], references: [id])
 
-  @@id([teamId, matchId])
-  @@map("matchTeam")
+  @@unique([teamId, matchId])
+  @@map("match_team")
+}
+
+model MatchDetailsCsgo {
+  id      Int    @unique @default(autoincrement())
+  matchId String @unique @db.Uuid
+
+  map        String?
+  team1score Int     @default(0) @map("team_1_score")
+  team2score Int     @default(0) @map("team_2_score")
+
+  team1steamIds String[] @map("team_1_steam_ids")
+  team2steamIds String[] @map("team_2_steam_ids")
+
+  match Match @relation(fields: [matchId], references: [id])
+
+  @@map("match_details_csgo")
 }

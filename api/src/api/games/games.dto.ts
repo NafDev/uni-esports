@@ -1,5 +1,5 @@
 import { LinkedIdentities } from '@prisma/client';
-import { IsAlphanumeric, IsArray, IsIn, IsOptional, IsPositive, IsString } from 'class-validator';
+import { IsAlphanumeric, IsArray, IsBoolean, IsIn, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class CreateNewGameDto {
 	@IsAlphanumeric()
@@ -13,6 +13,9 @@ export class CreateNewGameDto {
 
 	@IsPositive()
 	teamsPerMatch!: number;
+
+	@IsBoolean()
+	hasVeto!: boolean;
 
 	@IsArray()
 	@IsIn(Object.values(LinkedIdentities), { each: true })
