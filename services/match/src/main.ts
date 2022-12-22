@@ -5,8 +5,6 @@ import { AppModule } from './app.module';
 import appConfig from './config/app.config';
 
 async function bootstrap() {
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-	appConfig;
 	const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
 		bufferLogs: true,
 		transport: Transport.NATS,

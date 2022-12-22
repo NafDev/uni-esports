@@ -164,7 +164,7 @@ export class VetoService {
 		const { veto, matchId, teamId } = vetoRequestPayload;
 		const { vetoed } = vetoHistory;
 
-		const remainingMaps = optionPool.filter((map) => !vetoed.includes(map));
+		const remainingMaps = optionPool.filter((option) => !vetoed.includes(option));
 
 		if (remainingMaps.length <= 1) {
 			this.logger.error('Error while processing veto: received request for a completed veto', { matchId, teamId });
