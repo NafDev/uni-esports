@@ -16,17 +16,22 @@ export interface MatchService {
 	};
 	'match.veto._gameId.start': {
 		matchId: string;
-		teamAid: string;
-		teamBid: string;
+		teamAid: number;
+		teamBid: number;
 	};
 	'match.veto._gameId.request': {
 		matchId: string;
-		teamId: string;
+		teamId: number;
 		veto: string;
 	};
-	'match.veto._gameId.update': {
+	'match.veto.update': {
 		matchId: string;
 		vetoed: string;
 		time: string;
 	};
+	'match.veto.result': {
+		matchId: string;
+		result: string;
+		gameId: GameId;
+	}
 }

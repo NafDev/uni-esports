@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, MessageEvent } from '@nestjs/common';
 import type { GameId, MatchService as MatchServicePayload } from '@uni-esports/interfaces';
 import { add, isBefore } from 'date-fns';
-import { firstValueFrom } from 'rxjs';
+import { nanoid } from 'nanoid';
+import { firstValueFrom, Observable, Subject } from 'rxjs';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { LoggerService } from '../../common/logger-wrapper';
 import { PrismaService } from '../../db/prisma/prisma.service';
@@ -12,30 +13,25 @@ import type { CreateNewMatchDto } from './matches.dto';
 export class MatchService {
 	private readonly logger = new LoggerService(MatchService.name);
 
+	private readonly matchEventHandler = new Map<string, Subject<MessageEvent>>();
+
 	constructor(private readonly prisma: PrismaService, private readonly natsClient: NatsService) {}
 
-	async startScheduledMatch(matchId: string, gameId: GameId) {
-		const resp = await this.prisma.match.updateMany({
-			where: { id: matchId, status: 'Scheduled' },
-			data: { status: 'Ongoing' }
+	async scheduledNewMatch(matchDto: CreateNewMatchDto) {
+		await this.validateMatchDto(matchDto);
+
+		const match = await this.prisma.match.create({
+			data: {
+				gameId: matchDto.gameId,
+				status: 'Scheduled',
+				startTime: matchDto.scheduledStart,
+				teams: {
+					create: matchDto.teams.map((teamId, index) => ({ teamId, teamNumber: index + 1 }))
+				}
+			}
 		});
 
-		if (resp.count === 0) {
-			this.logger.log('Scheduled match not found or is already being processed', { matchId });
-			return;
-		}
-
-		this.logger.log('Scheduled match starting processing', { matchId });
-
-		switch (gameId) {
-			case 'csgo':
-				// Call relevant services here
-				break;
-			default:
-				this.logger.warn('Unknown game ID found while starting scheduled match - has been marked "Ongoing" anyway', {
-					gameId
-				});
-		}
+		return match;
 	}
 
 	async fetchVetoStatus(matchId: string) {
@@ -45,18 +41,20 @@ export class MatchService {
 		return firstValueFrom(source);
 	}
 
-	async publishVetoRequest(payload: MatchServicePayload['match.veto._gameId.request'], gameId: GameId) {
-		this.natsClient.emit(`match.veto.${gameId}.request`, { ...payload });
-	}
+	async validateAndSendUserVetoRequest(
+		props: { matchId: string; teamId: number; veto: string; gameId: GameId },
+		session: SessionContainer
+	) {
+		const { matchId, teamId, veto, gameId } = props;
 
-	async validateUserVetoRequest(matchId: string, teamId: number, veto: string, session: SessionContainer) {
-		const found = await this.prisma.userOnTeam.count({
+		const found = await this.prisma.teamOnMatch.count({
 			where: {
-				userId: session.getUserId(),
+				matchId,
 				teamId,
-				captain: true,
 				team: {
-					matches: { some: { matchId } }
+					users: {
+						some: { userId: session.getUserId(), captain: true }
+					}
 				}
 			}
 		});
@@ -65,23 +63,41 @@ export class MatchService {
 			this.logger.warn('Received invalid veto request', { userId: session.getUserId(), matchId, teamId, veto });
 			throw new BadRequestException();
 		}
+
+		void this.publishVetoRequest({ matchId, teamId, veto }, gameId);
 	}
 
-	async createNewMatch(matchDto: CreateNewMatchDto) {
-		await this.validateMatchDto(matchDto);
+	matchEvents(matchId: string): Observable<MessageEvent> {
+		let stream = this.matchEventHandler.get(matchId);
 
-		const match = await this.prisma.match.create({
-			data: {
-				gameId: matchDto.gameId,
-				status: 'Scheduled',
-				startTime: matchDto.scheduledStart,
-				teams: {
-					create: matchDto.teams.map((teamId) => ({ teamId }))
-				}
-			}
-		});
+		if (!stream) {
+			this.matchEventHandler.set(matchId, new Subject());
+			stream = this.matchEventHandler.get(matchId);
+		}
 
-		return match;
+		if (!stream) {
+			this.logger.error('Error while retrieving match event stream - value is undefined for match ID', { matchId });
+			throw new InternalServerErrorException();
+		}
+
+		return stream.asObservable();
+	}
+
+	broadcastMatchEvent(matchId: string, data: MessageEvent) {
+		const stream = this.matchEventHandler.get(matchId);
+
+		if (!stream) {
+			this.logger.log('Received match event but no stream present to broadcast to', { matchId, eventData: data });
+			return;
+		}
+
+		data = { ...data, id: nanoid() };
+
+		stream.next(data);
+	}
+
+	private async publishVetoRequest(payload: MatchServicePayload['match.veto._gameId.request'], gameId: GameId) {
+		this.natsClient.emit(`match.veto.${gameId.toLowerCase()}.request`, { ...payload });
 	}
 
 	private async validateMatchDto(matchDto: CreateNewMatchDto) {

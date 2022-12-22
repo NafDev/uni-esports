@@ -7,7 +7,7 @@ export class DatabaseService {
 	private readonly pgInstance: postgres.Sql;
 
 	constructor() {
-		this.pgInstance = postgres(appConfig.DATABASE_URI, {});
+		this.pgInstance = postgres(appConfig.DATABASE_URI, { transform: postgres.camel });
 	}
 
 	get query() {

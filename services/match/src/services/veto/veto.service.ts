@@ -13,10 +13,11 @@ type VetoStartPayload = MatchService['match.veto._gameId.start'] & { gameId: Gam
 type VetoHistoryValue = {
 	vetoed: string[];
 	remaining: string[];
-	teamAid: string;
-	teamBid: string;
-	lastVetoTeamId: string;
+	teamAid: number;
+	teamBid: number;
+	lastVetoTeamId: number;
 	lastVetoTime: Date;
+	gameId: GameId;
 };
 
 @Injectable()
@@ -46,7 +47,8 @@ export class VetoService {
 			lastVetoTime: new Date(),
 			lastVetoTeamId: data.teamBid,
 			teamAid: data.teamAid,
-			teamBid: data.teamBid
+			teamBid: data.teamBid,
+			gameId: data.gameId
 		});
 	}
 
@@ -72,6 +74,16 @@ export class VetoService {
 
 		if (currentVetoHistory.vetoed.includes(veto)) {
 			this.logger.warn('Error when processing veto: choice is already vetoed', { matchId, teamId, veto });
+			return;
+		}
+
+		if (currentVetoHistory.gameId !== gameId) {
+			this.logger.warn('Error when processing veto: game ID mismatch', {
+				matchId,
+				teamId,
+				gameId,
+				expectedGameId: currentVetoHistory.gameId
+			});
 			return;
 		}
 
@@ -102,13 +114,13 @@ export class VetoService {
 			this.schedulerRegistry.deleteTimeout(timeoutId);
 
 			if (updatedVetoHistory.vetoed.length === 1) {
-				this.endVeto(matchId, updatedVetoHistory.vetoed[0]);
+				this.endVeto({ matchId, result: updatedVetoHistory.vetoed[0], gameId });
 				return;
 			}
 
 			this.scheduleRandomVote(matchId, gameId, timeoutId, updatedVetoHistory);
 
-			const emitVetoUpdate: MatchService['match.veto._gameId.update'] = {
+			const emitVetoUpdate: MatchService['match.veto.update'] = {
 				matchId,
 				time: updatedVetoHistory.lastVetoTime.toISOString(),
 				vetoed: veto
@@ -117,12 +129,10 @@ export class VetoService {
 		}
 	}
 
-	endVeto(matchId: string, result: string) {
-		this.natsClient.emit('match.veto.result', { matchId, result });
+	endVeto(data: MatchService['match.veto.result']) {
+		this.natsClient.emit('match.veto.result', data);
 
-		// Probably add result to some DB row here
-
-		setTimeout(() => this.vetoHistory.delete(matchId), appConfig.VETO_RESULT_TTL);
+		setTimeout(() => this.vetoHistory.delete(data.matchId), appConfig.VETO_RESULT_TTL);
 	}
 
 	scheduleRandomVote(matchId: string, gameId: string, timeoutId: string, vetoHistory: VetoHistoryValue) {

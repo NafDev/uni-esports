@@ -1,21 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import type { GameId } from '@uni-esports/interfaces';
+import type { GameId, MatchService } from '@uni-esports/interfaces';
 import { add, formatISO } from 'date-fns';
 import { PostgresError } from 'postgres';
-import { LoggerService } from '../../common/logger-wrapper';
+import { LoggerService, logPostgresError } from '../../common/logger-wrapper';
 import { DatabaseService } from '../../db/db.service';
-import { MatchSchedulingPublisher } from './match-scheduling.publisher';
+import { NatsService } from '../clients/nats.service';
+import { MatchOrchestrationService } from '../match-orchestration/match-orchestration.service';
 import type { Match } from './scheduling';
 
 @Injectable()
 export class MatchSchedulingService {
 	private readonly logger = new LoggerService(MatchSchedulingService.name);
 
+	private readonly queuedMatches = new Map<string, Match>();
+
 	constructor(
 		private readonly db: DatabaseService,
+		private readonly natsClient: NatsService,
 		private readonly schedulerRegistry: SchedulerRegistry,
-		private readonly schedulingPublisher: MatchSchedulingPublisher
+		private readonly matchOrchestration: MatchOrchestrationService
 	) {}
 
 	@Cron(CronExpression.EVERY_DAY_AT_1AM)
@@ -28,17 +32,17 @@ export class MatchSchedulingService {
 			this.logger.log(`Found ${matches.length} matches to be added to queue`);
 
 			for (const match of matches) {
-				const existingKey = this.schedulingPublisher.queuedMatches.get(match.id);
+				const existingKey = this.queuedMatches.get(match.id);
 
 				if (existingKey) {
 					this.logger.warn(`Existing match ID key in queued matches map`, { matchId: match.id });
 					continue;
 				}
 
-				this.schedulingPublisher.queuedMatches.set(match.id, match);
+				this.queuedMatches.set(match.id, match);
 
 				const callback = async () => {
-					this.schedulingPublisher.publishQueuedGame({ matchId: match.id, gameId: match.gameId as GameId });
+					this.publishQueuedGame({ matchId: match.id, gameId: match.gameId as GameId });
 					this.schedulerRegistry.deleteTimeout(`queued-match-${match.id}`);
 				};
 
@@ -57,7 +61,28 @@ export class MatchSchedulingService {
 		void this.queueUpcomingMatches();
 	}
 
+	publishQueuedGame(data: MatchService['match.start']) {
+		const match = this.queuedMatches.get(data.matchId);
+
+		if (!match) {
+			this.logger.warn('Unknown ID while attempting to publish match start event - will not be sent.', {
+				matchId: data.matchId
+			});
+			return;
+		}
+
+		void this.natsClient.emit('match.start', data);
+
+		this.queuedMatches.delete(match.id);
+	}
+
+	processMatchStartEvent(data: MatchService['match.start']) {
+		void this.matchOrchestration.startMatch(data);
+	}
+
 	async pollScheduledMatches() {
+		const sql = this.db.query;
+
 		const now = formatISO(new Date());
 		const nowPlus24 = formatISO(add(new Date(), { days: 1 }));
 
@@ -66,24 +91,16 @@ export class MatchSchedulingService {
 		try {
 			rows = await this.db.query`
 				select
-					*
+					${sql(['id', 'gameId', 'startTime', 'status'])}
 				from match
 				where
-					"startTime" > ${now}
-					and "startTime" < ${nowPlus24}
-					and "status" != ${'Ongoing'}
+					${sql('startTime')} > ${now}
+					and ${sql('startTime')} < ${nowPlus24}
+					and ${sql('status')} = ${'Scheduled'}
 			`;
-
-			if (rows.length === 0) {
-				return null;
-			}
 		} catch (error: unknown) {
 			if (error instanceof PostgresError) {
-				this.logger.error(
-					'Error while polling for scheduled games',
-					{ query: error.internal_query, message: error.message },
-					error.stack
-				);
+				logPostgresError(error, this.logger);
 				return;
 			}
 

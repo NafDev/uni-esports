@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MatchService } from './matches.service';
+import { MatchController } from './matches.controller';
 
 @Module({
-	controllers: [],
+	controllers: [MatchController],
 	providers: [MatchService],
 	exports: [MatchService]
 })

@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import type { PostgresError } from 'postgres';
 
 type Log = [message: string, metadata?: Record<string, any>];
 
@@ -28,4 +29,8 @@ export class LoggerService {
 	error(message: string, metadata?: Record<string, any>, stack?: string) {
 		this.nestLogger.error({ msg: message, metadata }, stack);
 	}
+}
+
+export function logPostgresError(error: PostgresError, logger: LoggerService) {
+	logger.error('PostgresError', { err: { ...error, stack: undefined } }, error.stack);
 }
