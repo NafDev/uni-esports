@@ -14,6 +14,7 @@ specifiers:
   date-fns: ^2.29.3
   dotenv: ^16.0.1
   envalid: ^7.3.1
+  ms: 3.0.0-canary.1
   nats: ^2.9.2
   nestjs-pino: ^3.1.1
   nodemon: ^2.0.20
@@ -38,6 +39,7 @@ dependencies:
   '@uni-esports/interfaces': link:../../interfaces
   date-fns: 2.29.3
   envalid: 7.3.1
+  ms: 3.0.0-canary.1
   nats: 2.9.2
   nestjs-pino: 3.1.1_k7wt3lqunl6v7sj6psdgp67dpe
   pino-http: 8.3.0
@@ -3336,6 +3338,11 @@ packages:
 
   /ms/2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
+
+  /ms/3.0.0-canary.1:
+    resolution: {integrity: sha512-kh8ARjh8rMN7Du2igDRO9QJnqCb2xYTJxyQYK7vJJS4TvLLmsbyhiKpSW+t+y26gyOyMd0riphX0GeWKU3ky5g==}
+    engines: {node: '>=12.13'}
+    dev: false
 
   /mute-stream/0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}

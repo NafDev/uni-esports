@@ -3,7 +3,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { DatabaseModule } from './db/db.module';
 import { NatsModule } from './services/clients/nats.module';
-import { MatchSchedulingModule } from './services/scheduling/match-scheduling.module';
+import { MatchSchedulingModule } from './services/match-scheduling/match-scheduling.module';
+import { VetoModule } from './services/veto/veto.module';
+import { MatchOrchestrationModule } from './services/match-orchestration/match-orchestration.module';
 
 @Module({
 	imports: [
@@ -20,7 +22,9 @@ import { MatchSchedulingModule } from './services/scheduling/match-scheduling.mo
 		ScheduleModule.forRoot(),
 		DatabaseModule,
 		NatsModule,
-		MatchSchedulingModule
+		MatchSchedulingModule,
+		VetoModule,
+		MatchOrchestrationModule
 	],
 	controllers: [],
 	providers: []

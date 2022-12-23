@@ -25,3 +25,17 @@ export class Deferred {
 		});
 	}
 }
+
+export function stripEmptyStrings(obj: Record<string, any>) {
+	const newObj = {};
+
+	for (const [k, v] of Object.entries(obj)) {
+		if (typeof v === 'string' && v.length === 0) {
+			continue;
+		}
+
+		newObj[`${k}`] = v;
+	}
+
+	return newObj;
+}

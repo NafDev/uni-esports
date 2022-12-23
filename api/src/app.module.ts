@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { AdminModule } from './api/admin/admin.module';
 import { AuthModule } from './api/auth/auth.module';
+import { GameModule } from './api/games/games.module';
 import { TeamModule } from './api/teams/teams.module';
 import { UniversityModule } from './api/universities/uni.module';
 import { UserModule } from './api/users/users.module';
@@ -38,7 +39,8 @@ import { MatchSchedulingModule } from './services/match-scheduling/match-schedul
 		UniversityModule,
 		EmailModule,
 		AdminModule,
-		MatchSchedulingModule
+		MatchSchedulingModule,
+		GameModule
 	],
 	providers: [PrismaService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 	controllers: [AppController]

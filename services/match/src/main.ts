@@ -9,7 +9,8 @@ async function bootstrap() {
 		bufferLogs: true,
 		transport: Transport.NATS,
 		options: {
-			servers: appConfig.NATS_SERVER_URL
+			servers: appConfig.NATS_SERVER_URL,
+			queue: 'match_service'
 		}
 	});
 
