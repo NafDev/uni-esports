@@ -1,8 +1,9 @@
-import type { GameId, VetoRequest } from '@uni-esports/interfaces';
+import { MatchStatus } from '@prisma/client';
+import type { GameId, IMatchSearchQuery, VetoRequest, ICreateNewMatch } from '@uni-esports/interfaces';
 import { Transform } from 'class-transformer';
-import { IsAlphanumeric, IsArray, IsDateString, IsOptional, IsPositive, IsString } from 'class-validator';
+import { IsAlphanumeric, IsArray, IsDate, IsIn, IsOptional, IsPositive, IsString, IsUUID } from 'class-validator';
 
-export class CreateNewMatchDto {
+export class CreateNewMatchDto implements ICreateNewMatch {
 	@IsAlphanumeric()
 	gameId!: string;
 
@@ -12,10 +13,10 @@ export class CreateNewMatchDto {
 
 	@IsPositive({ each: true })
 	@IsArray()
-	teams!: number[];
+	teamIds!: number[];
 
-	@Transform((prop) => new Date(prop as unknown as string))
-	@IsDateString()
+	@Transform((prop) => new Date(prop.value))
+	@IsDate()
 	scheduledStart!: Date;
 }
 
@@ -29,4 +30,30 @@ export class VetoRequestBody implements VetoRequest {
 
 	@Transform((gameId) => gameId.value.toLowerCase())
 	gameId!: GameId;
+}
+
+export class MatchSearchFilters implements IMatchSearchQuery {
+	@Transform((attr) => attr.value.trim())
+	@IsUUID()
+	@IsOptional()
+	id?: string;
+
+	@IsString()
+	@IsOptional()
+	gameId?: GameId;
+
+	@Transform((attr) => new Date(attr.value))
+	@IsDate()
+	@IsOptional()
+	startTimeLowerLimit?: Date;
+
+	@Transform((attr) => new Date(attr.value))
+	@IsDate()
+	@IsOptional()
+	startTimeUpperLimit?: Date;
+
+	@IsIn(Object.values(MatchStatus))
+	@IsString()
+	@IsOptional()
+	status?: MatchStatus;
 }

@@ -5,3 +5,43 @@ export interface VetoRequest {
 	veto: string;
 	gameId: GameId;
 }
+
+export interface IMatchListItem {
+	id: string;
+	gameId: string;
+	startTime: Date;
+	status: string;
+}
+
+export interface IMatchSearchQuery {
+	id?: string;
+	gameId?: string;
+	status?: string,
+	startTimeLowerLimit?: Date;
+	startTimeUpperLimit?: Date;
+}
+
+export interface IMatchInfo {
+	id: string;
+	gameId: string;
+	status: string;
+	startTime: Date;
+	teams: {
+		id: number;
+		name: string;
+		teamNumber: number;
+	}[];
+}
+
+export type IMatchDetailsCsgo = IMatchInfo & {
+	map: string | null;
+	team1Score: number;
+	team2Score: number;
+}
+
+export interface ICreateNewMatch {
+	gameId: string;
+	tournamentId?: number;
+	teamIds: number[];
+	scheduledStart: Date;
+}

@@ -11,4 +11,22 @@ export class GameService {
 			data: { ...newGameDto }
 		});
 	}
+
+	async getGameList() {
+		return this.prisma.game.findMany({
+			select: { id: true, displayName: true }
+		});
+	}
+
+	async checkCsgoTeamValidity(teamId: number) {
+		const checkValidatedSteamLinkedUsers = await this.prisma.user.count({
+			where: {
+				verified: true,
+				steam64Id: { not: null },
+				teams: { some: { teamId } }
+			}
+		});
+
+		return checkValidatedSteamLinkedUsers >= 5;
+	}
 }

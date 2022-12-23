@@ -28,9 +28,9 @@
 		initialValue: uniDetails.name
 	});
 
-	const [domainInput, domainHelper] = inputHandler<string>();
+	const [domainInput] = inputHandler<string>();
 
-	async function doActionWithConfirm<T extends (...params: Parameters<T>) => Promise<any>>(
+	async function doActionWithConfirm<T extends (...params: Parameters<T>) => Promise<unknown>>(
 		props: typeof modalProps,
 		action: T,
 		...params: Parameters<T>

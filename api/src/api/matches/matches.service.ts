@@ -1,5 +1,17 @@
-import { BadRequestException, Injectable, InternalServerErrorException, MessageEvent } from '@nestjs/common';
-import type { GameId, MatchService as MatchServicePayload } from '@uni-esports/interfaces';
+import {
+	BadRequestException,
+	Injectable,
+	InternalServerErrorException,
+	MessageEvent,
+	NotFoundException
+} from '@nestjs/common';
+import type { Match } from '@prisma/client';
+import type {
+	GameId,
+	IMatchDetailsCsgo,
+	IMatchInfo,
+	MatchService as MatchServicePayload
+} from '@uni-esports/interfaces';
 import { add, isBefore } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { firstValueFrom, Observable, Subject } from 'rxjs';
@@ -17,21 +29,52 @@ export class MatchService {
 
 	constructor(private readonly prisma: PrismaService, private readonly natsClient: NatsService) {}
 
-	async scheduledNewMatch(matchDto: CreateNewMatchDto) {
-		await this.validateMatchDto(matchDto);
-
-		const match = await this.prisma.match.create({
-			data: {
-				gameId: matchDto.gameId,
-				status: 'Scheduled',
-				startTime: matchDto.scheduledStart,
+	async getMatchInfo(id: string) {
+		const match = await this.prisma.match.findUnique({
+			where: { id },
+			include: {
 				teams: {
-					create: matchDto.teams.map((teamId, index) => ({ teamId, teamNumber: index + 1 }))
+					select: {
+						team: { select: { id: true, name: true } },
+						teamNumber: true
+					}
 				}
 			}
 		});
 
-		return match;
+		if (!match) {
+			throw new NotFoundException();
+		}
+
+		const matchCleaned = {
+			...match,
+			teams: match.teams.map((team) => ({ ...team.team, teamNumber: team.teamNumber }))
+		};
+
+		switch (match.gameId as GameId) {
+			case 'csgo':
+				return this.getCsgoMatchDetails(matchCleaned);
+			default:
+				this.logger.warn('Unknown game ID when fetching match details', { matchId: id });
+				break;
+		}
+	}
+
+	async getCsgoMatchDetails(
+		match: Match & { teams: Array<{ id: number; name: string; teamNumber: number }> }
+	): Promise<IMatchInfo | IMatchDetailsCsgo> {
+		const matchDetails = await this.prisma.matchDetailsCsgo.findUnique({ where: { matchId: match.id } });
+
+		if (!matchDetails) {
+			return match;
+		}
+
+		return {
+			...match,
+			map: matchDetails.map,
+			team1Score: matchDetails.team1score,
+			team2Score: matchDetails.team2score
+		};
 	}
 
 	async fetchVetoStatus(matchId: string) {
@@ -98,24 +141,5 @@ export class MatchService {
 
 	private async publishVetoRequest(payload: MatchServicePayload['match.veto._gameId.request'], gameId: GameId) {
 		this.natsClient.emit(`match.veto.${gameId.toLowerCase()}.request`, { ...payload });
-	}
-
-	private async validateMatchDto(matchDto: CreateNewMatchDto) {
-		if (isBefore(matchDto.scheduledStart, add(Date.now(), { days: 1 }))) {
-			throw new BadRequestException('Match must be scheduled at least 24 hours from now');
-		}
-
-		const game = await this.prisma.game.findUnique({
-			where: { id: matchDto.gameId },
-			select: { teamsPerMatch: true }
-		});
-
-		if (!game) {
-			throw new BadRequestException('Invalid game ID');
-		}
-
-		if (game.teamsPerMatch === matchDto.teams.length) {
-			throw new BadRequestException('Invalid number of teams for this match');
-		}
 	}
 }

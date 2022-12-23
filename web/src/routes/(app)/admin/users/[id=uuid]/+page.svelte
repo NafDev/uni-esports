@@ -31,7 +31,7 @@
 		validator: (value) => USERNAME_CHECK.test(value)
 	});
 
-	async function doActionWithConfirm<T extends (...params: Parameters<T>) => Promise<any>>(
+	async function doActionWithConfirm<T extends (...params: Parameters<T>) => Promise<unknown>>(
 		props: typeof modalProps,
 		action: T,
 		...params: Parameters<T>

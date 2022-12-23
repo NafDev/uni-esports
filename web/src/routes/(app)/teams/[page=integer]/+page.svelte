@@ -7,7 +7,7 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	const { team, isCaptain, isTeamMember } = data;
+	const { team, isCaptain } = data;
 
 	let playerSearch = '';
 	let playerSearchIsLoading = false;

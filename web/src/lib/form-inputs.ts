@@ -11,7 +11,7 @@ interface InputHandlerParameters<T> {
 	validator?: (newValue: T) => boolean;
 }
 
-export function inputHandler<T extends string | number | boolean>(
+export function inputHandler<T extends string | number | boolean | Date>(
 	parameters: InputHandlerParameters<T> = {}
 ): [WritableAtom<{ value: T; isValid: boolean }>, InputHandler] {
 	const { initialValue = '', errorText = '', validator = () => true } = parameters;
@@ -24,7 +24,7 @@ export function inputHandler<T extends string | number | boolean>(
 		let isValid: boolean;
 		const prevState = state.get();
 
-		if (!submit && prevState.value === '') {
+		if (prevState.value === '' && submit === false) {
 			isValid = true;
 		} else {
 			isValid = validator(prevState.value);

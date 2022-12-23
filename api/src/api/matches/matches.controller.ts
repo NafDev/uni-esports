@@ -16,6 +16,11 @@ export class MatchController {
 		return this.matchService.matchEvents(matchId);
 	}
 
+	@Get(':id')
+	async getMatchInfo(@Param('id', ParseUUIDPipe) id: string) {
+		return this.matchService.getMatchInfo(id);
+	}
+
 	@Get(':id/veto/status')
 	async getVetoStatus(@Param('id', ParseUUIDPipe) matchId: string) {
 		return this.matchService.fetchVetoStatus(matchId);
