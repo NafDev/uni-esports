@@ -14,7 +14,6 @@ specifiers:
   '@uni-esports/interfaces': workspace:0.0.1
   autoprefixer: ^10.4.13
   cookie: ^0.5.0
-  date-fns: ^2.29.3
   eslint: ^8.28.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-svelte3: ^4.0.0
@@ -34,9 +33,6 @@ specifiers:
   typescript: ^4.9.3
   vite: ^4.0.0
   vite-imagetools: ^4.0.11
-
-dependencies:
-  date-fns: 2.29.3
 
 devDependencies:
   '@nanostores/persistent': 0.5.3_nanostores@0.5.13
@@ -869,11 +865,6 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
     dev: true
-
-  /date-fns/2.29.3:
-    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
-    engines: {node: '>=0.11'}
-    dev: false
 
   /debug/4.3.4:
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
