@@ -1,4 +1,6 @@
-import SuperTokens from 'supertokens-website';
+import { goto } from '$app/navigation';
+import { isSignedIn, user, userInfo } from '$lib/stores/auth';
+import { pushNotification } from '$lib/stores/notifications';
 import type {
 	IEmailDto,
 	INewPasswordDto,
@@ -7,26 +9,11 @@ import type {
 	IUserLoginDto,
 	SteamOpenIdParameters
 } from '@uni-esports/interfaces';
-import { HttpMethod, makeRequest } from './http';
-import { goto } from '$app/navigation';
-import { pushNotification } from '$lib/stores/notifications';
-import { isSignedIn, user, userInfo } from '$lib/stores/auth';
-import type { Cookies } from '@sveltejs/kit';
-
-export async function checkSession(cookies: Cookies): Promise<boolean> {
-	const res = await makeRequest(HttpMethod.GET, {
-		url: '/session',
-		config: { headers: { Cookie: cookies.serialize('sAccessToken', cookies.get('sAccessToken')) } }
-	});
-
-	return Boolean(res);
-}
+import SuperTokens from 'supertokens-website';
+import { makeRequest } from './http';
 
 export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | URL) {
-	const res = await makeRequest<IEmailDto>(HttpMethod.POST, {
-		url: '/auth/signin',
-		body
-	});
+	const res = await makeRequest<IEmailDto>('POST', '/auth/signin', body);
 	if (!res) return;
 
 	if (redirectOnSuccess) {
@@ -40,8 +27,8 @@ export async function signOut() {
 }
 
 export async function resendVerificationEmail() {
-	const res = await makeRequest<void>(HttpMethod.POST, {
-		url: '/user/email/verify/token', // ST-exposed endpoint
+	// ST-exposed endpoint
+	const res = await makeRequest<void>('POST', '/user/email/verify/token', {
 		config: { headers: { rid: 'emailverification' } }
 	});
 
@@ -57,18 +44,15 @@ export async function verifyEmail(token: string) {
 	const res = await makeRequest<{
 		status: 'OK' | 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR';
 	}>(
-		HttpMethod.POST,
+		'POST',
+		'/user/email/verify', // ST-exposed endpoint
+		{ method: 'token', token },
 		{
-			url: '/user/email/verify', // ST-exposed endpoint
-			body: { method: 'token', token },
-			config: {
-				headers: { rid: 'emailverification' }
-			}
-		},
-		true
+			config: { headers: { rid: 'emailverification' } }
+		}
 	);
 
-	if (res && res.data.status === 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR') {
+	if (res && res.json.status === 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR') {
 		return pushNotification({
 			message: 'Invalid token',
 			type: 'danger'
@@ -83,12 +67,12 @@ export async function verifyEmail(token: string) {
 	}
 
 	if (isSignedIn.get()) {
-		await makeRequest<IUserInfoDto>(HttpMethod.GET, { url: '/users/me' });
+		await makeRequest<IUserInfoDto>('GET', '/users/me');
 	}
 }
 
 export async function sendPasswordResetEmail(body: IEmailDto) {
-	const res = await makeRequest<void>(HttpMethod.POST, { url: '/auth/password/reset', body }, true);
+	const res = await makeRequest<void>('POST', '/auth/password/reset', body);
 
 	if (res) {
 		pushNotification({
@@ -100,11 +84,7 @@ export async function sendPasswordResetEmail(body: IEmailDto) {
 }
 
 export async function performPasswordReset(body: IPasswordResetDto) {
-	const res = await makeRequest<void>(
-		HttpMethod.POST,
-		{ url: '/auth/password/reset/token', body },
-		true
-	);
+	const res = await makeRequest<void>('POST', '/auth/password/reset/token', body);
 
 	if (res) {
 		pushNotification({
@@ -116,11 +96,7 @@ export async function performPasswordReset(body: IPasswordResetDto) {
 }
 
 export async function performPasswordChange(body: INewPasswordDto) {
-	const res = await makeRequest<void>(
-		HttpMethod.POST,
-		{ url: '/auth/password/change', body },
-		true
-	);
+	const res = await makeRequest<void>('POST', '/auth/password/change', body);
 
 	if (res) {
 		pushNotification({
@@ -133,26 +109,18 @@ export async function performPasswordChange(body: INewPasswordDto) {
 }
 
 export async function steamAuthRedirect() {
-	const res = await makeRequest<{ url: string }>(
-		HttpMethod.GET,
-		{ url: '/auth/steam/redirect' },
-		true
-	);
+	const res = await makeRequest<{ url: string }>('GET', '/auth/steam/redirect');
 
 	if (res) {
-		goto(res.data.url);
+		goto(res.json.url);
 	}
 }
 
 export async function steamAuthLink(body: SteamOpenIdParameters) {
-	const res = await makeRequest<{ steam64Id: string }>(
-		HttpMethod.POST,
-		{ url: '/auth/steam/link', body },
-		true
-	);
+	const res = await makeRequest<{ steam64Id: string }>('POST', '/auth/steam/link', body);
 
 	if (res) {
-		userInfo.setKey('steam64', res.data.steam64Id);
+		userInfo.setKey('steam64', res.json.steam64Id);
 	}
 
 	goto('/users/me');

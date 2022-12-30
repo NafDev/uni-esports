@@ -14,25 +14,28 @@
 		ChartBar,
 		ClipboardCheck
 	} from '@steeze-ui/heroicons';
-	import type { IconSource } from '@steeze-ui/heroicons/types';
 	import { Icon } from '@steeze-ui/svelte-icon';
 
-	import csgo from './images/csgo.png?w=25&imagetools';
-	import league from './images/league.png?w=25&imagetools';
-	import logo from './images/logo.png?w=25&imagetools';
-	import overwatch from './images/overwatch.png?w=25&imagetools';
-	import rocket from './images/rocket.png?w=25&imagetools';
-	import siege from './images/siege.png?w=25&imagetools';
-	import valorant from './images/valorant.png?w=25&imagetools';
+	import csgo from './images/csgo.png?w=20&imagetools';
+	import league from './images/league.png?w=20&imagetools';
+	import logo from './images/logo.png?w=20&imagetools';
+	import overwatch from './images/overwatch.png?w=20&imagetools';
+	import rocket from './images/rocket.png?w=20&imagetools';
+	import siege from './images/siege.png?w=20&imagetools';
+	import valorant from './images/valorant.png?w=18&imagetools';
 
 	export let mobileSidebarActive: boolean;
 
 	type QuickLink = {
 		name: string;
 		link: string;
-		icon: IconSource;
+		icon: any;
 		signedIn?: true;
 		disabled?: true;
+	};
+
+	type GameQuickLink = QuickLink & {
+		iconBg: string;
 	};
 
 	const quickLinks: Array<QuickLink> = [
@@ -95,9 +98,53 @@
 		}
 	];
 
+	const gameLinks: Array<GameQuickLink> = [
+		{
+			name: 'Counter-Strike: GO',
+			link: '/games/csgo',
+			icon: csgo,
+			iconBg: 'bg-game-csgo'
+		},
+		{
+			name: 'League of Legends',
+			link: '/games/league-of-legends',
+			icon: league,
+			disabled: true,
+			iconBg: 'bg-game-league'
+		},
+		{
+			name: 'Valorant',
+			link: '/games/valorant',
+			icon: valorant,
+			disabled: true,
+			iconBg: 'bg-game-valorant'
+		},
+		{
+			name: 'Overwatch',
+			link: '/games/overwatch',
+			icon: overwatch,
+			disabled: true,
+			iconBg: 'bg-game-overwatch'
+		},
+		{
+			name: 'Rainbow Six: Siege',
+			link: '/games/r6siege',
+			icon: siege,
+			disabled: true,
+			iconBg: 'bg-game-siege'
+		},
+		{
+			name: 'Rocket League',
+			link: '/games/rocket-league',
+			icon: rocket,
+			disabled: true,
+			iconBg: 'bg-game-rcktlg'
+		}
+	];
+
 	let activeLink = '/';
 	const aggregatedLinks: Array<string> = Array.prototype
-		.concat(quickLinks)
+		.concat(quickLinks, adminLinks, gameLinks)
 		.map((link) => link.link);
 
 	$: {
@@ -111,34 +158,48 @@
 	}
 </script>
 
-<div class="relative flex h-full flex-col overflow-auto bg-[#1F2537] py-11 lg:py-14">
+<div
+	class="relative flex h-full flex-col overflow-auto bg-gradient-to-b from-bg-stop-1 to-bg-stop-2 py-14 lg:bg-none"
+>
 	<!-- Mobile Sidebar Close Chevron -->
 	<button
-		class="absolute left-[220px] top-[36px] z-40 flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/25 lg:hidden"
+		class="absolute left-[270px] top-[48px] z-40 flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/25 lg:hidden"
 		on:click={() => (mobileSidebarActive = false)}
 	>
 		<Icon src={ChevronDoubleLeft} size="28" />
 	</button>
 
 	<!-- Sidebar top logo -->
-	<div class="pl-12 pb-4 text-3xl font-bold text-white ">
+	<div class="pl-12 pb-4">
 		<a href="/">
 			<img class="h-8 w-8" src={logo} alt="logo" />
 		</a>
 	</div>
 
-	<div class="quickLinks p-10 text-lg font-bold">
-		<div class="py-2">
+	<div class="p-10 text-xl font-bold">
+		<div class="py-4">
 			{#each quickLinks as quickLink}
 				{#if !quickLink.signedIn || $isSignedIn}
 					<a
 						href={quickLink.link}
-						class:selected={activeLink === quickLink.link}
+						aria-selected={activeLink === quickLink.link}
+						class="group"
+						class:pointer-events-none={quickLink.disabled}
+						class:brightness-75={quickLink.disabled}
 						class:disabled={quickLink.disabled}
 					>
-						<div class="flex items-center">
-							<span class="pr-2"><Icon src={quickLink.icon} size="24" theme="solid" /></span>
-							<p>{quickLink.name}</p>
+						<div class="flex items-center pb-6">
+							<span class="pr-4">
+								<Icon
+									src={quickLink.icon}
+									size="24"
+									theme="solid"
+									class="fill-grey-700 group-hover:fill-grey-950 group-aria-selected:fill-grey-950"
+								/>
+							</span>
+							<p class="text-grey-700 group-hover:text-grey-950  group-aria-selected:text-grey-950">
+								{quickLink.name}
+							</p>
 						</div>
 					</a>
 				{/if}
@@ -146,12 +207,21 @@
 		</div>
 
 		{#if $isSignedIn && $user.roles.includes('ADMIN')}
-			<div class="py-2">
+			<div class="py-4">
 				{#each adminLinks as quickLink}
-					<a href={quickLink.link} class:selected={activeLink === quickLink.link}>
-						<div class="flex items-center">
-							<span class="pr-2"><Icon src={quickLink.icon} size="24" theme="solid" /></span>
-							<p>{quickLink.name}</p>
+					<a href={quickLink.link} aria-selected={activeLink === quickLink.link} class="group">
+						<div class="flex items-center pb-6">
+							<span class="pr-4">
+								<Icon
+									src={quickLink.icon}
+									size="24"
+									theme="solid"
+									class="fill-grey-700 group-hover:fill-grey-950 group-aria-selected:fill-grey-950"
+								/>
+							</span>
+							<p class="text-grey-700 group-hover:text-grey-950  group-aria-selected:text-grey-950">
+								{quickLink.name}
+							</p>
 						</div>
 					</a>
 				{/each}
@@ -159,70 +229,28 @@
 		{/if}
 	</div>
 
-	<p class="pl-12 text-lg font-bold">ACTIVE GAMES</p>
+	<p class="pl-16 text-lg font-bold">GAMES</p>
 
-	<ul class="gameOptions text-md pl-20 pt-4 font-bold">
-		<li class:selected={activeLink === '/games/csgo'}>
-			<span class="bg-[#E29A11]">
-				<img src={csgo} class="h-4 w-4 self-center" alt="img" />
-			</span>CS: Global Offensive
-		</li>
-		<li class="disabled">
-			<span class="bg-[#579CEA]">
-				<img src={league} class="h-4 w-4 self-center" alt="img" />
-			</span>League of Legends
-		</li>
-		<li class="disabled">
-			<span class="bg-[#D44448]">
-				<img src={valorant} class="h-4 w-4 self-center" alt="img" />
-			</span>Valorant
-		</li>
-		<li class="disabled">
-			<span class="bg-[#EE5708]">
-				<img src={overwatch} class="h-4 w-4 self-center" alt="img" />
-			</span>Overwatch
-		</li>
-		<li class="disabled">
-			<span class="bg-[#101114]">
-				<img src={siege} class="h-4 w-4 self-center" alt="img" />
-			</span>Rainbow: Six Siege
-		</li>
-		<li class="disabled">
-			<span class="bg-[#579CEA]">
-				<img src={rocket} class="h-4 w-4 self-center" alt="img" />
-			</span>Rocket League
-		</li>
+	<ul class="px-10 pt-4 font-bold">
+		{#each gameLinks as gameLink}
+			<li
+				class="group mb-5 flex items-center text-xl text-grey-700 hover:text-grey-950 aria-selected:text-grey-950"
+				class:pointer-events-none={gameLink.disabled}
+				class:brightness-75={gameLink.disabled}
+				class:disabled={gameLink.disabled}
+				aria-selected={activeLink === gameLink.link}
+			>
+				<span
+					class={`${gameLink.iconBg} mr-4 flex h-7 w-7 items-center justify-center rounded-md p-1 brightness-90 group-hover:brightness-100 group-aria-selected:brightness-100`}
+				>
+					<img src={gameLink.icon} alt={`${gameLink.name}`} />
+				</span>
+				{gameLink.name}
+			</li>
+		{/each}
 	</ul>
 
 	<hr class="invisible mb-auto" />
 
-	<p class="mt-14 text-center font-bold opacity-50">UK UNIVERSITY ESPORTS 2022</p>
+	<p class="mt-14 text-center text-grey-700">UK UNIVERSITY ESPORTS 2022</p>
 </div>
-
-<style lang="postcss">
-	.gameOptions > li {
-		@apply relative flex items-center pb-4 opacity-50 hover:cursor-pointer hover:opacity-100;
-	}
-	.gameOptions > li.selected {
-		@apply opacity-100;
-	}
-	.gameOptions > li.disabled {
-		@apply hover:opacity-50;
-	}
-	.gameOptions > li.disabled > span {
-		@apply grayscale;
-	}
-	.gameOptions > li > span {
-		@apply absolute -left-8 inline-block h-6 w-6 rounded-md p-1;
-	}
-
-	.quickLinks > div > a {
-		@apply relative flex items-start pb-4 opacity-50 hover:cursor-pointer hover:opacity-100;
-	}
-	.quickLinks > div > a.selected {
-		@apply opacity-100 before:absolute before:-left-12 before:-top-1 before:h-8 before:w-1 before:bg-primary;
-	}
-	.disabled {
-		@apply pointer-events-none;
-	}
-</style>

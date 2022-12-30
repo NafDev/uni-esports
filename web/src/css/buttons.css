@@ -1,5 +1,5 @@
 .btn {
-	@apply flex w-auto items-center justify-around rounded-md py-1.5 text-center text-sm font-bold text-white transition-all duration-300 hover:opacity-90;
+	@apply flex w-auto items-center justify-around rounded-md py-1.5 text-center text-sm font-bold text-white transition-all duration-300 hover:bg-opacity-90;
 }
 .btn:not(.isLoading) {
 	@apply disabled:grayscale-[80%] disabled:hover:opacity-100;
@@ -8,34 +8,22 @@
 	@apply bg-primary px-5;
 }
 .btn.primary-outlined {
-	@apply border-[3px] border-primary px-5;
+	@apply border-[3px] border-primary bg-[#1B304F] px-5;
 }
 .btn.secondary {
-	@apply border-[3px] border-[#555d81] bg-black bg-opacity-20  px-5;
+	@apply border-[3px] bg-secondary px-5;
 }
-.btn.dark {
-	@apply bg-black bg-opacity-20 px-5;
-}
-.btn.light {
-	@apply border-[3px] border-[#33374D] border-opacity-50 bg-black bg-opacity-20 px-5;
-}
-.btn.success {
-	@apply bg-success px-5;
-}
-.btn.success-outlined {
-	@apply border-[3px] border-success px-5 text-success;
+.btn.secondary-outlined {
+	@apply border-[3px] border-secondary bg-[#1E2939] px-5;
 }
 .btn.warning {
-	@apply bg-warning px-5;
-}
-.btn.warning-outlined {
-	@apply border-[3px] border-warning px-5 text-warning;
+	@apply border-[3px] border-warning bg-[#4B250A] px-5;
 }
 .btn.danger {
 	@apply bg-danger px-5;
 }
 .btn.danger-outlined {
-	@apply border-[3px] border-danger px-5 text-danger;
+	@apply border-[3px] border-danger bg-[#230101] px-5;
 }
 .btn.isLoading {
 	@apply relative text-opacity-0 before:absolute before:aspect-square before:h-4/6 before:animate-spin before:rounded-full before:border-2 before:border-y-white before:border-x-transparent;

@@ -1,46 +1,40 @@
 import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
-import { HttpMethod, makeRequest } from './http';
+import { makeRequest } from './http';
 import { playerTeams } from '$lib/stores/teams';
 import { pushNotification } from '$lib/stores/notifications';
 
 export async function joinTeam(token: string) {
-	await makeRequest<TeamDto>(HttpMethod.PATCH, { url: `/teams/join?token=${token}` }, true);
+	await makeRequest<TeamDto>('PATCH', `/teams/join?token=${token}`);
 }
 
 export async function createTeam(body: CreateTeamDto) {
-	const res = await makeRequest<TeamDto>(HttpMethod.POST, { url: '/teams/create', body }, true);
+	const res = await makeRequest<TeamDto>('POST', '/teams/create', body);
 
 	if (res) {
-		playerTeams.set([...playerTeams.get(), res.data]);
+		playerTeams.set([...playerTeams.get(), res.json]);
 	}
 
 	return Boolean(res);
 }
 
-export async function getTeamById(body: { id: number }) {
-	const res = await makeRequest<TeamDto>(HttpMethod.GET, { url: `/teams/${body.id}` }, true);
+export async function getTeamById(body: { id: number }, fetchWrapper?: typeof fetch) {
+	const res = await makeRequest<TeamDto>('GET', `/teams/${body.id}`, undefined, { fetchWrapper });
 
 	if (res) {
-		return res.data;
+		return res.json;
 	}
 }
 
 export async function getTeamInviteCode(id: number) {
-	const res = await makeRequest<{ inviteCode: string }>(HttpMethod.GET, {
-		url: `/teams/${id}/invite-code`
-	});
+	const res = await makeRequest<{ inviteCode: string }>('GET', `/teams/${id}/invite-code`);
 
 	if (res) {
-		return res.data;
+		return res.json;
 	}
 }
 
 export async function invitePlayerBySearch(teamId: number, body: InvitePlayerDto) {
-	const res = await makeRequest<void>(
-		HttpMethod.POST,
-		{ url: `teams/${teamId}/invite`, body },
-		true
-	);
+	const res = await makeRequest<void>('POST', `teams/${teamId}/invite`, body);
 
 	if (res) {
 		pushNotification({

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { Login, Logout, Menu } from '@steeze-ui/heroicons';
+	import { Login, Menu } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 
 	import { user } from '$lib/stores/auth';
@@ -21,21 +21,18 @@
 
 	{#if signedIn}
 		<div class="flex w-auto items-center">
-			<button
-				class="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-white/10 active:bg-white/25"
-				on:click={() => signOut()}
-			>
-				<Icon src={Logout} size="28" />
+			<button class="btn secondary-outlined scale-105" on:click={() => signOut()}>
+				Sign out
 			</button>
 			<img
 				src={`https://avatars.dicebear.com/api/identicon/${$user.id}.svg`}
 				alt="profile"
-				class="ml-5 h-16 rounded-lg"
+				class="ml-6 h-16 rounded-lg"
 			/>
 		</div>
 	{:else}
 		<div class="flex flex-col">
-			<button class="btn primary" on:click={() => goto('/users/signin')}>
+			<button class="btn primary scale-105" on:click={() => goto('/users/signin')}>
 				<span class="pr-2"><Icon class="stroke-white" src={Login} size="16" /></span>
 				Sign In
 			</button>

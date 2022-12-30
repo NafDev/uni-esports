@@ -20,6 +20,8 @@ type VetoHistoryValue = {
 	gameId: GameId;
 };
 
+const vetoTimeoutId = (matchId: string) => `random-vote-${matchId.toLowerCase()}`;
+
 @Injectable()
 export class VetoService {
 	private readonly logger = new LoggerService(VetoService.name);
@@ -41,15 +43,38 @@ export class VetoService {
 			return;
 		}
 
-		this.vetoHistory.set(matchId, {
+		let mapPool: string[];
+
+		switch (gameId) {
+			case 'csgo': {
+				mapPool = appConfig.VETO_CSGO_POOL;
+				break;
+			}
+
+			default: {
+				this.logger.warn('Unknown game ID when starting map veto', { gameId });
+				return;
+			}
+		}
+
+		const initialMatchVetoHistory = {
 			vetoed: [],
-			remaining: [],
+			remaining: mapPool,
 			lastVetoTime: new Date(),
 			lastVetoTeamId: data.teamBid,
 			teamAid: data.teamAid,
 			teamBid: data.teamBid,
 			gameId: data.gameId
-		});
+		};
+
+		this.vetoHistory.set(matchId, initialMatchVetoHistory);
+
+		this.scheduleRandomVote(matchId, gameId, initialMatchVetoHistory);
+
+		this.logger.log('Starting match veto', { matchId, gameId });
+
+		const vetoStartData: MatchService['match.start'] = { matchId, gameId };
+		this.natsClient.emit('match.veto.start', vetoStartData);
 	}
 
 	processVetoRequest(data: VetoRequestPayload) {
@@ -77,6 +102,11 @@ export class VetoService {
 			return;
 		}
 
+		if (!currentVetoHistory.remaining.includes(veto)) {
+			this.logger.warn('Error when processing veto: invalid choice', { matchId, teamId, veto });
+			return;
+		}
+
 		if (currentVetoHistory.gameId !== gameId) {
 			this.logger.warn('Error when processing veto: game ID mismatch', {
 				matchId,
@@ -88,45 +118,44 @@ export class VetoService {
 		}
 
 		// This check isn't logically needed, but added to prevent a conflict with randomised votes
-		const vetoDeadline = add(currentVetoHistory.lastVetoTime, { seconds: 1 + appConfig.VETO_HAND_TIMEOUT / 1000 });
+		const vetoDeadline = add(currentVetoHistory.lastVetoTime, { seconds: 3 + appConfig.VETO_HAND_TIMEOUT / 1000 });
 		if (isAfter(Date.now(), vetoDeadline)) {
 			this.logger.warn('Received veto request after deadline', { matchId, teamId, veto });
+			return;
 		}
 
-		let updatedVetoHistory: VetoHistoryValue | undefined;
+		const updatedVetoHistory: VetoHistoryValue = {
+			...currentVetoHistory,
+			vetoed: [...currentVetoHistory.vetoed, veto],
+			remaining: currentVetoHistory.remaining.filter((map) => map !== veto),
+			lastVetoTime: new Date(),
+			lastVetoTeamId: teamId
+		};
 
-		switch (gameId) {
-			case 'csgo': {
-				updatedVetoHistory = this.processVetoOptions(data, currentVetoHistory, appConfig.VETO_CSGO_POOL);
-				break;
-			}
+		this.vetoHistory.set(matchId, updatedVetoHistory);
 
-			default: {
-				this.logger.warn('Processing veto for unknown game ID', { gameId });
-				break;
+		try {
+			this.schedulerRegistry.deleteTimeout(vetoTimeoutId(matchId));
+		} catch (error: unknown) {
+			if (!(error instanceof Error && error.message.startsWith('No Timeout'))) {
+				throw error;
 			}
 		}
 
-		if (updatedVetoHistory) {
-			this.vetoHistory.set(matchId, updatedVetoHistory);
-
-			const timeoutId = `random-vote-${matchId}`;
-			this.schedulerRegistry.deleteTimeout(timeoutId);
-
-			if (updatedVetoHistory.vetoed.length === 1) {
-				this.endVeto({ matchId, result: updatedVetoHistory.vetoed[0], gameId });
-				return;
-			}
-
-			this.scheduleRandomVote(matchId, gameId, timeoutId, updatedVetoHistory);
-
-			const emitVetoUpdate: MatchService['match.veto.update'] = {
-				matchId,
-				time: updatedVetoHistory.lastVetoTime.toISOString(),
-				vetoed: veto
-			};
-			this.natsClient.emit(`match.veto.${gameId}.update`, emitVetoUpdate);
+		if (updatedVetoHistory.remaining.length === 1) {
+			this.endVeto({ matchId, result: updatedVetoHistory.remaining[0], gameId });
+			return;
 		}
+
+		this.scheduleRandomVote(matchId, gameId, updatedVetoHistory);
+
+		const emitVetoUpdate: MatchService['match.veto.update'] = {
+			matchId,
+			teamId: updatedVetoHistory.lastVetoTeamId,
+			time: updatedVetoHistory.lastVetoTime.toISOString(),
+			vetoed: veto
+		};
+		this.natsClient.emit(`match.veto.update`, emitVetoUpdate);
 	}
 
 	endVeto(data: MatchService['match.veto.result']) {
@@ -135,7 +164,9 @@ export class VetoService {
 		setTimeout(() => this.vetoHistory.delete(data.matchId), appConfig.VETO_RESULT_TTL);
 	}
 
-	scheduleRandomVote(matchId: string, gameId: string, timeoutId: string, vetoHistory: VetoHistoryValue) {
+	scheduleRandomVote(matchId: string, gameId: string, vetoHistory: VetoHistoryValue) {
+		const timeoutId = vetoTimeoutId(matchId);
+
 		const remainingChoices = [...vetoHistory.remaining];
 
 		const previousVetoWasTeamA = vetoHistory.lastVetoTeamId === vetoHistory.teamAid;
@@ -149,45 +180,26 @@ export class VetoService {
 				veto: remainingChoices[randomVetoIndex]
 			};
 
+			this.logger.log('Setting randomised vote due to veto hand timeout', { matchId });
+
 			this.natsClient.emit(`match.veto.${gameId}.request`, vetoRequest);
 			this.schedulerRegistry.deleteTimeout(timeoutId);
 		};
 
-		this.schedulerRegistry.addTimeout(timeoutId, setTimeout(randomisedVeto, appConfig.VETO_HAND_TIMEOUT + ms('3s')));
+		this.schedulerRegistry.addTimeout(timeoutId, setTimeout(randomisedVeto, appConfig.VETO_HAND_TIMEOUT + ms('1.5s')));
 	}
 
-	processVetoOptions(
-		vetoRequestPayload: VetoRequestPayload,
-		vetoHistory: VetoHistoryValue,
-		optionPool: string[]
-	): VetoHistoryValue | undefined {
-		const { veto, matchId, teamId } = vetoRequestPayload;
-		const { vetoed } = vetoHistory;
-
-		const remainingMaps = optionPool.filter((option) => !vetoed.includes(option));
-
-		if (remainingMaps.length <= 1) {
-			this.logger.error('Error while processing veto: received request for a completed veto', { matchId, teamId });
-			return;
-		}
-
-		vetoed.push(veto);
-
-		return {
-			...vetoHistory,
-			vetoed,
-			remaining: remainingMaps,
-			lastVetoTime: new Date(),
-			lastVetoTeamId: teamId
-		};
-	}
-
-	getVetoStatus(matchId: string) {
+	getVetoStatus(matchId: string): MatchService['match.veto.status']['res'] {
 		const data = this.vetoHistory.get(matchId);
 		if (!data) {
-			return { vetoed: [], pool: [] };
+			return { status: 0 };
 		}
 
-		return { vetoed: data.vetoed, pool: [...data.vetoed, ...data.remaining] };
+		return {
+			vetoed: data.vetoed,
+			teamId: data.lastVetoTeamId,
+			time: data.lastVetoTime as unknown as string,
+			status: 'Ongoing'
+		};
 	}
 }

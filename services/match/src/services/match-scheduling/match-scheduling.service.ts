@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import type { GameId, MatchService } from '@uni-esports/interfaces';
 import { add, formatISO } from 'date-fns';
@@ -10,7 +10,7 @@ import { MatchOrchestrationService } from '../match-orchestration/match-orchestr
 import type { Match } from './scheduling';
 
 @Injectable()
-export class MatchSchedulingService {
+export class MatchSchedulingService implements OnApplicationBootstrap {
 	private readonly logger = new LoggerService(MatchSchedulingService.name);
 
 	private readonly queuedMatches = new Map<string, Match>();

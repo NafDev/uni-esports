@@ -1,4 +1,4 @@
-import { GameId } from "./games";
+import { GameId } from './games';
 
 export interface VetoRequest {
 	teamId: number;
@@ -16,7 +16,7 @@ export interface IMatchListItem {
 export interface IMatchSearchQuery {
 	id?: string;
 	gameId?: string;
-	status?: string,
+	status?: string;
 	startTimeLowerLimit?: Date;
 	startTimeUpperLimit?: Date;
 }
@@ -37,11 +37,19 @@ export type IMatchDetailsCsgo = IMatchInfo & {
 	map: string | null;
 	team1Score: number;
 	team2Score: number;
-}
+};
 
 export interface ICreateNewMatch {
 	gameId: string;
 	tournamentId?: number;
 	teamIds: number[];
 	scheduledStart: Date;
+}
+
+export interface IUpcomingMatch {
+	matchId: string;
+	gameId: GameId;
+	tournamentId: string | null;
+	time: string | Date;
+	universityIds: number[];
 }

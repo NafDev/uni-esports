@@ -10,9 +10,11 @@ export interface MatchService {
 			matchId: string;
 		};
 		res: {
-			pool: string[];
 			vetoed: string[];
-		};
+			teamId: number;
+			time: string;
+			status: 'Ongoing'
+		} | { status: 0 };
 	};
 	'match.veto._gameId.start': {
 		matchId: string;
@@ -24,9 +26,13 @@ export interface MatchService {
 		teamId: number;
 		veto: string;
 	};
+	'match.veto.start': {
+		matchId: string;
+	};
 	'match.veto.update': {
 		matchId: string;
 		vetoed: string;
+		teamId: number;
 		time: string;
 	};
 	'match.veto.result': {

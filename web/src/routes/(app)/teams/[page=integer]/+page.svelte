@@ -41,7 +41,7 @@
 			<p class="class mb-3 text-xl font-bold">Players</p>
 			{#each team.members as member}
 				<div
-					class="flex flex-row justify-between border-t border-greyText/50 p-5 last-of-type:border-b"
+					class="border-greyText/50 flex flex-row justify-between border-t p-5 last-of-type:border-b"
 				>
 					<p>{member.username}</p>
 					{#if member.captain}<Crown />{/if}

@@ -1,3 +1,4 @@
+@import 'app.css';
 @import 'badges.css';
 @import 'buttons.css';
 @import 'inputs.css';
@@ -5,33 +6,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-* {
-	font-family: 'Play';
-	user-select: none;
-	@apply text-greyText;
-}
-input {
-	user-select: text;
-}
-*::-webkit-scrollbar {
-	display: none;
-}
-
-@keyframes fade {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 100;
-	}
-}
-body {
-	background: black;
-}
-.app {
-	background: rgb(34, 43, 69);
-	background: linear-gradient(180deg, rgba(34, 43, 69, 1) 0%, rgba(29, 33, 50, 1) 100%);
-	min-height: 100vh;
-	display: flex;
-}
