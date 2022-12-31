@@ -22,7 +22,7 @@
 		{#each $playerTeams as team (team.id)}
 			<a href={`/teams/${team.id}`}>
 				<div
-					class="m-3 w-96 min-w-fit rounded-md bg-secondary/20 p-5 outline outline-1 outline-greyText/50 hover:outline-primary"
+					class="outline-greyText/50 m-3 w-96 min-w-fit rounded-md bg-secondary/20 p-5 outline outline-1 hover:outline-primary"
 				>
 					<div class="flex flex-row items-center justify-between">
 						<h1 class="text-lg font-bold">{team.name}</h1>

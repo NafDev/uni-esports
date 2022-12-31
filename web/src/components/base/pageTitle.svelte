@@ -4,9 +4,7 @@
 </script>
 
 {#if hasHeading}
-	<h1
-		class="mb-5 overflow-x-auto rounded-3xl bg-opacity-5 bg-gradient-to-t from-black/5 p-10 text-left text-4xl font-black uppercase"
-	>
+	<h1 class="overflow-x-autotext-left mb-6 text-3xl font-black lg:mt-6">
 		{title}
 	</h1>
 {/if}

@@ -18,18 +18,17 @@
 
 {#if open}
 	<div
-		class="absolute top-0 right-0 z-40 flex h-screen w-screen items-center justify-center bg-black/30"
+		class="absolute top-0 right-0 z-[98] flex h-screen w-screen items-center justify-center bg-black/30"
 		transition:fade={{ duration: 100 }}
 	>
 		<!-- Modal body -->
-		<div class="app relative z-50 h-auto rounded-md" style="min-height: fit-content;">
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<span
+		<div class="app relative z-[99] h-auto rounded-md" style="min-height: fit-content;">
+			<button
 				on:click={() => closeModal()}
-				class="absolute right-0 top-0 m-2 aspect-square rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-20"
+				class="absolute right-2 top-2 m-2 aspect-square rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-20"
 			>
 				<Icon src={X} size="20" theme="solid" />
-			</span>
+			</button>
 
 			<!-- Content -->
 			<div class="w-[80vw] p-10 lg:w-[38vw]">

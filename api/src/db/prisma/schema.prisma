@@ -186,7 +186,7 @@ model TeamOnMatch {
 
 model MatchDetailsCsgo {
   id      Int    @unique @default(autoincrement())
-  matchId String @unique @db.Uuid
+  matchId String @unique @map("match_id") @db.Uuid
 
   map        String?
   team1score Int     @default(0) @map("team_1_score")

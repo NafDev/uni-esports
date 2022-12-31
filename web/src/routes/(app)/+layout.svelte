@@ -11,10 +11,10 @@
 
 <NotificationOverlay />
 
-<div class="grid h-screen w-screen  grid-flow-col grid-cols-[300px_1fr]">
+<div class="grid h-screen w-screen grid-flow-col grid-cols-[350px_1fr]">
 	<!-- Sidebar -->
 	<div
-		class="absolute z-40 h-screen w-[300px] lg:static lg:inline"
+		class="absolute z-50 h-screen w-[350px] lg:static lg:inline"
 		class:hidden={!mobileSidebarActive}
 	>
 		<Sidebar bind:mobileSidebarActive />
@@ -23,7 +23,7 @@
 	<!-- Sidebar dark backdrop (mobile) -->
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div
-		class="absolute z-30 h-full w-full bg-black bg-opacity-50 lg:hidden"
+		class="absolute z-40 h-full w-full bg-black bg-opacity-50 lg:hidden"
 		class:hidden={!mobileSidebarActive}
 		on:click={() => (mobileSidebarActive = false)}
 	/>

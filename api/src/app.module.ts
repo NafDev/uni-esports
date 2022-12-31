@@ -22,7 +22,34 @@ import { MatchSchedulingModule } from './services/match-scheduling/match-schedul
 				return {
 					pinoHttp: {
 						transport: { target: 'pino-pretty' },
-						redact: { paths: ['req.headers.cookie', 'res.headers["set-cookie"]'], remove: true }
+						redact: {
+							paths: [
+								'req.headers.cookie',
+								'res.headers["set-cookie"]',
+								'res.headers["content-security-policy"]',
+								'res.headers["cross-origin-embedder-policy"]',
+								'res.headers["cross-origin-opener-policy"]',
+								'res.headers["cross-origin-resource-policy"]',
+								'res.headers["x-dns-prefetch-control"]',
+								'res.headers["expect-ct"]',
+								'res.headers["x-frame-options"]',
+								'res.headers["strict-transport-security"]',
+								'res.headers["x-download-options"]',
+								'res.headers["x-content-type-options"]',
+								'res.headers["origin-agent-cluster"]',
+								'res.headers["x-permitted-cross-domain-policies"]',
+								'res.headers["referrer-policy"]',
+								'res.headers["x-xss-protection"]',
+								'res.headers["access-control-allow-origin"]',
+								'res.headers.vary',
+								'res.headers["access-control-allow-credentials"]',
+								'res.headers["x-ratelimit-limit"]',
+								'res.headers["x-ratelimit-remaining"]',
+								'res.headers["x-ratelimit-reset"]',
+								'res.headers["content-type"]'
+							],
+							remove: true
+						}
 					}
 				};
 			}

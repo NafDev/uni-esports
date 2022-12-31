@@ -17,7 +17,7 @@
 </script>
 
 <div
-	class="notification relative {type} mx-4 my-3 flex max-h-60 min-h-[7.5rem] w-80 flex-row rounded-lg border-l-8 bg-gradient-to-t from-[#1d2132] to-[#222b45] shadow-xl"
+	class="notification relative {type} mx-4 my-3 flex max-h-60 min-h-[7.5rem] w-80 flex-row rounded-lg border-l-8 bg-gradient-to-tr from-bg-stop-2 to-bg-stop-1 shadow-xl"
 >
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<span
@@ -30,7 +30,7 @@
 		<span class="mr-4"><Icon src={icon} size="28" theme="solid" /></span>
 		<div class="inline max-h-full w-full overflow-auto align-middle font-bold">
 			{#if heading}
-				<header class="mb-1 text-xl font-bold text-white">{heading}</header>
+				<header class="mb-1 text-xl font-bold text-grey-950">{heading}</header>
 			{/if}
 			<p>{message}</p>
 		</div>

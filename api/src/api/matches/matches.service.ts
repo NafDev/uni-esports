@@ -5,21 +5,22 @@ import {
 	MessageEvent,
 	NotFoundException
 } from '@nestjs/common';
-import type { Match } from '@prisma/client';
+import type { Match, Prisma } from '@prisma/client';
 import type {
 	GameId,
 	IMatchDetailsCsgo,
 	IMatchInfo,
+	IUpcomingMatch,
 	MatchService as MatchServicePayload
 } from '@uni-esports/interfaces';
-import { add, isBefore } from 'date-fns';
+import { add } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { firstValueFrom, Observable, Subject } from 'rxjs';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { LoggerService } from '../../common/logger-wrapper';
+import { DEFAULT_PAGE_LEN } from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { NatsService } from '../../services/clients/nats.service';
-import type { CreateNewMatchDto } from './matches.dto';
 
 @Injectable()
 export class MatchService {
@@ -28,6 +29,57 @@ export class MatchService {
 	private readonly matchEventHandler = new Map<string, Subject<MessageEvent>>();
 
 	constructor(private readonly prisma: PrismaService, private readonly natsClient: NatsService) {}
+
+	async getUpcomingMatches(
+		session: SessionContainer,
+		gameIdFilter: string,
+		forSessionUserFilter: boolean
+	): Promise<IUpcomingMatch[]> {
+		const whereUserIsPlaying = session && forSessionUserFilter;
+		const filterByUserPlaying: Prisma.TeamOnMatchListRelationFilter | false = whereUserIsPlaying && {
+			some: {
+				team: { users: { some: { userId: session.getUserId() } } }
+			}
+		};
+
+		const data = await this.prisma.match.findMany({
+			where: {
+				gameId: gameIdFilter,
+				status: whereUserIsPlaying ? { in: ['Ongoing', 'Scheduled', 'Setup'] } : undefined,
+				startTime: whereUserIsPlaying
+					? undefined
+					: {
+							gte: new Date(),
+							lte: add(Date.now(), { weeks: 1 })
+					  },
+				teams: filterByUserPlaying || undefined
+			},
+			select: {
+				gameId: true,
+				startTime: true,
+				id: true,
+				teams: {
+					select: {
+						team: {
+							select: {
+								universityId: true
+							}
+						}
+					}
+				}
+			},
+			orderBy: { startTime: 'asc' },
+			take: DEFAULT_PAGE_LEN
+		});
+
+		return data.map((entry) => ({
+			matchId: entry.id,
+			gameId: entry.gameId as GameId,
+			tournamentId: null, // Assign later when tournaments are implemented
+			time: entry.startTime,
+			universityIds: entry.teams.map((team) => team.team.universityId)
+		}));
+	}
 
 	async getMatchInfo(id: string) {
 		const match = await this.prisma.match.findUnique({
@@ -135,6 +187,8 @@ export class MatchService {
 		}
 
 		data = { ...data, id: nanoid() };
+
+		this.logger.log('Broadcasting match event', { matchId, data });
 
 		stream.next(data);
 	}

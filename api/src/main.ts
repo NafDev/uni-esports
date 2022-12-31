@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
-import { getAllCORSHeaders } from 'supertokens-node';
+import SuperTokens from 'supertokens-node';
 import helmet from 'helmet';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
@@ -20,7 +20,7 @@ async function bootstrap() {
 	app.use(helmet());
 	app.enableCors({
 		origin: [appConfig.WEB_DOMAIN],
-		allowedHeaders: ['content-type', ...getAllCORSHeaders()],
+		allowedHeaders: ['content-type', ...SuperTokens.getAllCORSHeaders()],
 		credentials: true
 	});
 

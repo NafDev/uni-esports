@@ -37,6 +37,8 @@ export class MatchOrchestrationService {
 					${sql({ status: 'Setup' })}
 				where
 					${sql('id')} = ${matchId}
+				returning
+					${sql('id')}
 			`;
 		} catch (error: unknown) {
 			if (error instanceof PostgresError) {
@@ -79,6 +81,7 @@ export class MatchOrchestrationService {
 
 		switch (gameId) {
 			case 'csgo': {
+				void this.csgoService.startMatch(data.matchId, data.result);
 				break;
 			}
 

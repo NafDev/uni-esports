@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 import type { MatchService } from '@uni-esports/interfaces';
 import type postgres from 'postgres';
 import { PostgresError } from 'postgres';
@@ -38,10 +38,14 @@ export class CsgoService {
 						${sql({ status: 'Ongoing' })}
 					where
 						${sql('id')} = ${matchId}
+					returning
+						${sql('id')}
 				`;
 
 				if (rows.length !== 1) {
-					throw new PostgresError('Transaction failed - zero rows updated');
+					const error = new Error('Transaction failed - zero rows updated');
+					error.name = 'Transaction failed';
+					throw error;
 				}
 
 				await sql`
@@ -55,7 +59,9 @@ export class CsgoService {
 				logPostgresError(error, this.logger);
 			}
 
-			throw error;
+			if (error instanceof Error && error.name === 'Transaction failed') {
+				this.logger.error(error.message, { matchId });
+			}
 		}
 
 		// Get team IDs

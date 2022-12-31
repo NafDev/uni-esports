@@ -15,10 +15,7 @@ export class VetoController {
 	) {}
 
 	@MessagePattern('match.veto.status')
-	matchVetoStatus(
-		@Payload() data: MatchService['match.veto.status']['req'],
-		@Ctx() ctx: NatsContext
-	): MatchService['match.veto.status']['res'] {
+	matchVetoStatus(@Payload() data: MatchService['match.veto.status']['req'], @Ctx() ctx: NatsContext) {
 		this.logger.log('Received event', { pattern: ctx.getSubject() });
 
 		return this.vetoService.getVetoStatus(data.matchId);

@@ -1,0 +1,28 @@
+* {
+	font-family: 'Play';
+	user-select: none;
+	@apply text-grey-950;
+}
+input {
+	user-select: text;
+}
+*::-webkit-scrollbar {
+	display: none;
+}
+
+@keyframes fade {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 100;
+	}
+}
+body {
+	background: black;
+}
+.app {
+	background: linear-gradient(180deg, #283653 5%, #131e2b 95%);
+	min-height: 100vh;
+	display: flex;
+}

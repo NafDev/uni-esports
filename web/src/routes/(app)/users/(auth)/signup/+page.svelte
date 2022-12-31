@@ -56,7 +56,7 @@
 <div class="my-auto mx-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">
 		<a href="/">
-			<img src={logo} href="/" alt="logo" class="mb-10 h-12" />
+			<img src={logo} alt="logo" class="mb-10 h-12" />
 		</a>
 		<h3 class="text-4xl">Sign Up</h3>
 	</div>

@@ -1,8 +1,22 @@
-import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post, Session, Sse, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	Param,
+	ParseBoolPipe,
+	ParseUUIDPipe,
+	Post,
+	Query,
+	Session,
+	Sse,
+	UseGuards
+} from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import type { MatchService as MatchServicePayload } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuardNotRequired } from '../auth/auth.no-verify.guard';
 import { VetoRequestBody } from './matches.dto';
 import { MatchService } from './matches.service';
 
@@ -10,10 +24,19 @@ import { MatchService } from './matches.service';
 export class MatchController {
 	constructor(private readonly matchService: MatchService) {}
 
-	@UseGuards(AuthGuard)
 	@Sse(':id/events')
 	matchSetupEvents(@Param('id', ParseUUIDPipe) matchId: string) {
 		return this.matchService.matchEvents(matchId);
+	}
+
+	@UseGuards(AuthGuardNotRequired)
+	@Get('upcoming')
+	async getUpcomingMatches(
+		@Session() session: SessionContainer,
+		@Query('game') gameIdFilter: string,
+		@Query('me', ParseBoolPipe) forSessionUserFilter: boolean
+	) {
+		return this.matchService.getUpcomingMatches(session, gameIdFilter, forSessionUserFilter);
 	}
 
 	@Get(':id')
@@ -45,13 +68,24 @@ export class MatchController {
 		);
 	}
 
+	@EventPattern(`match.veto.start`)
+	vetoStartEvent(@Payload() data: MatchServicePayload['match.veto.start']) {
+		this.matchService.broadcastMatchEvent(data.matchId, {
+			type: 'veto_start',
+			data: {
+				...data,
+				matchId: undefined
+			}
+		});
+	}
+
 	@EventPattern(`match.veto.update`)
 	vetoUpdateEvent(@Payload() data: MatchServicePayload['match.veto.update']) {
 		this.matchService.broadcastMatchEvent(data.matchId, {
 			type: 'veto_update',
 			data: {
-				vetoed: data.vetoed,
-				time: data.time
+				...data,
+				matchId: undefined
 			}
 		});
 	}

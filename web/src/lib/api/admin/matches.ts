@@ -6,24 +6,22 @@ import type {
 	IMatchSearchQuery,
 	Pagination
 } from '@uni-esports/interfaces';
-import { HttpMethod, makeRequest } from '../http';
+import { makeRequest } from '../http';
 
 export async function getMatchesList(page: number, filters: IMatchSearchQuery) {
-	const res = await makeRequest<Pagination<IMatchListItem>>(HttpMethod.POST, {
-		url: `/admin/matches/list?page=${page}`,
-		body: stripEmptyStrings(filters)
-	});
+	const res = await makeRequest<Pagination<IMatchListItem>>(
+		'POST',
+		`/admin/matches/list?page=${page}`,
+		stripEmptyStrings(filters)
+	);
 
 	if (res) {
-		return res.data;
+		return res.json;
 	}
 }
 
 export async function createNewMatch(data: ICreateNewMatch) {
-	const res = await makeRequest(HttpMethod.POST, {
-		url: `/admin/matches/create`,
-		body: data
-	});
+	const res = await makeRequest('POST', `/admin/matches/create`, data);
 
 	if (res) {
 		pushNotification({

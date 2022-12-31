@@ -1,37 +1,32 @@
 import { pushNotification } from '$lib/stores/notifications';
+import { stripEmptyStrings } from '$lib/util';
 import type { IUserDetails, IUserFilters, IUsers, Pagination } from '@uni-esports/interfaces';
-import { HttpMethod, makeRequest } from '../http';
+import { makeRequest } from '../http';
 
 export async function getAllUsers(page: number, filters?: IUserFilters) {
 	const res = await makeRequest<Pagination<IUsers>>(
-		HttpMethod.POST,
-		{ url: `/admin/users/list?page=${page}`, body: filters },
-		true
+		'POST',
+		`/admin/users/list?page=${page}`,
+		stripEmptyStrings(filters)
 	);
 
 	if (res) {
-		return res.data;
+		return res.json;
 	}
 }
 
 export async function getUser(uuid: string) {
-	const res = await makeRequest<IUserDetails>(
-		HttpMethod.GET,
-		{ url: `/admin/users/${uuid}` },
-		true
-	);
+	const res = await makeRequest<IUserDetails>('GET', `/admin/users/${uuid}`);
 
 	if (res) {
-		return res.data;
+		return res.json;
 	}
 }
 
 export async function updateUserEmail(uuid: string, newEmail: string) {
-	const res = await makeRequest<void>(
-		HttpMethod.PATCH,
-		{ url: `/admin/users/${uuid}/email/update`, body: { email: newEmail } },
-		true
-	);
+	const res = await makeRequest<void>('PATCH', `/admin/users/${uuid}/email/update`, {
+		email: newEmail
+	});
 
 	if (res) {
 		pushNotification({
@@ -42,11 +37,9 @@ export async function updateUserEmail(uuid: string, newEmail: string) {
 }
 
 export async function updateUsername(uuid: string, newUsername: string) {
-	const res = await makeRequest<void>(
-		HttpMethod.PATCH,
-		{ url: `/admin/users/${uuid}/username/update`, body: { username: newUsername } },
-		true
-	);
+	const res = await makeRequest<void>('PATCH', `/admin/users/${uuid}/username/update`, {
+		username: newUsername
+	});
 
 	if (res) {
 		pushNotification({
@@ -57,11 +50,7 @@ export async function updateUsername(uuid: string, newUsername: string) {
 }
 
 export async function unlinkSteamId(userId: string) {
-	const res = await makeRequest<void>(
-		HttpMethod.PATCH,
-		{ url: `/admin/users/${userId}/steam/remove` },
-		true
-	);
+	const res = await makeRequest<void>('PATCH', `/admin/users/${userId}/steam/remove`);
 
 	if (res) {
 		pushNotification({

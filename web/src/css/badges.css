@@ -1,5 +1,5 @@
 .badge {
-	@apply flex h-auto w-auto items-center rounded-md text-center text-sm font-bold text-white;
+	@apply flex h-auto w-auto items-center rounded-md text-center text-sm font-bold text-grey-950;
 }
 .badge-primary {
 	@apply bg-primary px-1 py-0.5;
