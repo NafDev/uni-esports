@@ -1,25 +1,40 @@
 <script lang="ts">
 	import PageTitle from '$/components/base/pageTitle.svelte';
-	import placeholder from '$/images/maps/csgo/placeholder.png?w=100&imagetools';
 	import ancient from '$/images/maps/csgo/ancient.jpg?w=100&imagetools';
 	import anubis from '$/images/maps/csgo/anubis.jpg?w=100&imagetools';
 	import inferno from '$/images/maps/csgo/inferno.jpg?w=100&imagetools';
 	import mirage from '$/images/maps/csgo/mirage.jpg?w=100&imagetools';
 	import nuke from '$/images/maps/csgo/nuke.jpg?w=100&imagetools';
 	import overpass from '$/images/maps/csgo/overpass.jpg?w=100&imagetools';
+	import placeholder from '$/images/maps/csgo/placeholder.png?w=100&imagetools';
 	import vertigo from '$/images/maps/csgo/vertigo.jpg?w=100&imagetools';
 
+	import { browser } from '$app/environment';
+	import { sse } from '$lib/api/http';
+	import { sendVetoRequest } from '$lib/api/matches';
+	import { isSignedIn, userInfo } from '$lib/stores/auth';
 	import { gameStore } from '$lib/stores/games';
+	import { formatSeconds } from '$lib/util';
 	import { User } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
-	import type { PageData } from './$types';
-	import { sse } from '$lib/api/http';
 	import type { MatchService } from '@uni-esports/interfaces';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
 
 	$: team1 = data.teams.find((team) => team.teamNumber === 1);
 	$: team2 = data.teams.find((team) => team.teamNumber === 2);
+	$: hasVetoHand =
+		$isSignedIn &&
+		$userInfo.id === vetoingTeam?.members.find((player) => player.id && player.captain)?.id;
+
+	let secondsTillVetoStart = (data.startTime.getTime() - Date.now()) / 1000;
+
+	if (browser && !data.map && !data.vetoOngoing) {
+		let inter = setInterval(() => {
+			secondsTillVetoStart >= 0 ? (secondsTillVetoStart -= 1) : clearInterval(inter);
+		}, 1000);
+	}
 
 	const formatDate = new Intl.DateTimeFormat('en-GB', {
 		day: 'numeric',
@@ -44,7 +59,7 @@
 	$: remainingMaps =
 		vetoedMaps !== undefined ? mapPool.filter((map) => !vetoedMaps.includes(map)) : undefined;
 
-	let vetoingTeam;
+	let vetoingTeam: typeof team1;
 	$: {
 		if (Array.isArray(vetoedMaps)) {
 			vetoingTeam = vetoedMaps.length % 2 === 0 ? team1 : team2;
@@ -61,7 +76,7 @@
 			`/matches/${data.id}/events`,
 			{
 				type: 'veto_start',
-				fn: (event: MessageEvent<MatchService['match.veto.start']>) => {
+				fn: (event: MessageEvent<string>) => {
 					console.log(event.data);
 
 					updateVetoTimer(new Date());
@@ -73,8 +88,8 @@
 			},
 			{
 				type: 'veto_update',
-				fn: (event: MessageEvent<MatchService['match.veto.update']>) => {
-					const data: typeof event.data = JSON.parse(event.data as unknown as string);
+				fn: (event: MessageEvent<string>) => {
+					const data: MatchService['match.veto.update'] = JSON.parse(event.data);
 					console.log(data);
 
 					if (!Array.isArray(vetoedMaps)) vetoedMaps = [];
@@ -99,18 +114,25 @@
 		);
 	}
 
+	let updateVetoTimerId: number;
 	function updateVetoTimer(lastVetoTime: Date) {
+		clearInterval(updateVetoTimerId);
+
 		const secondsSinceLastVeto = (Date.now() - lastVetoTime.getTime()) / 1000;
 
 		vetoTimeoutSecs = 30 - Math.floor(secondsSinceLastVeto);
 
-		const updateTimeout = setInterval(() => {
+		updateVetoTimerId = setInterval(() => {
 			if (vetoTimeoutSecs > 0) {
 				vetoTimeoutSecs = vetoTimeoutSecs - 1;
 			} else {
-				clearInterval(updateTimeout);
+				clearInterval(updateVetoTimerId);
 			}
-		}, 1000);
+		}, 1000) as unknown as number;
+	}
+
+	function doVeto(veto: string) {
+		sendVetoRequest(data.id, { gameId: 'csgo', teamId: vetoingTeam.id, veto });
 	}
 </script>
 
@@ -145,8 +167,13 @@
 
 	<div class="mx-auto max-w-[320px] flex-1 rounded-2xl">
 		{#if !data.vetoOngoing}
-			<p class="mt-4 text-center font-bold">Map</p>
-
+			{#if data.map || secondsTillVetoStart > 60 * 15}
+				<p class="mt-4 text-center font-bold">Map</p>
+			{:else}
+				<p class="mt-4 text-center font-bold">
+					Map veto starts in {formatSeconds(secondsTillVetoStart)}
+				</p>
+			{/if}
 			<div
 				class="my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
 			>
@@ -180,7 +207,9 @@
 						</div>
 						<p class="mx-5 font-bold">{maps.get(map).displayName}</p>
 					</div>
-					<button class="btn primary mr-1">Veto</button>
+					{#if hasVetoHand}
+						<button class="btn primary mr-2" on:click={() => doVeto(map)}>Veto</button>
+					{/if}
 				</div>
 			{/each}
 			{#each vetoedMaps as map}

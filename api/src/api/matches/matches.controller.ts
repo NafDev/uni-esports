@@ -24,7 +24,6 @@ import { MatchService } from './matches.service';
 export class MatchController {
 	constructor(private readonly matchService: MatchService) {}
 
-	@UseGuards(AuthGuard)
 	@Sse(':id/events')
 	matchSetupEvents(@Param('id', ParseUUIDPipe) matchId: string) {
 		return this.matchService.matchEvents(matchId);

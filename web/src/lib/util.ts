@@ -39,3 +39,25 @@ export function stripEmptyStrings(obj: Record<string, any>) {
 
 	return newObj;
 }
+
+/**
+ * Format seconds to hh:mm:ss
+ *
+ * Adapted from https://stackoverflow.com/a/9934957
+ */
+export const formatSeconds = (secs: number) => {
+	const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+
+	let str = '';
+
+	const h = Math.floor(secs / 3600);
+	if (h > 0) str += pad(h) + ':';
+
+	const m = Math.floor(secs / 60) - h * 60;
+	if (m > 0 || str.length !== 0) str += pad(m) + ':';
+
+	const s = Math.floor(secs - h * 3600 - m * 60);
+	if (s > 0 || str.length !== 0) str += pad(s);
+
+	return str;
+};

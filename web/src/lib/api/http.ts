@@ -2,6 +2,7 @@ import { BASE_API_URL } from '$/lib/config';
 import { browser } from '$app/environment';
 import { pushNotification } from '$lib/stores/notifications';
 import { onDestroy, onMount } from 'svelte';
+import { dev } from '$app/environment';
 
 type HttpResponse<T> = {
 	readonly status: number;
@@ -36,6 +37,7 @@ export async function makeRequest<T>(
 			method,
 			body: json,
 			...config,
+			credentials: dev ? 'include' : 'same-origin',
 			headers: { 'Content-Type': 'application/json; charset=utf-8', ...config.headers }
 		});
 

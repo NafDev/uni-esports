@@ -2,7 +2,8 @@ import type {
 	GameListItem,
 	IMatchInfo,
 	IUpcomingMatch,
-	MatchService
+	MatchService,
+	VetoRequest
 } from '@uni-esports/interfaces';
 import { makeRequest } from './http';
 
@@ -43,4 +44,8 @@ export async function getVetoStatus(matchId: string, fetchWrapper: typeof fetch)
 	if (res) {
 		return res.json;
 	}
+}
+
+export function sendVetoRequest(matchId: string, body: VetoRequest) {
+	void makeRequest<void>('POST', `/matches/${matchId}/veto/request`, body);
 }

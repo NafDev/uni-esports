@@ -43,7 +43,11 @@
 		<p class="text-lg font-bold">{gameTitle}</p>
 		<p>{subheading}</p>
 		<div class="flex flex-1 items-center justify-center">
-			<p class="font-bold">Starts in {formatDistanceToNowStrict(startTime)}</p>
+			<p class="font-bold">
+				{startTime.getTime() >= Date.now()
+					? `Starts in ${formatDistanceToNowStrict(startTime)}`
+					: 'In progress'}
+			</p>
 		</div>
 	</div>
 </div>

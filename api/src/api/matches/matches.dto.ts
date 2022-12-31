@@ -29,6 +29,7 @@ export class VetoRequestBody implements VetoRequest {
 	veto!: string;
 
 	@Transform((gameId) => gameId.value.toLowerCase())
+	@IsString()
 	gameId!: GameId;
 }
 
