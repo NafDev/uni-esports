@@ -2,14 +2,20 @@ import { getMatchInfo, getVetoStatus } from '$lib/api/matches';
 import { getTeamById } from '$lib/api/teams';
 import { error } from '@sveltejs/kit';
 import type { IMatchDetailsCsgo, TeamDto, TeamMemberDto } from '@uni-esports/interfaces';
-import { isAfter } from 'date-fns';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch, params }) => {
 	const matchId = params.id;
 
-	type MatchDetails = Omit<IMatchDetailsCsgo, 'status' | 'teams'> & {
-		status: 'Match scheduled' | 'Match in progress' | 'Match complete' | 'Veto in progress';
+	type MatchStatus =
+		| 'Match scheduled'
+		| 'Match in progress'
+		| 'Match complete'
+		| 'Match cancelled'
+		| 'Veto in progress';
+
+	type MatchDetails = Omit<IMatchDetailsCsgo, 'teams'> & {
+		status: MatchStatus;
 		teams: Array<IMatchDetailsCsgo['teams'][number] & TeamDto & { members: TeamMemberDto[] }>;
 		vetoOngoing: boolean;
 		vetoStatus?: { vetoed: string[]; teamId: number; time: string };
@@ -25,11 +31,23 @@ export const load: PageLoad = async ({ fetch, params }) => {
 
 	props.startTime = new Date(matchInfo.startTime);
 
-	props.status = isAfter(props.startTime, Date.now())
-		? 'Match scheduled'
-		: matchInfo.status === 'Completed'
-		? 'Match complete'
-		: 'Match in progress';
+	switch (matchInfo.status) {
+		case 'Scheduled':
+			props.status = 'Match scheduled';
+			break;
+		case 'Setup':
+			props.status = 'Veto in progress';
+			break;
+		case 'Ongoing':
+			props.status = 'Match in progress';
+			break;
+		case 'Completed':
+			props.status = 'Match complete';
+			break;
+		case 'Cancelled':
+			props.status = 'Match cancelled';
+			break;
+	}
 
 	props.teams = [];
 

@@ -14,5 +14,5 @@
 		"editor.defaultFormatter": "samverschueren.linter-xo"
 	},
 	"material-icon-theme.activeIconPack": "nest",
-	"cSpell.words": ["csgo", "esports", "nats", "nestjs", "pino", "supertokens"]
+	"cSpell.words": ["csgo", "dathost", "esports", "nats", "nestjs", "pino", "supertokens", "UKUE"]
 }

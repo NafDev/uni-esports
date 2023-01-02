@@ -39,5 +39,25 @@ export interface MatchService {
 		matchId: string;
 		result: string;
 		gameId: GameId;
+	},
+	'match.server.start': {
+		matchId: string;
+		connectString: string;
+	},
+	'match.event.csgo.round': {
+		matchId: string
+		roundData: Record<string, any>
+	},
+	'match.event.csgo.match': {
+		matchId: string
+		matchData: Record<string, any>
+	},
+	'match_round': { // SSE Data
+		team1Score: number,
+		team2Score: number
+	},
+	'match_end': { // SSE Data
+		team1Score: number,
+		team2Score: number
 	}
 }

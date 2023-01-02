@@ -26,7 +26,10 @@ import { NatsService } from '../../services/clients/nats.service';
 export class MatchService {
 	private readonly logger = new LoggerService(MatchService.name);
 
-	private readonly matchEventHandler = new Map<string, Subject<MessageEvent>>();
+	private readonly matchEventHandler = new Map<
+		string,
+		{ public: Subject<MessageEvent>; private: Subject<MessageEvent> }
+	>();
 
 	constructor(private readonly prisma: PrismaService, private readonly natsClient: NatsService) {}
 
@@ -41,17 +44,16 @@ export class MatchService {
 				team: { users: { some: { userId: session.getUserId() } } }
 			}
 		};
+		const betweenTodayAndNextWeek = {
+			gte: new Date(),
+			lte: add(Date.now(), { weeks: 1 })
+		};
 
 		const data = await this.prisma.match.findMany({
 			where: {
 				gameId: gameIdFilter,
 				status: whereUserIsPlaying ? { in: ['Ongoing', 'Scheduled', 'Setup'] } : undefined,
-				startTime: whereUserIsPlaying
-					? undefined
-					: {
-							gte: new Date(),
-							lte: add(Date.now(), { weeks: 1 })
-					  },
+				startTime: whereUserIsPlaying ? undefined : betweenTodayAndNextWeek,
 				teams: filterByUserPlaying || undefined
 			},
 			select: {
@@ -81,13 +83,13 @@ export class MatchService {
 		}));
 	}
 
-	async getMatchInfo(id: string) {
+	async getMatchInfo(id: string, session?: SessionContainer) {
 		const match = await this.prisma.match.findUnique({
 			where: { id },
 			include: {
 				teams: {
 					select: {
-						team: { select: { id: true, name: true } },
+						team: { select: { id: true, name: true, users: { select: { userId: true } } } },
 						teamNumber: true
 					}
 				}
@@ -98,6 +100,20 @@ export class MatchService {
 			throw new NotFoundException();
 		}
 
+		let userInMatch = false;
+
+		if (session) {
+			const foundUserInMatch = match.teams.find((team) => {
+				return team.team.users.find((player) => {
+					return player.userId === session.getUserId();
+				});
+			});
+
+			if (foundUserInMatch) {
+				userInMatch = true;
+			}
+		}
+
 		const matchCleaned = {
 			...match,
 			teams: match.teams.map((team) => ({ ...team.team, teamNumber: team.teamNumber }))
@@ -105,7 +121,7 @@ export class MatchService {
 
 		switch (match.gameId as GameId) {
 			case 'csgo':
-				return this.getCsgoMatchDetails(matchCleaned);
+				return this.getCsgoMatchDetails(matchCleaned, userInMatch);
 			default:
 				this.logger.warn('Unknown game ID when fetching match details', { matchId: id });
 				break;
@@ -113,9 +129,13 @@ export class MatchService {
 	}
 
 	async getCsgoMatchDetails(
-		match: Match & { teams: Array<{ id: number; name: string; teamNumber: number }> }
+		match: Match & { teams: Array<{ id: number; name: string; teamNumber: number }> },
+		userInMatch: boolean
 	): Promise<IMatchInfo | IMatchDetailsCsgo> {
-		const matchDetails = await this.prisma.matchDetailsCsgo.findUnique({ where: { matchId: match.id } });
+		const matchDetails = await this.prisma.matchDetailsCsgo.findUnique({
+			where: { matchId: match.id },
+			select: { map: true, matchId: true, serverConnect: userInMatch, team1score: true, team2score: true }
+		});
 
 		if (!matchDetails) {
 			return match;
@@ -123,6 +143,7 @@ export class MatchService {
 
 		return {
 			...match,
+			connectString: matchDetails.serverConnect,
 			map: matchDetails.map,
 			team1Score: matchDetails.team1score,
 			team2Score: matchDetails.team2score
@@ -162,11 +183,25 @@ export class MatchService {
 		void this.publishVetoRequest({ matchId, teamId, veto }, gameId);
 	}
 
-	matchEvents(matchId: string): Observable<MessageEvent> {
+	async matchEvents(matchId: string, session: SessionContainer) {
+		let isPlayer = false;
+
+		if (session) {
+			const findPlayer = await this.prisma.teamOnMatch.count({
+				where: {
+					matchId,
+					team: { users: { some: { userId: session.getUserId() } } }
+				}
+			});
+			if (findPlayer === 1) {
+				isPlayer = true;
+			}
+		}
+
 		let stream = this.matchEventHandler.get(matchId);
 
 		if (!stream) {
-			this.matchEventHandler.set(matchId, new Subject());
+			this.matchEventHandler.set(matchId, { private: new Subject(), public: new Subject() });
 			stream = this.matchEventHandler.get(matchId);
 		}
 
@@ -175,10 +210,14 @@ export class MatchService {
 			throw new InternalServerErrorException();
 		}
 
-		return stream.asObservable();
+		if (isPlayer) {
+			return stream.private.asObservable();
+		}
+
+		return stream.public.asObservable();
 	}
 
-	broadcastMatchEvent(matchId: string, data: MessageEvent) {
+	broadcastMatchEvent(matchId: string, data: MessageEvent, privilegedEvent = false) {
 		const stream = this.matchEventHandler.get(matchId);
 
 		if (!stream) {
@@ -190,7 +229,13 @@ export class MatchService {
 
 		this.logger.log('Broadcasting match event', { matchId, data });
 
-		stream.next(data);
+		if (privilegedEvent) {
+			stream.private.next(data);
+			return;
+		}
+
+		stream.private.next(data);
+		stream.public.next(data);
 	}
 
 	private async publishVetoRequest(payload: MatchServicePayload['match.veto._gameId.request'], gameId: GameId) {

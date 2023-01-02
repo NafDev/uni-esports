@@ -14,6 +14,7 @@ import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
 import { NatsModule } from './services/clients/nats.module';
 import { MatchSchedulingModule } from './services/match-scheduling/match-scheduling.module';
+import { WebhooksModule } from './api/webhooks/webhooks.module';
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import { MatchSchedulingModule } from './services/match-scheduling/match-schedul
 						redact: {
 							paths: [
 								'req.headers.cookie',
+								'req.headers.authorization',
 								'res.headers["set-cookie"]',
 								'res.headers["content-security-policy"]',
 								'res.headers["cross-origin-embedder-policy"]',
@@ -67,7 +69,8 @@ import { MatchSchedulingModule } from './services/match-scheduling/match-schedul
 		EmailModule,
 		AdminModule,
 		MatchSchedulingModule,
-		GameModule
+		GameModule,
+		WebhooksModule
 	],
 	providers: [PrismaService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 	controllers: [AppController]

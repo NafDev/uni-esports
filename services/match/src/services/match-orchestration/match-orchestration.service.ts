@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import type { MatchService } from '@uni-esports/interfaces';
-import type postgres from 'postgres';
 import { PostgresError } from 'postgres';
 import { LoggerService, logPostgresError } from '../../common/logger-wrapper';
 import { DatabaseService } from '../../db/db.service';
 import { NatsService } from '../clients/nats.service';
 import { CsgoService } from './csgo/csgo.service';
+import { MatchOrchestrationError } from './match-orchestration.error';
 
 @Injectable()
 export class MatchOrchestrationService {
@@ -17,7 +17,7 @@ export class MatchOrchestrationService {
 		private readonly csgoService: CsgoService
 	) {}
 
-	async startMatch(data: MatchService['match.start']) {
+	async setupMatch(data: MatchService['match.start']) {
 		this.logger.log('Processing match start event', { ...data });
 
 		const { matchId, gameId } = data;
@@ -27,29 +27,19 @@ export class MatchOrchestrationService {
 		}
 
 		const sql = this.db.query;
-		let rows: postgres.Row[];
+		const [match] = await this.db.query<Array<{ id: string }>>`
+			update
+				${sql('match')}
+			set
+				${sql({ status: 'Setup' })}
+			where
+				${sql('id')} = ${matchId} and
+				${sql('status')} = 'Scheduled'
+			returning
+				${sql('id')}
+		`;
 
-		try {
-			rows = await this.db.query`
-				update
-					${sql('match')}
-				set
-					${sql({ status: 'Setup' })}
-				where
-					${sql('id')} = ${matchId}
-				returning
-					${sql('id')}
-			`;
-		} catch (error: unknown) {
-			if (error instanceof PostgresError) {
-				logPostgresError(error, this.logger);
-				return;
-			}
-
-			throw error;
-		}
-
-		if (!rows || rows.length === 0) {
+		if (!match) {
 			this.logger.warn('Match ID was not found when updating match status', { matchId });
 			return;
 		}
@@ -71,7 +61,7 @@ export class MatchOrchestrationService {
 		}
 	}
 
-	async startMatchServerFromVetoResult(data: MatchService['match.veto.result']) {
+	async startMatchWithVetoResult(data: MatchService['match.veto.result']) {
 		const { matchId, result, gameId } = data;
 
 		if (!matchId || !result || !gameId) {
@@ -79,16 +69,57 @@ export class MatchOrchestrationService {
 			return;
 		}
 
-		switch (gameId) {
-			case 'csgo': {
-				void this.csgoService.startMatch(data.matchId, data.result);
-				break;
+		try {
+			switch (gameId) {
+				case 'csgo': {
+					const matchInfo: MatchService['match.server.start'] = await this.csgoService.startMatch(
+						data.matchId,
+						data.result
+					);
+					this.natsClient.emit('match.server.start', matchInfo);
+					break;
+				}
+
+				default: {
+					this.logger.error('Unknown game ID', { ...data });
+					break;
+				}
+			}
+		} catch (error: unknown) {
+			if (error instanceof MatchOrchestrationError) {
+				this.logger.error(error.message, { matchId }, error.stack);
 			}
 
-			default: {
-				this.logger.error('Unknown game ID', { ...data });
-				break;
+			if (error instanceof PostgresError) {
+				logPostgresError(error, this.logger);
 			}
+
+			await this.cancelMatch(matchId);
+		}
+	}
+
+	private async cancelMatch(matchId: string) {
+		this.logger.log('Cancelling match due to caught error', { matchId });
+
+		const sql = this.db.query;
+		try {
+			await this.db.query`
+				update
+					${sql('match')}
+				set
+					${sql('status')} = 'Cancelled'
+				where
+					${sql('id')} = ${matchId}
+			`;
+		} catch (error: unknown) {
+			if (error instanceof PostgresError) {
+				logPostgresError(error, this.logger);
+				this.logger.warn('Failed to set match status to cancelled', { matchId });
+
+				return;
+			}
+
+			throw error;
 		}
 	}
 }

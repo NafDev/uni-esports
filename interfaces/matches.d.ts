@@ -37,6 +37,7 @@ export type IMatchDetailsCsgo = IMatchInfo & {
 	map: string | null;
 	team1Score: number;
 	team2Score: number;
+	connectString: string | null;
 };
 
 export interface ICreateNewMatch {

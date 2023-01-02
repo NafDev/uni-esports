@@ -6,6 +6,7 @@ import { NatsModule } from './services/clients/nats.module';
 import { MatchSchedulingModule } from './services/match-scheduling/match-scheduling.module';
 import { VetoModule } from './services/veto/veto.module';
 import { MatchOrchestrationModule } from './services/match-orchestration/match-orchestration.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
 	imports: [
@@ -24,7 +25,8 @@ import { MatchOrchestrationModule } from './services/match-orchestration/match-o
 		NatsModule,
 		MatchSchedulingModule,
 		VetoModule,
-		MatchOrchestrationModule
+		MatchOrchestrationModule,
+		AuthModule
 	],
 	controllers: [],
 	providers: []

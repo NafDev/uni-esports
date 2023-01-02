@@ -22,8 +22,10 @@
 
 	export let data: PageData;
 
+	$: showScores = data.status === 'Match complete' || data.status === 'Match in progress';
 	$: team1 = data.teams.find((team) => team.teamNumber === 1);
 	$: team2 = data.teams.find((team) => team.teamNumber === 2);
+	$: winningTeam = data.team1Score > data.team2Score ? team1 : team2;
 	$: hasVetoHand =
 		$isSignedIn &&
 		$userInfo.id === vetoingTeam?.members.find((player) => player.id && player.captain)?.id;
@@ -71,8 +73,9 @@
 		updateVetoTimer(new Date(data.vetoStatus.time));
 	}
 
-	if (data.status !== 'Match complete') {
-		sse(
+	if (data.status !== 'Match complete' && data.status !== 'Match cancelled') {
+		let eventSource: EventSource;
+		eventSource = sse(
 			`/matches/${data.id}/events`,
 			{
 				type: 'veto_start',
@@ -108,6 +111,42 @@
 						status: 'Match in progress',
 						map: event.data,
 						vetoOngoing: false
+					};
+				}
+			},
+			{
+				type: 'match_server',
+				fn: (event: MessageEvent) => {
+					const eventData: MatchService['match.server.start'] = JSON.parse(event.data);
+					console.log(eventData);
+
+					data = { ...data, connectString: eventData.connectString };
+				}
+			},
+			{
+				type: 'match_end',
+				fn: (event: MessageEvent) => {
+					const eventData: MatchService['match_end'] = JSON.parse(event.data);
+
+					data = {
+						...data,
+						team1Score: eventData.team1Score,
+						team2Score: eventData.team2Score,
+						status: 'Match complete'
+					};
+
+					eventSource.close();
+				}
+			},
+			{
+				type: 'match_round',
+				fn: (event: MessageEvent) => {
+					const eventData: MatchService['match_round'] = JSON.parse(event.data);
+
+					data = {
+						...data,
+						team1Score: eventData.team1Score,
+						team2Score: eventData.team2Score
 					};
 				}
 			}
@@ -149,8 +188,104 @@
 	<p class="text-sm font-bold">Best of 1</p>
 </div>
 
-<div class="mt-10 flex flex-row flex-wrap justify-center gap-8">
-	<div class="h-fit w-[360px] rounded-2xl bg-gradient-to-br from-[#4F6694]/20 to-transparent p-8">
+<div class="relative mt-10 flex flex-row flex-wrap justify-center gap-8 2xl:justify-between">
+	<div class="static left-0 right-0 mx-auto w-full rounded-2xl 2xl:absolute 2xl:w-[320px]">
+		<div class="mx-auto w-[320px] max-w-full">
+			{#if !data.vetoOngoing}
+				{#if data.map || secondsTillVetoStart > 60 * 15}
+					<p class="mt-4 text-center font-bold">Map</p>
+				{:else}
+					<p class="mt-4 text-center font-bold">
+						Map veto starts in {formatSeconds(secondsTillVetoStart)}
+					</p>
+				{/if}
+				<div
+					class="my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
+				>
+					<div class="flex h-full flex-row items-center">
+						<div class="h-full w-20 bg-black">
+							<img
+								class="h-full w-full object-cover object-center"
+								src={data.map ? maps.get(data.map).thumb : placeholder}
+								alt=""
+							/>
+						</div>
+						<p class="mx-5 font-bold">{data.map ? maps.get(data.map).displayName : 'TBD'}</p>
+					</div>
+				</div>
+				{#if data.status === 'Match in progress' && data.connectString}
+					<div class="flex flex-col">
+						<a
+							class="self-center"
+							href={`steam://connect/${data.connectString.split(';')[0].substring(8)}`}
+						>
+							<button class="btn primary my-2 mb-4">Connect to game server</button>
+						</a>
+						<p class="mb-2 text-xs text-grey-700">
+							If button above does not work, copy the connect command below and paste into your game
+							console
+						</p>
+						<p>Server IP</p>
+						<div class="mt-1 w-full select-all rounded-md bg-white bg-opacity-5 p-2.5 text-sm">
+							{data.connectString}
+						</div>
+					</div>
+				{/if}
+			{:else}
+				<p class="mt-4 text-center font-bold">Map Veto</p>
+				<p class="mb-4 text-center text-sm font-bold">
+					{vetoingTeam?.name ?? team1.name} is voting: {vetoTimeoutSecs ?? 0}s
+				</p>
+				{#each remainingMaps as map}
+					<div
+						class="my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
+					>
+						<div class="flex h-full flex-row items-center">
+							<div class="h-full w-20 bg-black">
+								<img
+									class="h-full w-full object-cover object-center"
+									src={maps.get(map).thumb}
+									alt=""
+								/>
+							</div>
+							<p class="mx-5 font-bold">{maps.get(map).displayName}</p>
+						</div>
+						{#if hasVetoHand}
+							<button class="btn primary mr-2" on:click={() => doVeto(map)}>Veto</button>
+						{/if}
+					</div>
+				{/each}
+				{#each vetoedMaps as map}
+					<div
+						class="group my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
+					>
+						<div class="flex h-full flex-row items-center">
+							<div class="h-full w-20 bg-black grayscale">
+								<img
+									class="h-full w-full object-cover object-center"
+									src={maps.get(map).thumb}
+									alt=""
+								/>
+							</div>
+							<p class="mx-5 font-bold text-grey-700">{maps.get(map).displayName}</p>
+						</div>
+					</div>
+				{/each}
+			{/if}
+		</div>
+	</div>
+
+	<div
+		class="relative h-fit w-[360px] rounded-2xl border-primary bg-gradient-to-br from-[#4F6694]/20 to-transparent p-8"
+		class:border-2={data.status === 'Match complete' && winningTeam.id === team1.id}
+	>
+		{#if showScores}
+			<div class="mb-4 flex flex-col items-center 2xl:absolute 2xl:-top-24 2xl:left-36">
+				<p class="text-xl font-bold text-grey-700">Score</p>
+				<p class="text-xl font-bold text-grey-950">{data.team1Score}</p>
+			</div>
+		{/if}
+
 		<p class="mb-2 text-xl font-bold">{team1.name}</p>
 		<p class="text-grey-700">{team1.university}</p>
 
@@ -165,73 +300,17 @@
 		{/each}
 	</div>
 
-	<div class="mx-auto max-w-[320px] flex-1 rounded-2xl">
-		{#if !data.vetoOngoing}
-			{#if data.map || secondsTillVetoStart > 60 * 15}
-				<p class="mt-4 text-center font-bold">Map</p>
-			{:else}
-				<p class="mt-4 text-center font-bold">
-					Map veto starts in {formatSeconds(secondsTillVetoStart)}
-				</p>
-			{/if}
-			<div
-				class="my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
-			>
-				<div class="flex h-full flex-row items-center">
-					<div class="h-full w-20 bg-black">
-						<img
-							class="h-full w-full object-cover object-center"
-							src={data.map ? maps.get(data.map).thumb : placeholder}
-							alt=""
-						/>
-					</div>
-					<p class="mx-5 font-bold">{data.map ? maps.get(data.map).displayName : 'TBD'}</p>
-				</div>
+	<div
+		class="relative h-fit w-[360px] rounded-2xl border-primary bg-gradient-to-bl from-[#4F6694]/20 to-transparent p-8"
+		class:border-2={data.status === 'Match complete' && winningTeam.id === team2.id}
+	>
+		{#if showScores}
+			<div class="mb-4 flex flex-col items-center 2xl:absolute 2xl:-top-24 2xl:left-36">
+				<p class="text-xl font-bold text-grey-700">Score</p>
+				<p class="text-xl font-bold text-grey-950">{data.team2Score}</p>
 			</div>
-		{:else}
-			<p class="mt-4 text-center font-bold">Map Veto</p>
-			<p class="mb-4 text-center text-sm font-bold">
-				{vetoingTeam?.name ?? team1.name} is voting: {vetoTimeoutSecs ?? 0}s
-			</p>
-			{#each remainingMaps as map}
-				<div
-					class="my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
-				>
-					<div class="flex h-full flex-row items-center">
-						<div class="h-full w-20 bg-black">
-							<img
-								class="h-full w-full object-cover object-center"
-								src={maps.get(map).thumb}
-								alt=""
-							/>
-						</div>
-						<p class="mx-5 font-bold">{maps.get(map).displayName}</p>
-					</div>
-					{#if hasVetoHand}
-						<button class="btn primary mr-2" on:click={() => doVeto(map)}>Veto</button>
-					{/if}
-				</div>
-			{/each}
-			{#each vetoedMaps as map}
-				<div
-					class="group my-4 flex h-12 w-full items-center justify-between overflow-clip rounded-lg bg-gradient-to-tr from-[#283653] to-[#303C56]"
-				>
-					<div class="flex h-full flex-row items-center">
-						<div class="h-full w-20 bg-black grayscale">
-							<img
-								class="h-full w-full object-cover object-center"
-								src={maps.get(map).thumb}
-								alt=""
-							/>
-						</div>
-						<p class="mx-5 font-bold text-grey-700">{maps.get(map).displayName}</p>
-					</div>
-				</div>
-			{/each}
 		{/if}
-	</div>
 
-	<div class="h-fit w-[360px] rounded-2xl bg-gradient-to-bl from-[#4F6694]/20 to-transparent p-8">
 		<p class="mb-2 text-right text-xl font-bold">{team2.name}</p>
 		<p class="text-right text-grey-700">{team2.university}</p>
 
