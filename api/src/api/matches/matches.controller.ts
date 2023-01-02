@@ -24,9 +24,10 @@ import { MatchService } from './matches.service';
 export class MatchController {
 	constructor(private readonly matchService: MatchService) {}
 
+	@UseGuards(AuthGuardNotRequired)
 	@Sse(':id/events')
-	matchSetupEvents(@Param('id', ParseUUIDPipe) matchId: string) {
-		return this.matchService.matchEvents(matchId);
+	async matchSetupEvents(@Param('id', ParseUUIDPipe) matchId: string, @Session() session: SessionContainer) {
+		return this.matchService.matchEvents(matchId, session);
 	}
 
 	@UseGuards(AuthGuardNotRequired)
@@ -39,9 +40,10 @@ export class MatchController {
 		return this.matchService.getUpcomingMatches(session, gameIdFilter, forSessionUserFilter);
 	}
 
+	@UseGuards(AuthGuardNotRequired)
 	@Get(':id')
-	async getMatchInfo(@Param('id', ParseUUIDPipe) id: string) {
-		return this.matchService.getMatchInfo(id);
+	async getMatchInfo(@Param('id', ParseUUIDPipe) id: string, @Session() session: SessionContainer) {
+		return this.matchService.getMatchInfo(id, session);
 	}
 
 	@Get(':id/veto/status')
@@ -65,6 +67,21 @@ export class MatchController {
 				gameId: body.gameId
 			},
 			session
+		);
+	}
+
+	@EventPattern('match.server.start')
+	matchServerStartedEvent(@Payload() data: MatchServicePayload['match.server.start']) {
+		this.matchService.broadcastMatchEvent(
+			data.matchId,
+			{
+				type: 'match_server',
+				data: {
+					...data,
+					matchId: undefined
+				}
+			},
+			true
 		);
 	}
 

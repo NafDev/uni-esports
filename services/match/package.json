@@ -17,13 +17,16 @@
 		"date-fns": "^2.29.3",
 		"envalid": "^7.3.1",
 		"ms": "3.0.0-canary.1",
+		"nanoid": "3.3.4",
 		"nats": "^2.9.2",
 		"nestjs-pino": "^3.1.1",
 		"pino-http": "^8.3.0",
 		"postgres": "^3.3.2",
 		"reflect-metadata": "^0.1.13",
 		"rxjs": "^7.6.0",
-		"supertokens-node": "^11.3.0"
+		"steamid": "^2.0.0",
+		"supertokens-node": "^12.1.4",
+		"undici": "^5.14.0"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "^9.1.5",
@@ -31,6 +34,7 @@
 		"@nestjs/testing": "^9.2.1",
 		"@types/cron": "^2.0.0",
 		"@types/node": "^18.11.15",
+		"@types/steamid": "^2.0.1",
 		"dotenv": "^16.0.1",
 		"nodemon": "^2.0.20",
 		"pino-pretty": "^8.1.0",

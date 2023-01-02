@@ -77,7 +77,7 @@ export class MatchSchedulingService implements OnApplicationBootstrap {
 	}
 
 	processMatchStartEvent(data: MatchService['match.start']) {
-		void this.matchOrchestration.startMatch(data);
+		void this.matchOrchestration.setupMatch(data);
 	}
 
 	async pollScheduledMatches() {

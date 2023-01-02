@@ -153,6 +153,7 @@ enum MatchStatus {
   Setup
   Ongoing
   Completed
+  Cancelled
 }
 
 model Match {
@@ -194,6 +195,11 @@ model MatchDetailsCsgo {
 
   team1steamIds String[] @map("team_1_steam_ids")
   team2steamIds String[] @map("team_2_steam_ids")
+
+  serverConnect        String? @map("server_connect")
+  serverId             String? @map("server_id")
+  steamGameServerToken String? @map("steam_game_server_token")
+  steamGameServerId    String? @map("steam_game_server_id")
 
   match Match @relation(fields: [matchId], references: [id])
 

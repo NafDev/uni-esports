@@ -12,7 +12,7 @@ const appConfig = cleanEnv(process.env, {
 	NATS_SERVER_URL: url({ devDefault: 'nats://localhost:4222' }),
 
 	ST_CORE_URL: url({
-		devDefault: 'http://127.0.0.1:3567/',
+		devDefault: 'http://127.0.0.1:3567',
 		desc: 'The API domain for the SuperTokens Core service'
 	}),
 

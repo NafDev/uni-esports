@@ -47,7 +47,7 @@ export class VetoService {
 
 		switch (gameId) {
 			case 'csgo': {
-				mapPool = appConfig.VETO_CSGO_POOL;
+				mapPool = appConfig.CSGO_VETO_POOL;
 				break;
 			}
 

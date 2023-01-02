@@ -43,6 +43,6 @@ export class VetoController {
 	vetoResult(@Payload() data: MatchService['match.veto.result'], @Ctx() ctx: NatsContext) {
 		this.logger.log('Received event', { pattern: ctx.getSubject() });
 
-		void this.matchOrchestration.startMatchServerFromVetoResult(data);
+		void this.matchOrchestration.startMatchWithVetoResult(data);
 	}
 }
