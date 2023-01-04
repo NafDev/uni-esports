@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
-	import { signIn } from '$/lib/api/auth';
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import logo from '$/images/logo.png';
-	import { onMount } from 'svelte';
+	import { signIn } from '$/lib/api/auth';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { pushNotification } from '$lib/stores/notifications';
-	import PageTitle from '$/components/base/pageTitle.svelte';
+	import { onMount } from 'svelte';
 
 	let redirect: string;
 
@@ -32,7 +32,7 @@
 	}
 </script>
 
-<PageTitle title="Sign in" hasHeading={false} />
+<HeadTitle value="Sign in" />
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

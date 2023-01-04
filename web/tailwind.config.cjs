@@ -12,6 +12,7 @@ module.exports = {
 				700: '#ADB1B8',
 				950: '#F0F4F5'
 			},
+			gold: '#d4af37',
 			primary: '#3372DF',
 			secondary: '#435A8A ',
 			success: '#30b663',

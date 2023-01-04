@@ -1,28 +1,30 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
-	import { Icon } from '@steeze-ui/svelte-icon';
-	import { Users } from '@steeze-ui/heroicons';
-	import { playerTeams } from '$lib/stores/teams';
 	import NewTeamModal from '$/components/teams/newTeamModal.svelte';
+	import { playerTeams } from '$lib/stores/teams';
+	import { Users } from '@steeze-ui/heroicons';
+	import { Icon } from '@steeze-ui/svelte-icon';
 
 	let newTeamModalOpen = false;
 </script>
 
-<PageTitle title="Teams" />
+<HeadTitle value="Teams" />
+<PageTitle value="Teams" />
 
 <NewTeamModal bind:open={newTeamModalOpen} />
 
 <div class="flex flex-row items-center justify-between px-10">
-	<p class="my-8 text-2xl">Your Teams</p>
+	<p class="my-8 font-bold">Your Teams</p>
 	<button class="btn primary" on:click={() => (newTeamModalOpen = true)}>Create Team</button>
 </div>
 
 {#if $playerTeams?.length}
 	<div class="flex flex-row flex-wrap justify-center">
 		{#each $playerTeams as team (team.id)}
-			<a href={`/teams/${team.id}`}>
+			<a class="max-w-full" href={`/teams/${team.id}`}>
 				<div
-					class="outline-greyText/50 m-3 w-96 min-w-fit rounded-md bg-secondary/20 p-5 outline outline-1 hover:outline-primary"
+					class="m-3 w-96 max-w-full rounded-md bg-secondary/20 p-5 transition-all hover:scale-105 hover:bg-secondary/30 hover:drop-shadow-lg"
 				>
 					<div class="flex flex-row items-center justify-between">
 						<h1 class="text-lg font-bold">{team.name}</h1>

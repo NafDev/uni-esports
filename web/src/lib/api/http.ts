@@ -1,8 +1,7 @@
 import { BASE_API_URL } from '$/lib/config';
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 import { pushNotification } from '$lib/stores/notifications';
 import { onDestroy, onMount } from 'svelte';
-import { dev } from '$app/environment';
 
 type HttpResponse<T> = {
 	readonly status: number;

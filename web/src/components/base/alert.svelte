@@ -1,8 +1,8 @@
 <script lang="ts">
 	import '../../css/notifications.css';
 
+	import { CheckCircle, ExclamationCircle, InformationCircle, XMark } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
-	import { ExclamationCircle, InformationCircle, CheckCircle, X } from '@steeze-ui/heroicons';
 
 	export let type: 'primary' | 'warning' | 'danger' | 'success';
 	export let heading: string = undefined;
@@ -24,7 +24,7 @@
 		on:click={() => removeNotification()}
 		class="absolute top-0 right-0 m-2 rounded-full bg-white bg-opacity-5 hover:bg-opacity-20"
 	>
-		<Icon src={X} size="16" theme="solid" />
+		<Icon src={XMark} size="16" theme="solid" />
 	</span>
 	<div class="flex flex-row items-center justify-center px-4 py-4">
 		<span class="mr-4"><Icon src={icon} size="28" theme="solid" /></span>

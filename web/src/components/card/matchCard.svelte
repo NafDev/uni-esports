@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { formatDistanceToNowStrict } from 'date-fns';
 	import CsgoBg from '$/images/csgo_generic.jpg?w=320&imagetools';
+	import { formatDistanceToNowStrict } from 'date-fns';
 
 	export let game: 'csgo' | 'csgo2v2' | 'league' | 'valorant' | 'overwatch' | 'siege' | 'rcktlg';
 	export let subheading: string;

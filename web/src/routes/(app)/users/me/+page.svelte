@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$/lib/config';
-	import steamSignin from '$/images/sits_small.png';
-	import { formHandler, inputHandler } from '$/lib/form-inputs';
-	import { performPasswordChange, steamAuthRedirect } from '$/lib/api/auth';
-	import { userInfo, user } from '$lib/stores/auth';
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
+	import steamSignin from '$/images/sits_small.png';
+	import { performPasswordChange, steamAuthRedirect } from '$/lib/api/auth';
+	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$/lib/config';
+	import { formHandler, inputHandler } from '$/lib/form-inputs';
+	import { user, userInfo } from '$lib/stores/auth';
 
 	let oldPassword = '';
 	let isLoadingPasswdChange = false;
@@ -39,7 +40,8 @@
 	}
 </script>
 
-<PageTitle title="Profile" />
+<HeadTitle value="Profile" />
+<PageTitle value="Profile" />
 
 <div class="flex flex-row flex-wrap justify-items-stretch">
 	<!-- Generic Profile Fields -->
@@ -121,14 +123,7 @@
 			<label for="steam64Id">Steam</label>
 			{#if $userInfo?.steam64}
 				<div class="mb-5 mt-1 flex items-center">
-					<input
-						class="form"
-						type="text"
-						id="steam64Id"
-						href={`https://steamcommunity.com/profiles/${$userInfo?.steam64}`}
-						value={$userInfo?.steam64}
-						disabled
-					/>
+					<input class="form" type="text" id="steam64Id" value={$userInfo?.steam64} disabled />
 					<a
 						class="ml-4"
 						href={`https://steamcommunity.com/profiles/${$userInfo?.steam64}`}

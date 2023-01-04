@@ -3,26 +3,26 @@
 	import { isSignedIn, user } from '$lib/stores/auth';
 
 	import {
+		AcademicCap,
 		Calendar,
+		ChartBar,
 		ChevronDoubleLeft,
+		ClipboardDocumentCheck,
 		Home,
-		ViewBoards,
 		User,
 		UserGroup,
 		Users,
-		AcademicCap,
-		ChartBar,
-		ClipboardCheck
+		ViewColumns
 	} from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 
-	import csgo from './images/csgo.png?w=20&imagetools';
-	import league from './images/league.png?w=20&imagetools';
-	import logo from './images/logo.png?w=20&imagetools';
-	import overwatch from './images/overwatch.png?w=20&imagetools';
-	import rocket from './images/rocket.png?w=20&imagetools';
-	import siege from './images/siege.png?w=20&imagetools';
-	import valorant from './images/valorant.png?w=18&imagetools';
+	import csgo from '$/images/icons/csgo.png?w=20&imagetools';
+	import league from '$/images/icons/league.png?w=20&imagetools';
+	import logo from '$/images/icons/logo.png?w=20&imagetools';
+	import overwatch from '$/images/icons/overwatch.png?w=20&imagetools';
+	import rocket from '$/images/icons/rocket.png?w=20&imagetools';
+	import siege from '$/images/icons/siege.png?w=20&imagetools';
+	import valorant from '$/images/icons/valorant.png?w=18&imagetools';
 
 	export let mobileSidebarActive: boolean;
 
@@ -47,7 +47,7 @@
 		{
 			name: 'Tournaments',
 			link: '/tournaments',
-			icon: ViewBoards,
+			icon: ViewColumns,
 			disabled: true
 		},
 		{
@@ -89,7 +89,7 @@
 		{
 			name: 'Manage Matches',
 			link: '/admin/matches/list',
-			icon: ClipboardCheck
+			icon: ClipboardDocumentCheck
 		},
 		{
 			name: 'Manage Teams',

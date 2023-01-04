@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ConfirmationModal from '$/components/base/confirmationModal.svelte';
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { getUser, unlinkSteamId, updateUserEmail, updateUsername } from '$lib/api/admin/users';
 	import { USERNAME_CHECK } from '$lib/config';
@@ -100,7 +101,8 @@
 	}
 </script>
 
-<PageTitle title={`${userDetails.username} ~ User Management`} hasHeading={false} />
+<HeadTitle value={`${userDetails.username} ~ User Management`} />
+<PageTitle value="User Management" />
 
 <ConfirmationModal
 	bind:open={modalOpen}

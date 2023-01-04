@@ -2,6 +2,7 @@
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { browser } from '$app/environment';
 
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import Pagination from '$/components/base/pagination.svelte';
 	import { goto } from '$app/navigation';
 	import { getAllTeams } from '$lib/api/admin/teams';
@@ -66,7 +67,8 @@
 	}
 </script>
 
-<PageTitle title="Team Management" />
+<HeadTitle value="Team Management" />
+<PageTitle value="Team Management" />
 
 <form class="mb-5" id="filters" on:submit|preventDefault={() => updateFilters()}>
 	<div class="flex w-full flex-wrap items-center gap-5">

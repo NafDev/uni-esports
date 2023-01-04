@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ConfirmationModal from '$/components/base/confirmationModal.svelte';
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
-	import Crown from '$/icons/Crown.svelte';
 	import { invitePlayerBySearch } from '$/lib/api/teams';
 	import { invalidate } from '$app/navigation';
 	import {
@@ -12,6 +12,7 @@
 	import { inputHandler } from '$lib/form-inputs';
 	import { Deferred } from '$lib/util';
 	import { AcademicCap } from '@steeze-ui/heroicons';
+	import { VipCrown } from '@steeze-ui/remix-icons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import type { TeamMemberDto } from '@uni-esports/interfaces';
 	import type { PageData } from './$types';
@@ -132,7 +133,8 @@
 	}
 </script>
 
-<PageTitle title={`${team?.name ?? 'Team Not Found'} ~ Team Management`} hasHeading={false} />
+<HeadTitle value={`${team?.name ?? 'Team Not Found'} ~ Team Management`} />
+<PageTitle value={'Team Management'} />
 
 {#if team}
 	<ConfirmationModal
@@ -165,7 +167,7 @@
 						<div class="flex flex-row gap-2">
 							{#if member.captain}
 								<div class="flex h-8 items-center">
-									<Crown />
+									<Icon class="fill-gold" src={VipCrown} theme="solid" size="20" />
 								</div>
 							{:else}
 								<button class="btn primary" on:click={() => doReassignCaptain(member)}

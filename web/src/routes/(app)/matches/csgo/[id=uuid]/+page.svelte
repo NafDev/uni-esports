@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import ancient from '$/images/maps/csgo/ancient.jpg?w=100&imagetools';
 	import anubis from '$/images/maps/csgo/anubis.jpg?w=100&imagetools';
@@ -15,7 +16,7 @@
 	import { isSignedIn, userInfo } from '$lib/stores/auth';
 	import { gameStore } from '$lib/stores/games';
 	import { formatSeconds } from '$lib/util';
-	import { User } from '@steeze-ui/heroicons';
+	import { VipCrown } from '@steeze-ui/remix-icons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import type { MatchService } from '@uni-esports/interfaces';
 	import type { PageData } from './$types';
@@ -175,7 +176,8 @@
 	}
 </script>
 
-<PageTitle title="Match room" hasHeading={true} />
+<HeadTitle value="Match room" />
+<PageTitle value="Match room" />
 
 <h2 class="text- mb-1 font-bold text-grey-950">
 	{$gameStore.get(data.gameId)?.displayName ?? 'Counter-Strike: Global Offensive'}
@@ -221,7 +223,7 @@
 						>
 							<button class="btn primary my-2 mb-4">Connect to game server</button>
 						</a>
-						<p class="mb-2 text-xs text-grey-700">
+						<p class="mb-2 text-center text-xs text-grey-700">
 							If button above does not work, copy the connect command below and paste into your game
 							console
 						</p>
@@ -290,12 +292,12 @@
 		<p class="text-grey-700">{team1.university}</p>
 
 		{#each team1.members as player}
-			<div class="my-4 flex items-center gap-4 rounded-xl bg-grey-700/10 p-6">
-				<div class="h-4 w-4">
-					{#if player.captain}<Icon src={User} />{/if}
+			<div class="my-4 flex items-center gap-4 rounded-lg bg-grey-700/10 p-6">
+				<div class="w-5">
+					{#if player.captain}<Icon class="fill-gold" src={VipCrown} theme="solid" size="20" />{/if}
 				</div>
 				<p class="mr-auto font-bold">{player.username}</p>
-				<div class="h-4 w-4 bg-white/10" />
+				<!-- <div class="h-4 w-4 bg-white/10" /> -->
 			</div>
 		{/each}
 	</div>
@@ -315,12 +317,12 @@
 		<p class="text-right text-grey-700">{team2.university}</p>
 
 		{#each team2.members as player}
-			<div class="my-4 flex flex-row-reverse items-center gap-4 rounded-xl bg-grey-700/10 p-6">
-				<div class="h-4 w-4">
-					{#if player.captain}<Icon src={User} />{/if}
+			<div class="my-4 flex flex-row-reverse items-center gap-4 rounded-lg bg-grey-700/10 p-6">
+				<div class="w-5">
+					{#if player.captain}<Icon class="fill-gold" src={VipCrown} theme="solid" size="20" />{/if}
 				</div>
 				<p class="ml-auto text-right font-bold">{player.username}</p>
-				<div class="h-4 w-4 bg-white/10" />
+				<!-- <div class="h-4 w-4 bg-white/10" /> -->
 			</div>
 		{/each}
 	</div>

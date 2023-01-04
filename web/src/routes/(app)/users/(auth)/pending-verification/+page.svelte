@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Icon } from '@steeze-ui/svelte-icon';
-	import { InboxIn } from '@steeze-ui/heroicons';
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import { resendVerificationEmail } from '$/lib/api/auth';
 	import { pushNotification } from '$lib/stores/notifications';
-	import PageTitle from '$/components/base/pageTitle.svelte';
+	import { InboxArrowDown } from '@steeze-ui/heroicons';
+	import { Icon } from '@steeze-ui/svelte-icon';
 
 	let isLoading = false;
 	let canResend = true;
@@ -26,12 +26,12 @@
 	}
 </script>
 
-<PageTitle title="Verify my account" hasHeading={false} />
+<HeadTitle value="Verify my account" />
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="my-10 flex flex-col">
 		<h1 class="flex flex-col justify-center text-center align-middle text-3xl font-bold">
-			<span><Icon class="mb-2 inline" src={InboxIn} size="36" /></span>
+			<span><Icon class="mb-2 inline" src={InboxArrowDown} size="36" /></span>
 			Verify your email address
 		</h1>
 

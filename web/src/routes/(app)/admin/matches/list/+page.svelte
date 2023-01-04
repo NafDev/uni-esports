@@ -2,17 +2,18 @@
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { browser } from '$app/environment';
 
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import Pagination from '$/components/base/pagination.svelte';
 	import { goto } from '$app/navigation';
+	import { getMatchesList } from '$lib/api/admin/matches';
 	import { DEFAULT_PAGE_LEN } from '$lib/config';
 	import { createTable } from '$lib/data-table';
 	import { inputHandler } from '$lib/form-inputs';
+	import { gameStore } from '$lib/stores/games';
 	import { ChevronRight } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import type { IMatchListItem } from '@uni-esports/interfaces/';
 	import { atom } from 'nanostores';
-	import { getMatchesList } from '$lib/api/admin/matches';
-	import { gameStore } from '$lib/stores/games';
 
 	let tableData = atom<IMatchListItem[]>([]);
 
@@ -79,7 +80,8 @@
 	}
 </script>
 
-<PageTitle title="Match Management" />
+<PageTitle value="Match Management" />
+<HeadTitle value="Match Management" />
 
 <div class="flex flex-row justify-end">
 	<button class="btn primary" on:click={() => goto('/admin/matches/create')}

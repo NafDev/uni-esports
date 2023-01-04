@@ -1,5 +1,5 @@
 import { pushNotification } from '$lib/stores/notifications';
-import type { IUniversityAdminView, IUniversity } from '@uni-esports/interfaces';
+import type { IUniversity, IUniversityAdminView } from '@uni-esports/interfaces';
 import { makeRequest } from './http';
 
 export async function getUniList() {

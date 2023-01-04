@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X } from '@steeze-ui/heroicons';
+	import { XMark } from '@steeze-ui/heroicons';
 
 	import { Icon } from '@steeze-ui/svelte-icon';
 	import { createEventDispatcher } from 'svelte';
@@ -27,7 +27,7 @@
 				on:click={() => closeModal()}
 				class="absolute right-2 top-2 m-2 aspect-square rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-20"
 			>
-				<Icon src={X} size="20" theme="solid" />
+				<Icon src={XMark} size="20" theme="solid" />
 			</button>
 
 			<!-- Content -->

@@ -27,6 +27,10 @@ export class Deferred {
 }
 
 export function stripEmptyStrings(obj: Record<string, any>) {
+	if (obj === undefined) {
+		return undefined;
+	}
+
 	const newObj = {};
 
 	for (const [k, v] of Object.entries(obj)) {

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import HeadTitle from '$/components/base/headTitle.svelte';
+	import logo from '$/images/logo.png';
 	import { signUp } from '$/lib/api/users';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT, USERNAME_CHECK, USERNAME_PROMPT } from '$/lib/config';
 	import { formHandler, inputHandler } from '$/lib/form-inputs';
-	import logo from '$/images/logo.png';
-	import PageTitle from '$/components/base/pageTitle.svelte';
+	import { goto } from '$app/navigation';
 
 	let isLoading = false;
 
@@ -51,7 +51,7 @@
 	}
 </script>
 
-<PageTitle title="Create account" hasHeading={false} />
+<HeadTitle value="Create account" />
 
 <div class="my-auto mx-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

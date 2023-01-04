@@ -1,8 +1,8 @@
 import type { AccessTokenPayload } from '@uni-esports/interfaces';
 import type { LayoutLoad } from './$types';
 
-import SuperTokens from 'supertokens-website';
 import { browser, dev } from '$app/environment';
+import SuperTokens from 'supertokens-website';
 
 import { BASE_API_URL } from '$/lib/config';
 import { user } from '$lib/stores/auth';
@@ -36,6 +36,8 @@ export const load: LayoutLoad = async () => {
 
 			const userStore = { ...payload, id };
 			user.set(userStore);
+
+			return { userStore };
 		} catch (error) {
 			if (dev) {
 				console.warn(error);

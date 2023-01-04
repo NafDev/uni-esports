@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { sendPasswordResetEmail } from '$/lib/api/auth';
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import logo from '$/images/logo.png';
-	import PageTitle from '$/components/base/pageTitle.svelte';
+	import { sendPasswordResetEmail } from '$/lib/api/auth';
 
 	let email: string;
 
@@ -13,12 +13,12 @@
 	}
 </script>
 
-<PageTitle title="Forgot password" hasHeading={false} />
+<HeadTitle value="Forgot password" />
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">
 		<a href="/">
-			<img src={logo} href="/" alt="logo" class="mb-10 h-12" />
+			<img src={logo} alt="logo" class="mb-10 h-12" />
 		</a>
 		<h3 class="text-4xl">Forgot password</h3>
 	</div>

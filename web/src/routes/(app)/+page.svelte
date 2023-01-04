@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import MatchCard from '$/components/card/matchCard.svelte';
 	import { isSignedIn, userInfo } from '$lib/stores/auth';
@@ -7,11 +8,16 @@
 	export let data: PageData;
 </script>
 
-<PageTitle title="Home" hasHeading={false} />
+<HeadTitle value={'Home'} />
 
-<h1 class="overflow-x-autotext-left mb-6 text-3xl font-black lg:mt-6">
-	Welcome to UKUE{$isSignedIn && $userInfo?.username ? `, ${userInfo.get().username}` : ''}
-</h1>
+<PageTitle
+	value={`Welcome to UKUE${
+		$isSignedIn && $userInfo?.username ? `, ${userInfo.get().username}` : ''
+	}`}
+/>
+<!-- <h1 class="overflow-x-autotext-left mb-6 text-3xl font-black lg:mt-6">
+	
+</h1> -->
 
 {#if data.upcomingMatches && data.upcomingMatches.length > 0}
 	<h2 class="my-10 pl-10 font-bold">{$isSignedIn === true ? 'Your ' : ''}Upcoming Matches</h2>

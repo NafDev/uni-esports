@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { gameStore } from '$lib/stores/games';
 	import { ChevronRight } from '@steeze-ui/heroicons';
@@ -9,7 +10,8 @@
 	$: match = data.matchData;
 </script>
 
-<PageTitle title={`${match?.id ?? 'Match Not Found'} ~ Match Management`} hasHeading={false} />
+<HeadTitle value={`${match?.id ?? 'Match Not Found'} ~ Match Management`} />
+<PageTitle value={'Match Management'} />
 
 {#if match}
 	<p class="mb-7 text-xl font-bold">Match Details</p>

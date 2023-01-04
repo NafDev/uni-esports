@@ -1,7 +1,13 @@
-import type { CreateTeamDto, InvitePlayerDto, TeamDto } from '@uni-esports/interfaces';
-import { makeRequest } from './http';
-import { playerTeams } from '$lib/stores/teams';
 import { pushNotification } from '$lib/stores/notifications';
+import { playerTeams } from '$lib/stores/teams';
+import type {
+	CreateTeamDto,
+	InvitePlayerDto,
+	ITeamResult,
+	Pagination,
+	TeamDto
+} from '@uni-esports/interfaces';
+import { makeRequest } from './http';
 
 export async function joinTeam(token: string) {
 	await makeRequest<TeamDto>('PATCH', `/teams/join?token=${token}`);
@@ -18,7 +24,10 @@ export async function createTeam(body: CreateTeamDto) {
 }
 
 export async function getTeamById(body: { id: number }, fetchWrapper?: typeof fetch) {
-	const res = await makeRequest<TeamDto>('GET', `/teams/${body.id}`, undefined, { fetchWrapper });
+	const res = await makeRequest<TeamDto>('GET', `/teams/${body.id}`, undefined, {
+		displayUiError: false,
+		fetchWrapper
+	});
 
 	if (res) {
 		return res.json;
@@ -41,5 +50,16 @@ export async function invitePlayerBySearch(teamId: number, body: InvitePlayerDto
 			type: 'success',
 			message: 'Sent team invite to player'
 		});
+	}
+}
+
+export async function getRecentResults(teamId: number, page: number, limit: number) {
+	const res = await makeRequest<Pagination<ITeamResult>>(
+		'GET',
+		`teams/${teamId}/results?page=${page}&limit=${limit}`
+	);
+
+	if (res) {
+		return res.json;
 	}
 }

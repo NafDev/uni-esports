@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { browser } from '$app/environment';
 
@@ -63,7 +64,8 @@
 	}
 </script>
 
-<PageTitle title={'User Management'} />
+<HeadTitle value="User Management" />
+<PageTitle value="User Management" />
 
 <form
 	class="mb-5 flex flex-row items-center gap-5"

@@ -1,10 +1,10 @@
 <script lang="ts">
+	import PageTitle from '$/components/base/pageTitle.svelte';
 	import logo from '$/images/logo.png';
-	import { page } from '$app/stores';
 	import { performPasswordReset } from '$/lib/api/auth';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$/lib/config';
 	import { formHandler, inputHandler } from '$/lib/form-inputs';
-	import PageTitle from '$/components/base/pageTitle.svelte';
+	import { page } from '$app/stores';
 
 	const token = $page.url.searchParams.get('token');
 

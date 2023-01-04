@@ -1,6 +1,7 @@
 import { dev } from '$app/environment';
+import { PUBLIC_API_BASE } from '$env/static/public';
 
-export const BASE_API_URL = dev ? 'http://localhost:3000' : 'https://ukue.app';
+export const BASE_API_URL = dev ? 'http://localhost:3000' : PUBLIC_API_BASE;
 
 export const DEFAULT_PAGE_LEN = 20;
 

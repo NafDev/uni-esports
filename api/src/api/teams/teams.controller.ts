@@ -33,6 +33,15 @@ export class TeamController {
 		return this.teamsService.getTeam(id);
 	}
 
+	@Get(':id/results')
+	async getRecentMatchResults(
+		@Param('id', ParsePositiveIntPipe) teamId: number,
+		@Query('page', ParsePositiveIntPipe) page: number,
+		@Query('limit', ParsePositiveIntPipe) limit: number
+	) {
+		return this.teamsService.getTeamResults(teamId, page, limit);
+	}
+
 	@UseGuards(AuthGuard, VerifiedGuard)
 	@Post(':teamId/invite')
 	async invitePlayerBySearch(

@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { isSignedIn, user, userInfo } from '$lib/stores/auth';
+import { gracefulSignout, isSignedIn, userInfo } from '$lib/stores/auth';
 import { pushNotification } from '$lib/stores/notifications';
 import type {
 	IEmailDto,
@@ -23,7 +23,7 @@ export async function signIn(body: IUserLoginDto, redirectOnSuccess?: string | U
 
 export async function signOut() {
 	await SuperTokens.signOut();
-	user.set(undefined);
+	gracefulSignout();
 }
 
 export async function resendVerificationEmail() {

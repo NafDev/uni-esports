@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { browser } from '$app/environment';
 
@@ -35,7 +36,8 @@
 	}
 </script>
 
-<PageTitle title="University Management" />
+<HeadTitle value="University Management" />
+<PageTitle value="University Management" />
 
 <table class="w-full table-auto text-left">
 	<thead>

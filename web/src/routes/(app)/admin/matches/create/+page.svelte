@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import { createNewMatch } from '$lib/api/admin/matches';
 	import { inputHandler } from '$lib/form-inputs';
@@ -33,7 +34,8 @@
 	}
 </script>
 
-<PageTitle title="Create match" />
+<HeadTitle value={'Create match'} />
+<PageTitle value="Create match" />
 
 <div class="flex w-full flex-wrap items-end justify-around gap-5">
 	<div class="flex grow flex-col">

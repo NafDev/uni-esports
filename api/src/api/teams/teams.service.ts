@@ -4,10 +4,12 @@ import type {
 	CreateTeamDto,
 	InvitePlayerDto,
 	ITeamListSearchItem,
+	ITeamResult,
 	Pagination,
 	TeamDto,
 	TeamListItemDto
 } from '@uni-esports/interfaces';
+import camelCase from 'lodash.camelcase';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { LoggerService } from '../../common/logger-wrapper';
 import { WEB_TEAM_INVITE } from '../../config/app.config';
@@ -305,5 +307,60 @@ export class TeamService {
 		}
 
 		await this.prisma.userOnTeam.delete({ where: { userId_teamId: { teamId, userId } } });
+	}
+
+	async getTeamResults(teamId: number, page: number, limit: number): Promise<Pagination<ITeamResult>> {
+		type TeamResults = {
+			match_id: string;
+			team_number: number;
+			game_id: string;
+			team_1_score: number;
+			start_time: Date | string;
+			status: string;
+			full_count: number;
+		};
+
+		const data = await this.prisma.$queryRaw<TeamResults[]>`
+			select 
+				mt.match_id as match_id,
+				m.game_id as game_id,
+				mt.team_number as team_number,
+				mdc.team_1_score as team_1_score,
+				mdc.team_2_score as team_2_score,
+				m.start_time as start_time,
+				m.status as status,
+				count(*) OVER() AS full_count
+			from
+				"match_team" mt
+			inner join
+				"match" m 
+				on m.id = mt.match_id
+				and mt.team_id = ${teamId}
+				and m.status in ('Completed', 'Cancelled', 'Ongoing')
+				inner join
+					match_details_csgo mdc 
+					on mdc.match_id = mt.match_id
+			order by start_time desc
+			limit ${limit} offset ${(page - 1) * limit}
+		`;
+
+		const normalisedData: ITeamResult[] = [];
+
+		for (const row of data) {
+			row.full_count = Number(row.full_count);
+
+			const dataWithCamelKeys: Record<string, TeamResults[keyof TeamResults]> = {};
+			for (const [k, v] of Object.entries(row)) {
+				if (k !== 'full_count') {
+					dataWithCamelKeys[camelCase(k)] = v;
+				}
+			}
+
+			normalisedData.push(dataWithCamelKeys as unknown as ITeamResult);
+		}
+
+		const count = data.at(0)?.full_count ?? 0;
+
+		return [count, normalisedData];
 	}
 }
