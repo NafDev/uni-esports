@@ -1,6 +1,6 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import type { Request } from 'express';
 import type { AccessTokenPayload } from '@uni-esports/interfaces';
+import type { Request } from 'express';
 
 @Injectable()
 export class VerifiedGuard implements CanActivate {

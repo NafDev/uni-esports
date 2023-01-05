@@ -1,7 +1,8 @@
 import { Global, Module } from '@nestjs/common';
 import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import appConfig from '../../config/app.config';
-import { NatsClientInjectionToken, NatsService } from './nats.service';
+
+export const NatsClientInjectionToken = 'NATS';
 
 @Global()
 @Module({
@@ -16,9 +17,8 @@ import { NatsClientInjectionToken, NatsService } from './nats.service';
 					}
 				});
 			}
-		},
-		NatsService
+		}
 	],
-	exports: [NatsService]
+	exports: [NatsClientInjectionToken]
 })
 export class NatsModule {}

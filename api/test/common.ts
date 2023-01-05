@@ -1,6 +1,6 @@
-import supertest from 'supertest';
 import he from 'he';
 import type { Response } from 'superagent';
+import supertest from 'supertest';
 import mailhog from './scripts/mailhog';
 
 const api = supertest('http://localhost:3000');

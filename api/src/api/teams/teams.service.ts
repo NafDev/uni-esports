@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { Prisma } from '@prisma/client';
 import type {
 	CreateTeamDto,
@@ -11,7 +12,6 @@ import type {
 } from '@uni-esports/interfaces';
 import camelCase from 'lodash.camelcase';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { LoggerService } from '../../common/logger-wrapper';
 import { WEB_TEAM_INVITE } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
@@ -28,9 +28,11 @@ const TEAM_PUBLIC_DTO_SELECT = {
 
 @Injectable()
 export class TeamService {
-	private readonly logger = new LoggerService(TeamService.name);
-
-	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
+	constructor(
+		@OgmaLogger(TeamService) private readonly logger: OgmaService,
+		private readonly prisma: PrismaService,
+		private readonly smtpService: SmtpService
+	) {}
 
 	async findTeamsByUni(universityId: number, page: number): Promise<TeamDto[]> {
 		const teams = await this.prisma.team.findMany({
@@ -177,7 +179,7 @@ export class TeamService {
 				select: TEAM_PUBLIC_DTO_SELECT
 			});
 
-			this.logger.log(`User created team`, { userId: session.getUserId(), teamName });
+			this.logger.info(`User created team`, { userId: session.getUserId(), teamName });
 
 			const dto: TeamDto = {
 				id: team.id,
@@ -264,7 +266,7 @@ export class TeamService {
 
 		try {
 			await this.prisma.userOnTeam.create({ data: { teamId: team.id, userId: session.getUserId() } });
-			this.logger.log(`User joined team`, { userId: session.getUserId(), teamId: team.id });
+			this.logger.info(`User joined team`, { userId: session.getUserId(), teamId: team.id });
 		} catch (error: unknown) {
 			const [prismaError] = classifyPrismaError(error);
 			if (prismaError === PrismaError.CONSTRAINT_FAILED) {

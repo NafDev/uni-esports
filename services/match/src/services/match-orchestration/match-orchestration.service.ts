@@ -1,29 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { MatchService } from '@uni-esports/interfaces';
 import { PostgresError } from 'postgres';
-import { LoggerService, logPostgresError } from '../../common/logger-wrapper';
 import { DatabaseService } from '../../db/db.service';
-import { NatsService } from '../clients/nats.service';
+import { NatsClientInjectionToken } from '../clients/nats.module';
 import { CsgoService } from './csgo/csgo.service';
 import { MatchOrchestrationError } from './match-orchestration.error';
 
 @Injectable()
 export class MatchOrchestrationService {
-	private readonly logger = new LoggerService(MatchOrchestrationService.name);
-
 	constructor(
+		@OgmaLogger(MatchOrchestrationService) private readonly logger: OgmaService,
+		@Inject(NatsClientInjectionToken) readonly natsClient: ClientProxy,
 		private readonly db: DatabaseService,
-		private readonly natsClient: NatsService,
 		private readonly csgoService: CsgoService
 	) {}
 
 	async setupMatch(data: MatchService['match.start']) {
-		this.logger.log('Processing match start event', { ...data });
+		this.logger.info('Processing match start event', { ...data });
 
 		const { matchId, gameId } = data;
 
 		if (!matchId || !gameId) {
 			this.logger.error('Error while starting match - one or more required attributes is undefined', { ...data });
+			return;
 		}
 
 		const sql = this.db.query;
@@ -87,11 +88,11 @@ export class MatchOrchestrationService {
 			}
 		} catch (error: unknown) {
 			if (error instanceof MatchOrchestrationError) {
-				this.logger.error(error.message, { matchId }, error.stack);
+				this.logger.error(error.message, error.stack, { matchId });
 			}
 
 			if (error instanceof PostgresError) {
-				logPostgresError(error, this.logger);
+				this.logger.printError(error);
 			}
 
 			await this.cancelMatch(matchId);
@@ -99,7 +100,7 @@ export class MatchOrchestrationService {
 	}
 
 	private async cancelMatch(matchId: string) {
-		this.logger.log('Cancelling match due to caught error', { matchId });
+		this.logger.info('Cancelling match due to caught error', { matchId });
 
 		const sql = this.db.query;
 		try {
@@ -113,7 +114,7 @@ export class MatchOrchestrationService {
 			`;
 		} catch (error: unknown) {
 			if (error instanceof PostgresError) {
-				logPostgresError(error, this.logger);
+				this.logger.printError(error);
 				this.logger.warn('Failed to set match status to cancelled', { matchId });
 
 				return;

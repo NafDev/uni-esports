@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import startCase from 'lodash.startcase';
 import capitalize from 'lodash.capitalize';
+import startCase from 'lodash.startcase';
 
 export const enum PrismaError {
 	UNKNOWN,

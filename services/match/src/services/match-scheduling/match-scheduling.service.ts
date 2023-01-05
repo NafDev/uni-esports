@@ -1,35 +1,36 @@
-import { Injectable, type OnApplicationBootstrap } from '@nestjs/common';
+import { Inject, Injectable, type OnApplicationBootstrap } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { GameId, MatchService } from '@uni-esports/interfaces';
 import { add, formatISO } from 'date-fns';
 import { PostgresError } from 'postgres';
-import { LoggerService, logPostgresError } from '../../common/logger-wrapper';
 import { DatabaseService } from '../../db/db.service';
-import { NatsService } from '../clients/nats.service';
+import { NatsClientInjectionToken } from '../clients/nats.module';
 import { MatchOrchestrationService } from '../match-orchestration/match-orchestration.service';
 import type { Match } from './scheduling';
 
 @Injectable()
 export class MatchSchedulingService implements OnApplicationBootstrap {
-	private readonly logger = new LoggerService(MatchSchedulingService.name);
-
 	private readonly queuedMatches = new Map<string, Match>();
 
+	// eslint-disable-next-line max-params
 	constructor(
+		@OgmaLogger(MatchSchedulingService) private readonly logger: OgmaService,
+		@Inject(NatsClientInjectionToken) readonly natsClient: ClientProxy,
 		private readonly db: DatabaseService,
-		private readonly natsClient: NatsService,
 		private readonly schedulerRegistry: SchedulerRegistry,
 		private readonly matchOrchestration: MatchOrchestrationService
 	) {}
 
 	@Cron(CronExpression.EVERY_DAY_AT_1AM)
 	async queueUpcomingMatches() {
-		this.logger.log('Starting scheduled job for upcoming matches');
+		this.logger.info('Starting scheduled job for upcoming matches');
 
 		const matches = await this.pollScheduledMatches();
 
 		if (matches) {
-			this.logger.log(`Found ${matches.length} matches to be added to queue`);
+			this.logger.info(`Found ${matches.length} matches to be added to queue`);
 
 			for (const match of matches) {
 				const existingKey = this.queuedMatches.get(match.id);
@@ -54,7 +55,7 @@ export class MatchSchedulingService implements OnApplicationBootstrap {
 			}
 		}
 
-		this.logger.log('Finished scheduled job for upcoming matches');
+		this.logger.info('Finished scheduled job for upcoming matches');
 	}
 
 	onApplicationBootstrap() {
@@ -100,7 +101,7 @@ export class MatchSchedulingService implements OnApplicationBootstrap {
 			`;
 		} catch (error: unknown) {
 			if (error instanceof PostgresError) {
-				logPostgresError(error, this.logger);
+				this.logger.printError(error);
 				return;
 			}
 

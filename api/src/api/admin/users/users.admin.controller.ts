@@ -4,7 +4,6 @@ import {
 	Get,
 	HttpCode,
 	Param,
-	ParseIntPipe,
 	ParseUUIDPipe,
 	Patch,
 	Post,
@@ -13,10 +12,10 @@ import {
 	UseGuards
 } from '@nestjs/common';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { AuthGuard } from '../../auth/auth.guard';
 import { Roles } from '../../../common/guards/roles/roles.decorator';
 import { RolesGuard } from '../../../common/guards/roles/roles.guard';
 import { ParsePositiveIntPipe } from '../../../common/pipes/positive-int.pipe';
+import { AuthGuard } from '../../auth/auth.guard';
 import { UserFiltersDto, UserUpdateEmail, UserUpdateUsername } from './users.admin.dto';
 import { UserAdminService } from './users.admin.service';
 

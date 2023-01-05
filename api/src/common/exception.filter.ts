@@ -1,27 +1,28 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ThrottlerException } from '@nestjs/throttler';
+import type { OgmaService } from '@ogma/nestjs-module';
 import { capitalizeFirstLetter } from '../util/utility';
-import { LoggerService } from './logger-wrapper';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-	private readonly logger = new LoggerService(AllExceptionsFilter.name);
-
-	constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+	constructor(private readonly logger: OgmaService, private readonly httpAdapterHost: HttpAdapterHost) {}
 
 	catch(exception: unknown, host: ArgumentsHost): void {
-		if (exception instanceof HttpException) {
-			this.logger.log('HTTP Exception', { message: exception.message });
-		} else if (exception instanceof Error) {
-			this.logger.error('Uncaught error', { message: exception.message }, exception.stack);
-		} else {
-			this.logger.error('Uncaught error', { thrown: exception });
-		}
-
 		const { httpAdapter } = this.httpAdapterHost;
 
 		const ctx = host.switchToHttp();
+
+		const request = ctx.getRequest();
+		const correlationId = request.requestId;
+
+		if (exception instanceof HttpException && exception.message?.length > 0) {
+			this.logger.info(exception.message, { correlationId });
+		} else if (exception instanceof Error) {
+			this.logger.error(exception.message, exception.stack, { correlationId });
+		} else {
+			this.logger.fatal('Uncaught error', { correlationId, err: exception });
+		}
 
 		const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 

@@ -1,12 +1,12 @@
-import { Body, Controller, Param, ParseUUIDPipe, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Inject, Param, ParseUUIDPipe, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import type { MatchService as MatchServiceInterface } from '@uni-esports/interfaces';
-import { NatsService } from '../../services/clients/nats.service';
 import { JwtGuard } from '../auth/jwt.guard';
 import { MatchService } from '../matches/matches.service';
 
 @Controller('webhooks')
 export class WebhooksController {
-	constructor(private readonly natsClient: NatsService, private readonly matchService: MatchService) {}
+	constructor(@Inject('NATS') readonly natsClient: ClientProxy, private readonly matchService: MatchService) {}
 
 	@UseGuards(new JwtGuard('dathost'))
 	@Post('csgo/:matchId/round-end')

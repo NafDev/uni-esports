@@ -1,7 +1,7 @@
-import supertest from 'supertest';
 import he from 'he';
-import mailhog from './scripts/mailhog';
+import supertest from 'supertest';
 import { createNewSession, createNewVerifiedUser } from './common';
+import mailhog from './scripts/mailhog';
 
 const apiUsers = supertest('http://localhost:3000/users');
 const apiAuth = supertest('http://localhost:3000/auth');

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Res, Session, UseGuards } from '@nestjs/common';
-import type { Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
+import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { VerifiedGuard } from '../../common/guards/user/verified.guard';
 import appConfig, { WEB_STEAM_REDIRECT } from '../../config/app.config';

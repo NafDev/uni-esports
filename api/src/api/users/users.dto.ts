@@ -1,5 +1,3 @@
-import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 import type {
 	ICreateUserDto,
 	IEmailDto,
@@ -8,6 +6,8 @@ import type {
 	IUserInfoDto,
 	IUserLoginDto
 } from '@uni-esports/interfaces';
+import { Transform } from 'class-transformer';
+import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
 
 export class UserLoginDto implements IUserLoginDto {
 	@IsEmail()

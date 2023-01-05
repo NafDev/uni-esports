@@ -1,12 +1,11 @@
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { NestFactory } from '@nestjs/core';
-import { type MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { Transport, type MicroserviceOptions } from '@nestjs/microservices';
+import { OgmaService } from '@ogma/nestjs-module';
 import { AppModule } from './app.module';
 import appConfig from './config/app.config';
 
 async function bootstrap() {
 	const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
-		bufferLogs: true,
 		transport: Transport.NATS,
 		options: {
 			servers: appConfig.NATS_SERVER_URL,
@@ -14,8 +13,8 @@ async function bootstrap() {
 		}
 	});
 
-	app.useLogger(app.get(Logger));
-	app.useGlobalInterceptors(new LoggerErrorInterceptor());
+	const logger = app.get<OgmaService>(OgmaService);
+	app.useLogger(logger);
 
 	await app.listen();
 }

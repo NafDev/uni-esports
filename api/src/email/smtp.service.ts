@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { Injectable } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import { compile } from 'handlebars';
 import mjml2html from 'mjml';
 import * as nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { LoggerService } from '../common/logger-wrapper';
 import appConfig from '../config/app.config';
 
 export enum EmailTemplates {
@@ -20,12 +20,10 @@ export interface IEmailVariables {
 
 @Injectable()
 export class SmtpService {
-	private readonly logger = new LoggerService(SmtpService.name);
-
 	private readonly transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 	private readonly templates: Map<EmailTemplates, HandlebarsTemplateDelegate> = new Map();
 
-	constructor() {
+	constructor(@OgmaLogger(SmtpService) private readonly logger: OgmaService) {
 		for (const templateFile of Object.values(EmailTemplates)) {
 			const mjmlResult = mjml2html(readFileSync(`emails/templates/${templateFile}`).toString());
 
@@ -57,7 +55,7 @@ export class SmtpService {
 		const hbsTemplate = this.templates.get(template);
 
 		if (!hbsTemplate) {
-			this.logger.error('Invalid email template string', { template });
+			this.logger.error(`Invalid email template string = "${template}"`);
 			return;
 		}
 
@@ -68,10 +66,10 @@ export class SmtpService {
 				subject,
 				html: hbsTemplate({ ...variables, appName: appConfig.APP_NAME })
 			});
-			this.logger.log('Email sent', { template, messageId: result.messageId });
+			this.logger.info('Email sent', { template, messageId: result.messageId });
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				this.logger.error('Error sending email', { message: error.message }, error.stack);
+				this.logger.error(error.message, error.stack);
 			}
 
 			throw error;
