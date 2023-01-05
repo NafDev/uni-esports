@@ -1,6 +1,6 @@
+import { Buffer } from 'node:buffer';
 import { Injectable } from '@nestjs/common';
 import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
-import { Buffer } from 'node:buffer';
 import { fetch, FormData, type Response } from 'undici';
 import { AuthService } from '../../../auth/auth.service';
 import appConfig from '../../../config/app.config';
@@ -59,6 +59,7 @@ export class CsgoServerService {
 			map: matchSettings.map,
 			match_end_webhook_url: `${appConfig.API_DOMAIN}/csgo/${matchId}/match-end`,
 			round_end_webhook_url: `${appConfig.API_DOMAIN}/csgo/${matchId}/round-end`,
+			team_size: 5,
 			team1_name: matchSettings.team1.name,
 			team1_steam_ids: matchSettings.team1.steam32Ids,
 			team2_name: matchSettings.team2.name,

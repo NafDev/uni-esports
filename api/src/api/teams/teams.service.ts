@@ -179,7 +179,7 @@ export class TeamService {
 				select: TEAM_PUBLIC_DTO_SELECT
 			});
 
-			this.logger.info(`User created team`, { userId: session.getUserId(), teamName });
+			this.logger.debug(`User created team`, { userId: session.getUserId(), teamName });
 
 			const dto: TeamDto = {
 				id: team.id,
@@ -266,7 +266,7 @@ export class TeamService {
 
 		try {
 			await this.prisma.userOnTeam.create({ data: { teamId: team.id, userId: session.getUserId() } });
-			this.logger.info(`User joined team`, { userId: session.getUserId(), teamId: team.id });
+			this.logger.debug(`User joined team`, { userId: session.getUserId(), teamId: team.id });
 		} catch (error: unknown) {
 			const [prismaError] = classifyPrismaError(error);
 			if (prismaError === PrismaError.CONSTRAINT_FAILED) {

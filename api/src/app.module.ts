@@ -14,6 +14,7 @@ import { OgmaModuleConfig } from './common/logger-module-config';
 import { DatabaseModule } from './db/db.module';
 import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
+import { NatsModule } from './nats.module';
 
 @Module({
 	controllers: [AppController],
@@ -21,6 +22,7 @@ import { EmailModule } from './email/email.module';
 		OgmaModule.forRoot(OgmaModuleConfig.createModuleConfig()),
 		ThrottlerModule.forRoot({ ttl: 60, limit: 100 }),
 		AuthModule,
+		NatsModule,
 		DatabaseModule,
 		UserModule,
 		TeamModule,

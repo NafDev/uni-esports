@@ -6,9 +6,11 @@ import appConfig from './config/app.config';
 
 async function bootstrap() {
 	const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+		bufferLogs: true,
 		transport: Transport.NATS,
 		options: {
 			servers: appConfig.NATS_SERVER_URL,
+			token: appConfig.NATS_TOKEN,
 			queue: 'match_service'
 		}
 	});

@@ -22,6 +22,7 @@ import { firstValueFrom, Subject } from 'rxjs';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
 import { DEFAULT_PAGE_LEN } from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
+import { NatsClientInjectionToken } from '../../nats.module';
 
 @Injectable()
 export class MatchService {
@@ -32,8 +33,8 @@ export class MatchService {
 
 	constructor(
 		@OgmaLogger(MatchService) private readonly logger: OgmaService,
-		private readonly prisma: PrismaService,
-		@Inject('NATS') readonly natsClient: ClientProxy
+		@Inject(NatsClientInjectionToken) private readonly natsClient: ClientProxy,
+		private readonly prisma: PrismaService
 	) {}
 
 	async getUpcomingMatches(
@@ -230,7 +231,7 @@ export class MatchService {
 
 		data = { ...data, id: nanoid() };
 
-		this.logger.info('Broadcasting match event', { matchId, data });
+		this.logger.debug('Broadcasting match event', { matchId, data });
 
 		if (privilegedEvent) {
 			stream.private.next(data);

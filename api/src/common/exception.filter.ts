@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ThrottlerException } from '@nestjs/throttler';
-import type { OgmaService } from '@ogma/nestjs-module';
+import { OgmaService } from '@ogma/nestjs-module';
 import { capitalizeFirstLetter } from '../util/utility';
 
 @Catch()

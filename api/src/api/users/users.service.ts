@@ -71,7 +71,7 @@ export class UserService {
 			throw error;
 		}
 
-		this.logger.info('User created', { userId });
+		this.logger.debug('User created', { userId });
 	}
 
 	async getUserInfo(session: SessionContainer): Promise<UserInfoDto> {

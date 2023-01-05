@@ -59,20 +59,13 @@ export class SmtpService {
 			return;
 		}
 
-		try {
-			const result = await this.transporter.sendMail({
-				from: `${appConfig.APP_NAME} <${appConfig.SMTP_SENDFROM}>`,
-				to: recipient,
-				subject,
-				html: hbsTemplate({ ...variables, appName: appConfig.APP_NAME })
-			});
-			this.logger.info('Email sent', { template, messageId: result.messageId });
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				this.logger.error(error.message, error.stack);
-			}
+		const result = await this.transporter.sendMail({
+			from: `${appConfig.APP_NAME} <${appConfig.SMTP_SENDFROM}>`,
+			to: recipient,
+			subject,
+			html: hbsTemplate({ ...variables, appName: appConfig.APP_NAME })
+		});
 
-			throw error;
-		}
+		this.logger.debug('Email sent', { template, messageId: result.messageId });
 	}
 }
