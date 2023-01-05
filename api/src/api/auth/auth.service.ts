@@ -1,16 +1,10 @@
-import {
-	BadRequestException,
-	Injectable,
-	InternalServerErrorException,
-	Logger,
-	UnauthorizedException
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { AccessTokenPayload, INewPasswordDto } from '@uni-esports/interfaces';
 import axios from 'axios';
 import { compare, hash } from 'bcrypt';
 import type { Response } from 'express';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { LoggerService } from '../../common/logger-wrapper';
 import appConfig, { WEB_RESET_PASSWORD } from '../../config/app.config';
 import { classifyPrismaError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
@@ -22,9 +16,11 @@ import { STSession } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
-	private readonly logger = new LoggerService(AuthService.name);
-
-	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
+	constructor(
+		@OgmaLogger(AuthService) private readonly logger: OgmaService,
+		private readonly prisma: PrismaService,
+		private readonly smtpService: SmtpService
+	) {}
 
 	async login(userLoginDto: UserLoginDto, resp: Response) {
 		const user = await this.prisma.user.findUnique({
@@ -82,7 +78,7 @@ export class AuthService {
 			});
 		}
 
-		this.logger.log(`User requested password reset`, { userId: user.id });
+		this.logger.info(`User requested password reset`, { userId: user.id });
 	}
 
 	async performPasswordReset(token: string, newPassword: string) {
@@ -99,7 +95,7 @@ export class AuthService {
 			data: { passwordHash: await hash(newPassword, appConfig.PASSWORD_SALT_ROUNDS), passwordResetToken: null }
 		});
 
-		this.logger.log(`User successfully performed password reset`, { userId: user.id });
+		this.logger.info(`User successfully performed password reset`, { userId: user.id });
 	}
 
 	async performChangePasswordRequest(session: SessionContainer, body: INewPasswordDto) {

@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import type { Request } from 'express';
-import jwkToPem from 'jwk-to-pem';
 import axios from 'axios';
-import type { getJWKS } from 'supertokens-node/recipe/session';
+import type { Request } from 'express';
 import jsonWebToken, { JsonWebTokenError } from 'jsonwebtoken';
+import jwkToPem from 'jwk-to-pem';
+import type { getJWKS } from 'supertokens-node/recipe/session';
 import appConfig from '../../config/app.config';
 
 @Injectable()

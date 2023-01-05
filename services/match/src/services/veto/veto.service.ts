@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { GameId, MatchService } from '@uni-esports/interfaces';
 import { add, isAfter } from 'date-fns';
 import ms from 'ms';
-import { LoggerService } from '../../common/logger-wrapper';
 import appConfig from '../../config/app.config';
-import { NatsService } from '../clients/nats.service';
+import { NatsClientInjectionToken } from '../clients/nats.module';
 
 type VetoRequestPayload = MatchService['match.veto._gameId.request'] & { gameId: GameId };
 type VetoStartPayload = MatchService['match.veto._gameId.start'] & { gameId: GameId };
@@ -24,11 +25,13 @@ const vetoTimeoutId = (matchId: string) => `random-vote-${matchId.toLowerCase()}
 
 @Injectable()
 export class VetoService {
-	private readonly logger = new LoggerService(VetoService.name);
-
 	private readonly vetoHistory = new Map<string, VetoHistoryValue>();
 
-	constructor(private readonly natsClient: NatsService, private readonly schedulerRegistry: SchedulerRegistry) {}
+	constructor(
+		@OgmaLogger(VetoService) private readonly logger: OgmaService,
+		@Inject(NatsClientInjectionToken) readonly natsClient: ClientProxy,
+		private readonly schedulerRegistry: SchedulerRegistry
+	) {}
 
 	startVeto(data: VetoStartPayload) {
 		const { matchId, gameId } = data;
@@ -71,7 +74,7 @@ export class VetoService {
 
 		this.scheduleRandomVote(matchId, gameId, initialMatchVetoHistory);
 
-		this.logger.log('Starting match veto', { matchId, gameId });
+		this.logger.info('Starting match veto', { matchId, gameId });
 
 		const vetoStartData: MatchService['match.start'] = { matchId, gameId };
 		this.natsClient.emit('match.veto.start', vetoStartData);
@@ -180,7 +183,7 @@ export class VetoService {
 				veto: remainingChoices[randomVetoIndex]
 			};
 
-			this.logger.log('Setting randomised vote due to veto hand timeout', { matchId });
+			this.logger.info('Setting randomised vote due to veto hand timeout', { matchId });
 
 			this.natsClient.emit(`match.veto.${gameId}.request`, vetoRequest);
 			this.schedulerRegistry.deleteTimeout(timeoutId);

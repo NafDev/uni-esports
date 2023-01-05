@@ -1,21 +1,21 @@
 import { Injectable, type OnApplicationBootstrap } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import { fetch, type Response } from 'undici';
-import { LoggerService } from '../../../common/logger-wrapper';
 import appConfig, { CSGO_APP_ID } from '../../../config/app.config';
 import { createToken } from '../../../util/utility';
 import type { CreateAccountResponse, GetAccountListResponse } from './steam-game-servers-service';
 
 @Injectable()
 export class SteamService implements OnApplicationBootstrap {
-	private readonly logger = new LoggerService(SteamService.name);
+	constructor(@OgmaLogger(SteamService) private readonly logger: OgmaService) {}
 
 	onApplicationBootstrap() {
 		void this.clearExpiredCsgoTokens();
 	}
 
 	async createCsgoServerToken() {
-		this.logger.log('Creating CSGO game server account');
+		this.logger.info('Creating CSGO game server account');
 
 		const resp = await this.makeRequest<CreateAccountResponse>('POST', '/CreateAccount/v1/', {
 			appid: 730,
@@ -30,7 +30,7 @@ export class SteamService implements OnApplicationBootstrap {
 	}
 
 	async deleteCsgoServerToken(serverSteamId: string) {
-		this.logger.log('Deleting CSGO game server account', { serverSteamId });
+		this.logger.info('Deleting CSGO game server account', { serverSteamId });
 
 		const resp = await this.makeRequest<void>('POST', '/DeleteAccount/v1/', { steamid: serverSteamId });
 
@@ -45,7 +45,7 @@ export class SteamService implements OnApplicationBootstrap {
 
 	@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
 	private async clearExpiredCsgoTokens() {
-		this.logger.log('Clearing expired CSGO game server tokens');
+		this.logger.info('Clearing expired CSGO game server tokens');
 
 		const resp = await this.makeRequest<GetAccountListResponse>('GET', '/GetAccountList/v1/');
 

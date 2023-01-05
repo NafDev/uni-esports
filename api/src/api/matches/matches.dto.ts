@@ -1,5 +1,5 @@
 import { MatchStatus } from '@prisma/client';
-import type { GameId, IMatchSearchQuery, VetoRequest, ICreateNewMatch } from '@uni-esports/interfaces';
+import type { GameId, ICreateNewMatch, IMatchSearchQuery, VetoRequest } from '@uni-esports/interfaces';
 import { Transform } from 'class-transformer';
 import { IsAlphanumeric, IsArray, IsDate, IsIn, IsOptional, IsPositive, IsString, IsUUID } from 'class-validator';
 

@@ -1,5 +1,5 @@
 import type { ITeamListSearch } from '@uni-esports/interfaces';
-import { Allow, IsInt, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class TeamListSearch implements ITeamListSearch {
 	@IsString()

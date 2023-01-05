@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { Prisma } from '@prisma/client';
 import type { IUserDetails, IUsers, Pagination } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { LoggerService } from '../../../common/logger-wrapper';
 import { WEB_EMAIL_VERIFY } from '../../../config/app.config';
 import { PrismaService } from '../../../db/prisma/prisma.service';
 import { prismaPaginationSkipTake } from '../../../util/utility';
@@ -12,9 +12,11 @@ import type { UserFiltersDto } from './users.admin.dto';
 
 @Injectable()
 export class UserAdminService {
-	private readonly logger = new LoggerService(UserAdminService.name);
-
-	constructor(private readonly prisma: PrismaService, private readonly authService: AuthService) {}
+	constructor(
+		@OgmaLogger(UserAdminService) private readonly logger: OgmaService,
+		private readonly prisma: PrismaService,
+		private readonly authService: AuthService
+	) {}
 
 	async findAllUsers(page: number, filters: UserFiltersDto): Promise<Pagination<IUsers>> {
 		page = page < 1 ? 1 : page;
@@ -66,7 +68,7 @@ export class UserAdminService {
 			await this.authService.sendPasswordResetTokenEmail(resp.email);
 		}
 
-		this.logger.log('Admin sent password email reset to user', { adminId: session.getUserId(), userId });
+		this.logger.info('Admin sent password email reset to user', { adminId: session.getUserId(), userId });
 	}
 
 	async updateEmail(userId: string, email: string, session: SessionContainer) {
@@ -106,7 +108,7 @@ export class UserAdminService {
 			userContext: {}
 		});
 
-		this.logger.log(`Admin changed user's email`, { adminId: session.getUserId(), userId });
+		this.logger.info(`Admin changed user's email`, { adminId: session.getUserId(), userId });
 	}
 
 	async updateUsername(userId: string, username: string, session: SessionContainer) {
@@ -116,7 +118,7 @@ export class UserAdminService {
 			select: { id: true }
 		});
 
-		this.logger.log(`Admin changed user's username for user`, { adminId: session.getUserId(), userId });
+		this.logger.info(`Admin changed user's username for user`, { adminId: session.getUserId(), userId });
 	}
 
 	async unlinkSteamId(userId: string, session: SessionContainer) {
@@ -126,6 +128,6 @@ export class UserAdminService {
 			select: { id: true }
 		});
 
-		this.logger.log(`Admin unlinked user's Steam ID`, { adminId: session.getUserId(), userId });
+		this.logger.info(`Admin unlinked user's Steam ID`, { adminId: session.getUserId(), userId });
 	}
 }

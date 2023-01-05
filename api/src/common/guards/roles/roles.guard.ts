@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import type { AccessTokenPayload, Role } from '@uni-esports/interfaces';
 import type { Request } from 'express';
-import type { Role, AccessTokenPayload } from '@uni-esports/interfaces';
 import { ROLES_KEY } from './roles.decorator';
 
 @Injectable()

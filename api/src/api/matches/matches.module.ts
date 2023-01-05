@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MatchService } from './matches.service';
+import { OgmaModule } from '@ogma/nestjs-module';
 import { MatchController } from './matches.controller';
+import { MatchService } from './matches.service';
 
 @Module({
 	controllers: [MatchController],
 	providers: [MatchService],
-	exports: [MatchService]
+	exports: [MatchService],
+	imports: [OgmaModule.forFeatures([MatchController, MatchService])]
 })
 export class MatchModule {}

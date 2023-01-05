@@ -1,9 +1,9 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import type { AccessTokenPayload } from '@uni-esports/interfaces';
 import { hash } from 'bcrypt';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { LoggerService } from '../../common/logger-wrapper';
 import appConfig, { WEB_EMAIL_VERIFY } from '../../config/app.config';
 import { classifyPrismaError, normalizeConflictError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
@@ -13,9 +13,11 @@ import type { CreateUserDto, UserInfoDto } from './users.dto';
 
 @Injectable()
 export class UserService {
-	private readonly logger = new LoggerService(UserService.name);
-
-	constructor(private readonly prisma: PrismaService, private readonly smtpService: SmtpService) {}
+	constructor(
+		@OgmaLogger(UserService) private readonly logger: OgmaService,
+		private readonly prisma: PrismaService,
+		private readonly smtpService: SmtpService
+	) {}
 
 	async createUser(createUserDto: CreateUserDto) {
 		const emailDomain = createUserDto.email.split('@').at(1);
@@ -69,7 +71,7 @@ export class UserService {
 			throw error;
 		}
 
-		this.logger.log('User created', { userId });
+		this.logger.debug('User created', { userId });
 	}
 
 	async getUserInfo(session: SessionContainer): Promise<UserInfoDto> {

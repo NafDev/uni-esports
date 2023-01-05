@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { CsgoService } from './csgo.service';
-import type { MatchRoundInfo, MatchEndInfo } from './dathost-api'; // eslint-disable-line @typescript-eslint/consistent-type-imports
+import type { MatchEndInfo, MatchRoundInfo } from './dathost-api'; // eslint-disable-line @typescript-eslint/consistent-type-imports
 
 @Controller()
 export class CsgoController {

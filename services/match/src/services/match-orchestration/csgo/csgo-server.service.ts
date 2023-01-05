@@ -1,20 +1,22 @@
 import { Buffer } from 'node:buffer';
 import { Injectable } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import { fetch, FormData, type Response } from 'undici';
-import { LoggerService } from '../../../common/logger-wrapper';
+import { AuthService } from '../../../auth/auth.service';
 import appConfig from '../../../config/app.config';
+import { createToken } from '../../../util/utility';
 import { MatchOrchestrationError } from '../match-orchestration.error';
 import { SteamService } from '../steam/steam.service';
-import { AuthService } from '../../../auth/auth.service';
-import { createToken } from '../../../util/utility';
 import type { Match, Team } from './csgo.service';
 import type { GameServer, MatchServerStart } from './dathost-api';
 
 @Injectable()
 export class CsgoServerService {
-	private readonly logger = new LoggerService(CsgoServerService.name);
-
-	constructor(private readonly steamService: SteamService, private readonly authService: AuthService) {}
+	constructor(
+		@OgmaLogger(CsgoServerService) private readonly logger: OgmaService,
+		private readonly steamService: SteamService,
+		private readonly authService: AuthService
+	) {}
 
 	async startMatch(match: Match, team1: Team, team2: Team) {
 		const { server, gameAccountDetails } = await this.createGameServer();
@@ -57,6 +59,7 @@ export class CsgoServerService {
 			map: matchSettings.map,
 			match_end_webhook_url: `${appConfig.API_DOMAIN}/csgo/${matchId}/match-end`,
 			round_end_webhook_url: `${appConfig.API_DOMAIN}/csgo/${matchId}/round-end`,
+			team_size: 5,
 			team1_name: matchSettings.team1.name,
 			team1_steam_ids: matchSettings.team1.steam32Ids,
 			team2_name: matchSettings.team2.name,

@@ -1,5 +1,5 @@
 import { Equals, IsNotEmpty } from 'class-validator';
-import appConfig, { WEB_STEAM_REDIRECT } from '../../../config/app.config';
+import { WEB_STEAM_REDIRECT } from '../../../config/app.config';
 
 // https://stackoverflow.com/questions/53573820/steam-openid-signature-validation/63652502#63652502
 export class SteamOpenIdParameters {

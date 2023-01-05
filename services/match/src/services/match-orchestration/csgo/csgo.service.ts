@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { MatchService } from '@uni-esports/interfaces';
-import type postgres from 'postgres';
-import { PostgresError } from 'postgres';
 import Steam from 'steamid';
-import { LoggerService, logPostgresError } from '../../../common/logger-wrapper';
 import { DatabaseService } from '../../../db/db.service';
 import { MatchOrchestrationError } from '../match-orchestration.error';
 import { CsgoServerService } from './csgo-server.service';
-import type { MatchEndInfo, MatchServerStart } from './dathost-api';
+import type { MatchServerStart } from './dathost-api';
 
 export type Match = {
 	id: string;
@@ -19,12 +17,14 @@ export type Team = {
 };
 @Injectable()
 export class CsgoService {
-	private readonly logger = new LoggerService(CsgoService.name);
-
-	constructor(private readonly db: DatabaseService, private readonly csgoServerService: CsgoServerService) {}
+	constructor(
+		@OgmaLogger(CsgoService) private readonly logger: OgmaService,
+		private readonly db: DatabaseService,
+		private readonly csgoServerService: CsgoServerService
+	) {}
 
 	async getVetoStartPayload(matchId: string) {
-		this.logger.log('Fetching data to start CSGO veto', { matchId });
+		this.logger.info('Fetching data to start CSGO veto', { matchId });
 
 		const data = await this.getTeamIds(matchId);
 
@@ -32,7 +32,7 @@ export class CsgoService {
 	}
 
 	async startMatch(matchId: string, vetoResult: string) {
-		this.logger.log('Starting CSGO match with completed veto', { matchId, vetoResult });
+		this.logger.info('Starting CSGO match with completed veto', { matchId, vetoResult });
 
 		await this.db.query.begin(async (sql) => {
 			const rows = await sql`

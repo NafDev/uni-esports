@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import type { IMatchListItem, Pagination } from '@uni-esports/interfaces';
-import { isBefore, add } from 'date-fns';
-import { LoggerService } from '../../../common/logger-wrapper';
+import { add, isBefore } from 'date-fns';
 import { PrismaService } from '../../../db/prisma/prisma.service';
 import { prismaPaginationSkipTake } from '../../../util/utility';
 import { GameService } from '../../games/games.service';
@@ -10,8 +9,6 @@ import type { CreateNewMatchDto, MatchSearchFilters } from '../../matches/matche
 
 @Injectable()
 export class AdminMatchService {
-	private readonly logger = new LoggerService(AdminMatchService.name);
-
 	constructor(private readonly prisma: PrismaService, private readonly gameService: GameService) {}
 
 	async getMatches(filters: MatchSearchFilters, page: number): Promise<Pagination<IMatchListItem>> {

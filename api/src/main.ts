@@ -1,11 +1,11 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
-import SuperTokens from 'supertokens-node';
-import helmet from 'helmet';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { AppModule } from './app.module';
+import { OgmaService } from '@ogma/nestjs-module';
+import helmet from 'helmet';
+import SuperTokens from 'supertokens-node';
 import { SupertokensExceptionFilter } from './api/auth/auth.filter';
+import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/exception.filter';
 import appConfig from './config/app.config';
 import { PrismaExceptionFilter } from './db/prisma/prisma.filter';
@@ -13,8 +13,8 @@ import { PrismaExceptionFilter } from './db/prisma/prisma.filter';
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
-	app.useLogger(app.get(Logger));
-	app.useGlobalInterceptors(new LoggerErrorInterceptor());
+	const logger = app.get<OgmaService>(OgmaService);
+	app.useLogger(logger);
 
 	app.getHttpAdapter().getInstance().set('etag', false);
 	app.use(helmet());
@@ -24,9 +24,9 @@ async function bootstrap() {
 		credentials: true
 	});
 
-	app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost)));
+	app.useGlobalFilters(new AllExceptionsFilter(logger, app.get(HttpAdapterHost)));
 	app.useGlobalFilters(new SupertokensExceptionFilter());
-	app.useGlobalFilters(new PrismaExceptionFilter());
+	app.useGlobalFilters(new PrismaExceptionFilter(logger));
 
 	app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
@@ -39,7 +39,8 @@ async function startMicroservices(app: INestApplication) {
 	app.connectMicroservice<MicroserviceOptions>({
 		transport: Transport.NATS,
 		options: {
-			servers: appConfig.NATS_SERVER_URL
+			servers: appConfig.NATS_SERVER_URL,
+			token: appConfig.NATS_TOKEN
 		}
 	});
 

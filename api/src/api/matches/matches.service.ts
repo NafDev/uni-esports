@@ -1,10 +1,13 @@
 import {
 	BadRequestException,
+	Inject,
 	Injectable,
 	InternalServerErrorException,
 	MessageEvent,
 	NotFoundException
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import type { Match, Prisma } from '@prisma/client';
 import type {
 	GameId,
@@ -15,23 +18,24 @@ import type {
 } from '@uni-esports/interfaces';
 import { add } from 'date-fns';
 import { nanoid } from 'nanoid';
-import { firstValueFrom, Observable, Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { LoggerService } from '../../common/logger-wrapper';
 import { DEFAULT_PAGE_LEN } from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
-import { NatsService } from '../../services/clients/nats.service';
+import { NatsClientInjectionToken } from '../../nats.module';
 
 @Injectable()
 export class MatchService {
-	private readonly logger = new LoggerService(MatchService.name);
-
 	private readonly matchEventHandler = new Map<
 		string,
 		{ public: Subject<MessageEvent>; private: Subject<MessageEvent> }
 	>();
 
-	constructor(private readonly prisma: PrismaService, private readonly natsClient: NatsService) {}
+	constructor(
+		@OgmaLogger(MatchService) private readonly logger: OgmaService,
+		@Inject(NatsClientInjectionToken) private readonly natsClient: ClientProxy,
+		private readonly prisma: PrismaService
+	) {}
 
 	async getUpcomingMatches(
 		session: SessionContainer,
@@ -206,7 +210,7 @@ export class MatchService {
 		}
 
 		if (!stream) {
-			this.logger.error('Error while retrieving match event stream - value is undefined for match ID', { matchId });
+			this.logger.warn('Error while retrieving match event stream - value is undefined for match ID', { matchId });
 			throw new InternalServerErrorException();
 		}
 
@@ -221,13 +225,13 @@ export class MatchService {
 		const stream = this.matchEventHandler.get(matchId);
 
 		if (!stream) {
-			this.logger.log('Received match event but no stream present to broadcast to', { matchId, eventData: data });
+			this.logger.info('Received match event but no stream present to broadcast to', { matchId, eventData: data });
 			return;
 		}
 
 		data = { ...data, id: nanoid() };
 
-		this.logger.log('Broadcasting match event', { matchId, data });
+		this.logger.debug('Broadcasting match event', { matchId, data });
 
 		if (privilegedEvent) {
 			stream.private.next(data);

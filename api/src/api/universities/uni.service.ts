@@ -1,16 +1,17 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { OgmaLogger, OgmaService } from '@ogma/nestjs-module';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import type { IUniversity, IUniversityAdminView } from '@uni-esports/interfaces';
 import type { SessionContainer } from 'supertokens-node/recipe/session';
-import { LoggerService } from '../../common/logger-wrapper';
 import { classifyPrismaError, normalizeConflictError, PrismaError } from '../../db/prisma/prisma.errors';
 import { PrismaService } from '../../db/prisma/prisma.service';
 
 @Injectable()
 export class UniversityService {
-	private readonly logger = new LoggerService(UniversityService.name);
-
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		@OgmaLogger(UniversityService) private readonly logger: OgmaService,
+		private readonly prisma: PrismaService
+	) {}
 
 	async getUniversities(): Promise<IUniversity[]> {
 		return this.prisma.university.findMany({
@@ -45,7 +46,7 @@ export class UniversityService {
 		try {
 			await this.prisma.university.update({ where: { id: universityId }, data: { name } });
 
-			this.logger.log(`Admin changed university name`, {
+			this.logger.info(`Admin changed university name`, {
 				adminId: session.getUserId(),
 				universityId,
 				universityName: name
@@ -75,7 +76,7 @@ export class UniversityService {
 				select: { universityId: true }
 			});
 
-			this.logger.log(`Admin added university domain`, {
+			this.logger.info(`Admin added university domain`, {
 				adminId: session.getUserId(),
 				domain,
 				universityId
@@ -116,7 +117,7 @@ export class UniversityService {
 
 		await this.prisma.universityDomain.delete({ where: { domain_universityId: { domain, universityId } } });
 
-		this.logger.log(`Admin deleted university domain`, {
+		this.logger.info(`Admin deleted university domain`, {
 			adminId: session.getUserId(),
 			domain,
 			universityId
