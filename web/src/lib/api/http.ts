@@ -2,12 +2,26 @@ import { BASE_API_URL } from '$/lib/config';
 import { browser, dev } from '$app/environment';
 import { pushNotification } from '$lib/stores/notifications';
 import { onDestroy, onMount } from 'svelte';
+import SuperTokens from 'supertokens-website';
+import { goto } from '$app/navigation';
 
-type HttpResponse<T> = {
-	readonly status: number;
-	readonly url: string;
-	readonly json?: T extends void ? undefined : T;
-};
+async function httpRequest(url: string, reqInit: RequestInit, http: typeof fetch) {
+	const response = await http(url, reqInit);
+
+	let data;
+
+	if (response.ok) {
+		try {
+			data = await response.json();
+		} catch (error: unknown) {
+			if (!(error instanceof SyntaxError)) {
+				throw error;
+			}
+		}
+	}
+
+	return { status: response.status, url: response.url, ok: response.ok, json: data };
+}
 
 export async function makeRequest<T>(
 	method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
@@ -18,7 +32,7 @@ export async function makeRequest<T>(
 		displayUiError?: boolean;
 		fetchWrapper?: typeof fetch;
 	}
-): Promise<HttpResponse<T> | false> {
+) {
 	const config = options?.config ?? {};
 	const displayUiError = options?.displayUiError ?? true;
 	const http = options?.fetchWrapper ?? fetch;
@@ -31,45 +45,42 @@ export async function makeRequest<T>(
 		throw new Error('Cannot attach request body to GET request');
 	}
 
-	try {
-		const response = await http(reqUrl, {
-			method,
-			body: json,
-			...config,
-			credentials: dev ? 'include' : 'same-origin',
-			headers: { 'Content-Type': 'application/json; charset=utf-8', ...config.headers }
-		});
+	const requestOptions: RequestInit = {
+		method,
+		body: json,
+		...config,
+		credentials: dev ? 'include' : 'same-origin',
+		headers: { 'Content-Type': 'application/json; charset=utf-8', ...config.headers }
+	};
 
-		let data;
+	let response = await httpRequest(reqUrl, requestOptions, http);
 
+	if (browser && response.status === 511) {
 		try {
-			data = (await response.json()) as T;
+			const refreshSuccess = await SuperTokens.attemptRefreshingSession();
+
+			if (refreshSuccess) {
+				response = await httpRequest(reqUrl, requestOptions, http);
+			}
 		} catch (error: unknown) {
-			if (!(error instanceof SyntaxError)) {
-				throw error;
-			}
+			await goto('/users/signin');
 		}
-
-		if (response.ok) {
-			return { status: response.status, url: response.url, json: data };
-		}
-
-		if (response.status >= 400) {
-			if (displayUiError) {
-				pushNotification({
-					message: data?.message ?? 'An error occurred with your request',
-					type: 'danger'
-				});
-			}
-
-			return false;
-		}
-
-		return { status: response.status, url: response.url };
-	} catch (error) {
-		console.error(error);
 	}
+
+	if (!response.ok) {
+		if (browser && displayUiError) {
+			pushNotification({
+				message: response.json?.message ?? 'An error occurred with your request',
+				type: 'danger'
+			});
+		}
+
+		return false;
+	}
+
+	return { ...response, json: response.json as T };
 }
+
 type EventSourceListener = {
 	type: string;
 	fn: (this: EventSource, event: MessageEvent<any>) => void;

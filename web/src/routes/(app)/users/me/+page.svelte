@@ -5,7 +5,11 @@
 	import { performPasswordChange, steamAuthRedirect } from '$/lib/api/auth';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$/lib/config';
 	import { formHandler, inputHandler } from '$/lib/form-inputs';
-	import { user, userInfo } from '$lib/stores/auth';
+	import { userInfo } from '$lib/stores/auth';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+	const user = data.userStore;
 
 	let oldPassword = '';
 	let isLoadingPasswdChange = false;
@@ -52,7 +56,7 @@
 			<label for="email">Email address</label>
 			<div class="flex flex-row items-center gap-2">
 				<input class="form" type="email" id="email" value={$userInfo?.email ?? ''} disabled />
-				{#if $user.pendingEmailVerification}
+				{#if user?.pendingEmailVerification}
 					<a href="/users/pending-verification"><button class="btn primary">Verify email</button></a
 					>
 				{/if}

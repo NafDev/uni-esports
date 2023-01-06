@@ -150,7 +150,7 @@
 						>Kick</button
 					>
 				{/if}
-				{#if member.id === userStore.id && !isCaptain}
+				{#if member.id === userStore?.id && !isCaptain}
 					<button class="btn danger-outlined absolute right-8" on:click={() => doLeaveTeam()}
 						>Leave Team</button
 					>
