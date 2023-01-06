@@ -56,7 +56,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
 			const teamData = await getTeamById({ id: team.id }, fetch);
 
 			teamData.members.sort((a) => (a.captain ? -1 : 1));
-			props.teams.push({ ...teamData, teamNumber: team.teamNumber });
+			props.teams.push({ ...teamData, teamNumber: team.teamNumber, score: team.score });
 		})
 	);
 

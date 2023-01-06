@@ -2,6 +2,7 @@
 	font-family: 'Play';
 	user-select: none;
 	@apply text-grey-950;
+	@apply subpixel-antialiased;
 }
 input {
 	user-select: text;

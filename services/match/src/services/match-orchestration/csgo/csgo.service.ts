@@ -170,14 +170,22 @@ export class CsgoService {
 		const [serverDetails] = await this.db.query.begin(async (sql) => {
 			await this.db.query`
 				update
-					${sql('matchDetailsCsgo')}
+					${sql('matchTeam')}
 				set
-					${sql({
-						team_1_score: team1_stats.score,
-						team_2_score: team2_stats.score
-					})}
+					${sql('score')} = ${team1_stats.score}
 				where
-					${sql('matchId')} = ${matchId}
+					${sql('matchId')} = ${matchId} and
+					${sql('teamNumber')} = ${1}
+			`;
+
+			await this.db.query`
+				update
+					${sql('matchTeam')}
+				set
+					${sql('score')} = ${team2_stats.score}
+				where
+					${sql('matchId')} = ${matchId} and
+					${sql('teamNumber')} = ${2}
 			`;
 
 			await this.db.query`
@@ -224,14 +232,22 @@ export class CsgoService {
 
 		await this.db.query`
 			update
-				${sql('matchDetailsCsgo')}
+				${sql('matchTeam')}
 			set
-				${sql({
-					team_1_score: team1Score,
-					team_2_score: team2Score
-				})}
+				${sql('score')} = ${team1Score}
 			where
-				${sql('matchId')} = ${matchId}
+				${sql('matchId')} = ${matchId} and
+				${sql('teamNumber')} = ${1}
+	`;
+
+		await this.db.query`
+			update
+				${sql('matchTeam')}
+			set
+			${sql('score')} = ${team2Score}
+			where
+				${sql('matchId')} = ${matchId} and
+				${sql('teamNumber')} = ${2}
 		`;
 	}
 

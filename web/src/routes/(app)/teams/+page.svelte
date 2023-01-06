@@ -1,31 +1,45 @@
 <script lang="ts">
 	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
+	import JoinTeamModal from '$/components/teams/joinTeamModal.svelte';
 	import NewTeamModal from '$/components/teams/newTeamModal.svelte';
-	import { playerTeams } from '$lib/stores/teams';
+	import '$/css/generic-card.css';
+	import { invalidate } from '$app/navigation';
 	import { Users } from '@steeze-ui/heroicons';
 	import { Icon } from '@steeze-ui/svelte-icon';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
 
 	let newTeamModalOpen = false;
+	let joinTeamModalOpen = false;
+
+	async function reloadTeamsList() {
+		await invalidate('teams:list');
+	}
 </script>
 
 <HeadTitle value="Teams" />
 <PageTitle value="Teams" />
 
-<NewTeamModal bind:open={newTeamModalOpen} />
+<NewTeamModal bind:open={newTeamModalOpen} on:success={() => reloadTeamsList()} />
+<JoinTeamModal bind:open={joinTeamModalOpen} on:success={() => reloadTeamsList()} />
 
 <div class="flex flex-row items-center justify-between px-10">
-	<p class="my-8 font-bold">Your Teams</p>
-	<button class="btn primary" on:click={() => (newTeamModalOpen = true)}>Create Team</button>
+	<p class="my-8 text-lg font-bold">Your Teams</p>
+	<div class="flex flex-row justify-center gap-4">
+		<button class="btn primary-outlined" on:click={() => (joinTeamModalOpen = true)}>
+			Join Team
+		</button>
+		<button class="btn primary" on:click={() => (newTeamModalOpen = true)}>Create Team</button>
+	</div>
 </div>
 
-{#if $playerTeams?.length}
+{#if data.teams?.length}
 	<div class="flex flex-row flex-wrap justify-center">
-		{#each $playerTeams as team (team.id)}
+		{#each data.teams as team (team.id)}
 			<a class="max-w-full" href={`/teams/${team.id}`}>
-				<div
-					class="m-3 w-96 max-w-full rounded-md bg-secondary/20 p-5 transition-all hover:scale-105 hover:bg-secondary/30 hover:drop-shadow-lg"
-				>
+				<div class="card m-3 w-96 max-w-full p-5">
 					<div class="flex flex-row items-center justify-between">
 						<h1 class="text-lg font-bold">{team.name}</h1>
 						<div class="flex flex-row items-center">

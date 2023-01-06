@@ -94,7 +94,8 @@ export class MatchService {
 				teams: {
 					select: {
 						team: { select: { id: true, name: true, users: { select: { userId: true } } } },
-						teamNumber: true
+						teamNumber: true,
+						score: true
 					}
 				}
 			}
@@ -118,9 +119,9 @@ export class MatchService {
 			}
 		}
 
-		const matchCleaned = {
+		const matchCleaned: IMatchInfo = {
 			...match,
-			teams: match.teams.map((team) => ({ ...team.team, teamNumber: team.teamNumber }))
+			teams: match.teams.map((team) => ({ ...team.team, teamNumber: team.teamNumber, score: team.score }))
 		};
 
 		switch (match.gameId as GameId) {
@@ -132,13 +133,10 @@ export class MatchService {
 		}
 	}
 
-	async getCsgoMatchDetails(
-		match: Match & { teams: Array<{ id: number; name: string; teamNumber: number }> },
-		userInMatch: boolean
-	): Promise<IMatchInfo | IMatchDetailsCsgo> {
+	async getCsgoMatchDetails(match: IMatchInfo, userInMatch: boolean): Promise<IMatchInfo | IMatchDetailsCsgo> {
 		const matchDetails = await this.prisma.matchDetailsCsgo.findUnique({
 			where: { matchId: match.id },
-			select: { map: true, matchId: true, serverConnect: userInMatch, team1score: true, team2score: true }
+			select: { map: true, matchId: true, serverConnect: userInMatch }
 		});
 
 		if (!matchDetails) {
@@ -148,17 +146,24 @@ export class MatchService {
 		return {
 			...match,
 			connectString: matchDetails.serverConnect,
-			map: matchDetails.map,
-			team1Score: matchDetails.team1score,
-			team2Score: matchDetails.team2score
+			map: matchDetails.map
 		};
 	}
 
 	async fetchVetoStatus(matchId: string) {
-		type MessageReturn = MatchServicePayload['match.veto.status']['res'];
-		const source = this.natsClient.send<MessageReturn>('match.veto.status', { matchId });
+		try {
+			type MessageReturn = MatchServicePayload['match.veto.status']['res'];
+			const source = this.natsClient.send<MessageReturn>('match.veto.status', { matchId });
 
-		return firstValueFrom(source);
+			return await firstValueFrom(source);
+		} catch (error: unknown) {
+			if (error instanceof Error && error.name === 'EmptyResponseException') {
+				this.logger.error('No listeners when fetching veto status', { matchId });
+				return { status: 0 };
+			}
+
+			throw error;
+		}
 	}
 
 	async validateAndSendUserVetoRequest(

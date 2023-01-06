@@ -29,14 +29,13 @@ export interface IMatchInfo {
 	teams: {
 		id: number;
 		name: string;
+		score: number | null;
 		teamNumber: number;
 	}[];
 }
 
 export type IMatchDetailsCsgo = IMatchInfo & {
 	map: string | null;
-	team1Score: number;
-	team2Score: number;
 	connectString: string | null;
 };
 

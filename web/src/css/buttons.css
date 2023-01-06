@@ -1,5 +1,5 @@
 .btn {
-	@apply flex w-auto items-center justify-around rounded-md py-1.5 text-center text-sm font-bold text-white transition-all duration-300 hover:bg-opacity-90;
+	@apply flex w-auto items-center justify-around rounded-md py-1.5 text-center text-sm font-bold text-white transition-all duration-300 hover:brightness-110;
 }
 .btn:not(.isLoading) {
 	@apply disabled:grayscale-[80%] disabled:hover:opacity-100;

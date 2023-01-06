@@ -154,6 +154,32 @@ export class TeamService {
 		return { inviteCode: team.inviteCode };
 	}
 
+	async regenerateInviteCode(id: number, session: SessionContainer) {
+		const team = await this.prisma.team.findUnique({
+			where: { id },
+			select: {
+				inviteCode: true,
+				users: { where: { captain: true }, select: { userId: true } }
+			}
+		});
+
+		if (!team) throw new NotFoundException();
+
+		if (team?.users.at(0)?.userId !== session.getUserId()) {
+			throw new UnauthorizedException();
+		}
+
+		const newToken = createToken(10);
+
+		await this.prisma.team.update({
+			where: { id },
+			data: { inviteCode: newToken },
+			select: { id: true }
+		});
+
+		return { inviteCode: newToken };
+	}
+
 	async createTeam(body: CreateTeamDto, session: SessionContainer): Promise<TeamDto> {
 		const { teamName } = body;
 
@@ -312,57 +338,41 @@ export class TeamService {
 	}
 
 	async getTeamResults(teamId: number, page: number, limit: number): Promise<Pagination<ITeamResult>> {
-		type TeamResults = {
-			match_id: string;
-			team_number: number;
-			game_id: string;
-			team_1_score: number;
-			start_time: Date | string;
-			status: string;
-			full_count: number;
+		const where: Prisma.TeamOnMatchWhereInput = {
+			teamId,
+			match: { status: { in: ['Ongoing', 'Completed'] } }
 		};
 
-		const data = await this.prisma.$queryRaw<TeamResults[]>`
-			select 
-				mt.match_id as match_id,
-				m.game_id as game_id,
-				mt.team_number as team_number,
-				mdc.team_1_score as team_1_score,
-				mdc.team_2_score as team_2_score,
-				m.start_time as start_time,
-				m.status as status,
-				count(*) OVER() AS full_count
-			from
-				"match_team" mt
-			inner join
-				"match" m 
-				on m.id = mt.match_id
-				and mt.team_id = ${teamId}
-				and m.status in ('Completed', 'Cancelled', 'Ongoing')
-				inner join
-					match_details_csgo mdc 
-					on mdc.match_id = mt.match_id
-			order by start_time desc
-			limit ${limit} offset ${(page - 1) * limit}
-		`;
+		const [count, data] = await this.prisma.$transaction([
+			this.prisma.teamOnMatch.count({ where }),
+			this.prisma.teamOnMatch.findMany({
+				where,
+				select: {
+					teamNumber: true,
+					match: {
+						select: {
+							id: true,
+							startTime: true,
+							gameId: true,
+							status: true,
+							teams: { select: { score: true, teamNumber: true } }
+						}
+					}
+				},
+				orderBy: { match: { startTime: 'desc' } },
+				...prismaPaginationSkipTake(page, limit)
+			})
+		]);
 
-		const normalisedData: ITeamResult[] = [];
+		const results: ITeamResult[] = data.map((entry) => ({
+			gameId: entry.match.gameId,
+			matchId: entry.match.id,
+			startTime: entry.match.startTime,
+			status: entry.match.status,
+			teamNumber: entry.teamNumber,
+			teams: entry.match.teams
+		}));
 
-		for (const row of data) {
-			row.full_count = Number(row.full_count);
-
-			const dataWithCamelKeys: Record<string, TeamResults[keyof TeamResults]> = {};
-			for (const [k, v] of Object.entries(row)) {
-				if (k !== 'full_count') {
-					dataWithCamelKeys[camelCase(k)] = v;
-				}
-			}
-
-			normalisedData.push(dataWithCamelKeys as unknown as ITeamResult);
-		}
-
-		const count = data.at(0)?.full_count ?? 0;
-
-		return [count, normalisedData];
+		return [count, results];
 	}
 }

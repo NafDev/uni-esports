@@ -26,7 +26,7 @@
 	$: showScores = data.status === 'Match complete' || data.status === 'Match in progress';
 	$: team1 = data.teams.find((team) => team.teamNumber === 1);
 	$: team2 = data.teams.find((team) => team.teamNumber === 2);
-	$: winningTeam = data.team1Score > data.team2Score ? team1 : team2;
+	$: winningTeam = data.teams.sort((teamA, teamB) => (teamA.score > teamB.score ? -1 : 1)).at(0);
 	$: hasVetoHand =
 		$isSignedIn &&
 		$userInfo.id === vetoingTeam?.members.find((player) => player.id && player.captain)?.id;
@@ -131,10 +131,11 @@
 
 					data = {
 						...data,
-						team1Score: eventData.team1Score,
-						team2Score: eventData.team2Score,
 						status: 'Match complete'
 					};
+
+					team1 = { ...team1, score: eventData.team1Score };
+					team2 = { ...team2, score: eventData.team2Score };
 
 					eventSource.close();
 				}
@@ -144,11 +145,8 @@
 				fn: (event: MessageEvent) => {
 					const eventData: MatchService['match_round'] = JSON.parse(event.data);
 
-					data = {
-						...data,
-						team1Score: eventData.team1Score,
-						team2Score: eventData.team2Score
-					};
+					team1 = { ...team1, score: eventData.team1Score };
+					team2 = { ...team1, score: eventData.team2Score };
 				}
 			}
 		);
@@ -284,11 +282,15 @@
 		{#if showScores}
 			<div class="mb-4 flex flex-col items-center 2xl:absolute 2xl:-top-24 2xl:left-36">
 				<p class="text-xl font-bold text-grey-700">Score</p>
-				<p class="text-xl font-bold text-grey-950">{data.team1Score}</p>
+				<p class="text-xl font-bold text-grey-950">{team1.score}</p>
 			</div>
 		{/if}
 
-		<p class="mb-2 text-xl font-bold">{team1.name}</p>
+		<a href={`/teams/${team1.id}`} class="">
+			<p class="mb-2 origin-left text-xl font-bold transition-transform hover:scale-105">
+				{team1.name}
+			</p>
+		</a>
 		<p class="text-grey-700">{team1.university}</p>
 
 		{#each team1.members as player}
@@ -309,11 +311,17 @@
 		{#if showScores}
 			<div class="mb-4 flex flex-col items-center 2xl:absolute 2xl:-top-24 2xl:left-36">
 				<p class="text-xl font-bold text-grey-700">Score</p>
-				<p class="text-xl font-bold text-grey-950">{data.team2Score}</p>
+				<p class="text-xl font-bold text-grey-950">{team2.score}</p>
 			</div>
 		{/if}
 
-		<p class="mb-2 text-right text-xl font-bold">{team2.name}</p>
+		<a href={`/teams/${team2.id}`} class="">
+			<p
+				class="mb-2 origin-right text-right text-xl font-bold transition-transform hover:scale-105"
+			>
+				{team2.name}
+			</p>
+		</a>
 		<p class="text-right text-grey-700">{team2.university}</p>
 
 		{#each team2.members as player}

@@ -15,13 +15,11 @@
 		$isSignedIn && $userInfo?.username ? `, ${userInfo.get().username}` : ''
 	}`}
 />
-<!-- <h1 class="overflow-x-autotext-left mb-6 text-3xl font-black lg:mt-6">
-	
-</h1> -->
 
 {#if data.upcomingMatches && data.upcomingMatches.length > 0}
-	<h2 class="my-10 pl-10 font-bold">{$isSignedIn === true ? 'Your ' : ''}Upcoming Matches</h2>
-
+	<h2 class="my-10 pl-10 text-lg font-bold">
+		{$isSignedIn === true ? 'Your ' : ''}Upcoming Matches
+	</h2>
 	<div
 		class={`flex w-fit flex-wrap ${
 			data.upcomingMatches.length < 3 ? 'justify-start' : 'justify-center'
@@ -39,5 +37,5 @@
 	</div>
 {/if}
 
-<h2 class="my-10 pl-10 font-bold">Upcoming Tournaments</h2>
+<h2 class="my-10 pl-10 text-lg font-bold">Upcoming Tournaments</h2>
 <p>There are currently no upcoming tournaments, check back another time!</p>
