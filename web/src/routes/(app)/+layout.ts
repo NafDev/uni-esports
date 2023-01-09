@@ -1,7 +1,7 @@
 import type { AccessTokenPayload } from '@uni-esports/interfaces';
 import type { LayoutLoad } from './$types';
 
-import { browser, dev } from '$app/environment';
+import { browser } from '$app/environment';
 import SuperTokens from 'supertokens-website';
 
 import { BASE_API_URL } from '$/lib/config';
@@ -39,8 +39,8 @@ export const load: LayoutLoad = async () => {
 
 			return { userStore };
 		} catch (error) {
-			if (dev) {
-				console.warn(error);
+			if (error.message !== 'No session exists') {
+				console.error(error);
 			}
 		}
 	}

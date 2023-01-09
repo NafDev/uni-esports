@@ -58,6 +58,12 @@ export class TeamController {
 		return this.teamsService.getTeamInviteCode(id, session);
 	}
 
+	@UseGuards(AuthGuard, VerifiedGuard)
+	@Patch(':id/invite-code')
+	async regenerateInviteToken(@Param('id', ParseIntPipe) id: number, @Session() session: SessionContainer) {
+		return this.teamsService.regenerateInviteCode(id, session);
+	}
+
 	@Get('university/:id')
 	async getTeamsByUniversity(
 		@Param('id', ParseIntPipe) uniId: number,

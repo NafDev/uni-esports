@@ -17,7 +17,7 @@
 </script>
 
 <div
-	class="notification relative {type} mx-4 my-3 flex max-h-60 min-h-[7.5rem] w-80 flex-row rounded-lg border-l-8 bg-gradient-to-tr from-bg-stop-2 to-bg-stop-1 shadow-xl"
+	class="notification relative {type} mx-4 my-3 flex max-h-60 min-h-[7.5rem] w-80 flex-row rounded-lg border-l-8 bg-gradient-to-tr from-blue-100 to-blue-300 shadow-xl"
 >
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<span

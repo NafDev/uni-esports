@@ -29,7 +29,7 @@
 	type QuickLink = {
 		name: string;
 		link: string;
-		icon: any;
+		icon: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 		signedIn?: true;
 		disabled?: true;
 	};
@@ -159,7 +159,7 @@
 </script>
 
 <div
-	class="relative flex h-full flex-col overflow-auto bg-gradient-to-b from-bg-stop-1 to-bg-stop-2 py-14 lg:bg-none"
+	class="relative flex h-full flex-col overflow-auto bg-gradient-to-b from-blue-300 to-blue-100 py-14 lg:bg-none"
 >
 	<!-- Mobile Sidebar Close Chevron -->
 	<button
@@ -233,20 +233,21 @@
 
 	<ul class="px-10 pt-4 font-bold">
 		{#each gameLinks as gameLink}
-			<li
-				class="group mb-5 flex items-center text-xl text-grey-700 hover:text-grey-950 aria-selected:text-grey-950"
-				class:pointer-events-none={gameLink.disabled}
-				class:brightness-75={gameLink.disabled}
-				class:disabled={gameLink.disabled}
-				aria-selected={activeLink === gameLink.link}
-			>
-				<span
-					class={`${gameLink.iconBg} mr-4 flex h-7 w-7 items-center justify-center rounded-md p-1 brightness-90 group-hover:brightness-100 group-aria-selected:brightness-100`}
+			<a class:pointer-events-none={gameLink.disabled} href={gameLink.link}>
+				<li
+					class="group mb-5 flex items-center text-xl text-grey-700 hover:text-grey-950 aria-selected:text-grey-950"
+					class:brightness-75={gameLink.disabled}
+					class:disabled={gameLink.disabled}
+					aria-selected={activeLink === gameLink.link}
 				>
-					<img src={gameLink.icon} alt={`${gameLink.name}`} />
-				</span>
-				{gameLink.name}
-			</li>
+					<span
+						class={`${gameLink.iconBg} mr-4 flex h-7 w-7 items-center justify-center rounded-md p-1 brightness-90 group-hover:brightness-100 group-aria-selected:brightness-100`}
+					>
+						<img src={gameLink.icon} alt={`${gameLink.name}`} />
+					</span>
+					{gameLink.name}
+				</li>
+			</a>
 		{/each}
 	</ul>
 

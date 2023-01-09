@@ -1,19 +1,37 @@
 <script lang="ts">
+	import ConfirmationModal from '$/components/base/confirmationModal.svelte';
 	import HeadTitle from '$/components/base/headTitle.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
-	import csgo from '$/images/icons/csgo.png?h=24&imagetools';
-	import { invitePlayerBySearch } from '$/lib/api/teams';
-	import { AcademicCap, ChevronRight } from '@steeze-ui/heroicons';
+	import MatchResultList from '$/components/card/matchResultList.svelte';
+	import '$/css/generic-card.css';
+	import {
+		getTeamInviteCode,
+		invitePlayerBySearch,
+		regenerateTeamInviteCode,
+		removePlayer
+	} from '$/lib/api/teams';
+	import { goto } from '$app/navigation';
+	import { Deferred } from '$lib/util';
+	import { AcademicCap } from '@steeze-ui/heroicons';
 	import { VipCrown } from '@steeze-ui/remix-icons';
 	import { Icon } from '@steeze-ui/svelte-icon';
-	import type { ITeamResult } from '@uni-esports/interfaces';
+	import type { TeamMemberDto } from '@uni-esports/interfaces';
 	import type { PageData } from './$types';
 
+	let deferred: Deferred;
+
 	export let data: PageData;
-	const { team, isCaptain, teamResults } = data;
+	let { team, isCaptain, teamResults, userStore } = data;
+
+	let confirmModalProps = {};
 
 	let playerSearch = '';
 	let playerSearchIsLoading = false;
+
+	let inviteCode = '';
+	let showInviteCode = false;
+
+	let showLeaveModal = false;
 
 	async function doPlayerInvite() {
 		if (team && playerSearch !== '' && !playerSearchIsLoading) {
@@ -27,30 +45,91 @@
 		}
 	}
 
-	function gameIcon(gameId: string) {
-		switch (gameId) {
-			case 'csgo':
-				return csgo;
+	async function toggleInviteCode() {
+		if (inviteCode === '') {
+			const code = await getTeamInviteCode(data.team.id);
+
+			if (code) {
+				inviteCode = code.inviteCode;
+			}
+		}
+
+		showInviteCode = !showInviteCode;
+	}
+
+	async function getNewInviteCode() {
+		const code = await regenerateTeamInviteCode(data.team.id);
+
+		showInviteCode = false;
+
+		if (code) {
+			inviteCode = code.inviteCode;
 		}
 	}
 
-	function matchSummary(matchResult: ITeamResult): 'Win' | 'Loss' | 'Nil' {
-		const { status, teamNumber, team1Score, team2Score } = matchResult;
+	async function doLeaveTeam() {
+		confirmModalProps = {
+			body: 'Are you sure you want to leave this team?',
+			confirmBtnText: 'Leave team',
+			confirmBtnType: 'danger',
+			title: 'Leave team'
+		};
 
-		if (status === 'Completed') {
-			if (teamNumber === 1 && team1Score > team2Score) {
-				return 'Win';
-			}
+		showLeaveModal = true;
+		deferred = new Deferred();
+		const confirm = await deferred.promise;
 
-			return 'Loss';
+		if (confirm !== 'OK') {
+			showLeaveModal = false;
+			return;
 		}
 
-		return 'Nil';
+		try {
+			await removePlayer(data.team.id, userStore.id);
+
+			goto('/teams');
+		} finally {
+			showLeaveModal = false;
+		}
+	}
+
+	async function doPlayerKick(player: TeamMemberDto) {
+		confirmModalProps = {
+			body: `Are you sure you want to kick <strong>${player.username}</string>?`,
+			confirmBtnText: 'Kick',
+			confirmBtnType: 'danger',
+			title: 'Kick player'
+		};
+
+		showLeaveModal = true;
+		deferred = new Deferred();
+		const confirm = await deferred.promise;
+
+		if (confirm !== 'OK') {
+			showLeaveModal = false;
+			return;
+		}
+
+		try {
+			await removePlayer(data.team.id, player.id);
+
+			team = { ...team, members: team.members.filter((member) => member.id !== player.id) };
+		} finally {
+			showLeaveModal = false;
+		}
 	}
 </script>
 
 <HeadTitle value={`Team - ${team.name}`} />
 <PageTitle value="Team Page" />
+
+<ConfirmationModal
+	on:clickConfirm={() => deferred.resolve('OK')}
+	on:clickCancel={() => deferred.resolve('CANCEL')}
+	on:dismiss={() => deferred.resolve('DISMISS')}
+	open={showLeaveModal}
+	{...confirmModalProps}
+/>
 
 <div class="my-8 flex flex-row flex-wrap items-end justify-between">
 	<p class="text-xl font-bold">{team.name}</p>
@@ -64,11 +143,21 @@
 	<div class="my-6 flex w-full flex-col px-4 md:w-1/2">
 		<p class="class mb-3 text-lg font-bold">Players</p>
 		{#each team.members as member}
-			<div
-				class="mb-3 flex flex-row items-center justify-between rounded-md bg-secondary/20 p-5 py-5 px-8 transition-all hover:scale-105 hover:bg-secondary/30 hover:drop-shadow-lg"
-			>
+			<div class="card relative mb-3 flex flex-row items-center justify-between p-5 py-5 px-8">
 				<p class="font-bold">{member.username}</p>
-				{#if member.captain}<Icon class="fill-gold" src={VipCrown} theme="solid" size="20" />{/if}
+				{#if isCaptain && member.id !== userStore.id}
+					<button class="btn warning absolute right-8" on:click={() => doPlayerKick(member)}
+						>Kick</button
+					>
+				{/if}
+				{#if member.id === userStore?.id && !isCaptain}
+					<button class="btn danger-outlined absolute right-8" on:click={() => doLeaveTeam()}
+						>Leave Team</button
+					>
+				{/if}
+				{#if member.captain}
+					<Icon class="fill-gold" src={VipCrown} theme="solid" size="20" />
+				{/if}
 			</div>
 		{/each}
 	</div>
@@ -76,23 +165,7 @@
 	<div class="my-6 flex w-full flex-col px-4 md:w-1/2">
 		<p class="class mb-3 text-lg font-bold">Recent Matches</p>
 		{#if teamResults[0] > 0}
-			{#each teamResults[1] as result}
-				<a href={`/matches/${result.gameId}/${result.matchId}`}>
-					<div
-						class="flex w-full flex-row items-center justify-between rounded-md border-l-4 py-5 px-4 transition-all hover:scale-105 hover:drop-shadow-lg"
-						class:result-win={matchSummary(result) === 'Win'}
-						class:result-loss={matchSummary(result) === 'Loss'}
-						class:result-nil={matchSummary(result) === 'Nil'}
-					>
-						<img class="ml-4 h-6" src={gameIcon(result.gameId)} alt="game icon" />
-						<div class="flex grow flex-row justify-around">
-							<p class="text text-lg font-bold">{result.team1Score} — {result.team2Score}</p>
-							<p class="text-lg font-bold">{matchSummary(result)}</p>
-						</div>
-						<Icon src={ChevronRight} size="16" />
-					</div>
-				</a>
-			{/each}
+			<MatchResultList matchResults={teamResults[1]} />
 		{:else}
 			<p class="text-grey-700">This team hasn't played any matches yet.</p>
 		{/if}
@@ -116,18 +189,30 @@
 					on:click={() => doPlayerInvite()}>Invite</button
 				>
 			</div>
+
+			<label for="inviteCode">Invite code</label>
+			<div class="mb-2 flex flex-row items-center">
+				<input
+					type="text"
+					class="form"
+					id="inviteCode"
+					disabled
+					placeholder="••••••••••"
+					value={showInviteCode ? inviteCode : ''}
+				/>
+				<div class="ml-4 flex flex-row flex-wrap justify-center gap-4">
+					<button
+						class="btn primary"
+						class:isLoading={playerSearchIsLoading}
+						on:click={() => toggleInviteCode()}>{showInviteCode ? 'Hide' : 'Show'} Code</button
+					>
+					<button
+						class="btn warning"
+						class:isLoading={playerSearchIsLoading}
+						on:click={() => getNewInviteCode()}>Regenerate Code</button
+					>
+				</div>
+			</div>
 		</div>
 	{/if}
 </div>
-
-<style lang="postcss">
-	.result-win {
-		@apply border-success bg-gradient-to-r from-success/5 to-secondary/30 hover:from-success/10 hover:to-secondary/30;
-	}
-	.result-loss {
-		@apply border-danger bg-gradient-to-r from-danger/5 to-secondary/30 hover:from-danger/10 hover:to-secondary/30;
-	}
-	.result-nil {
-		@apply border-grey-700 bg-gradient-to-r from-grey-700/5 to-secondary/30 hover:from-danger/10 hover:to-secondary/30;
-	}
-</style>

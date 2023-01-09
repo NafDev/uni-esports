@@ -1,15 +1,18 @@
 import type {
 	GameListItem,
+	IGameMatchResult,
 	IMatchInfo,
 	IUpcomingMatch,
 	MatchService,
+	Pagination,
 	VetoRequest
 } from '@uni-esports/interfaces';
 import { makeRequest } from './http';
 
-export async function getGamesList() {
+export async function getGamesList(fetchWrapper?: typeof fetch) {
 	const res = await makeRequest<GameListItem[]>('GET', '/games/list', undefined, {
-		displayUiError: false
+		displayUiError: false,
+		fetchWrapper
 	});
 
 	if (res) {
@@ -48,4 +51,22 @@ export async function getVetoStatus(matchId: string, fetchWrapper: typeof fetch)
 
 export function sendVetoRequest(matchId: string, body: VetoRequest) {
 	void makeRequest<void>('POST', `/matches/${matchId}/veto/request`, body);
+}
+
+export async function getRecentMatchResults(
+	gameId: string,
+	page: number,
+	limit: number,
+	fetchWrapper?: typeof fetch
+) {
+	const res = await makeRequest<Pagination<IGameMatchResult>>(
+		'GET',
+		`games/${gameId}/recent-matches?page=${page}&limit=${limit}`,
+		undefined,
+		{ fetchWrapper }
+	);
+
+	if (res) {
+		return res.json;
+	}
 }

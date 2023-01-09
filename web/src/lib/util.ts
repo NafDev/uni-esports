@@ -15,7 +15,7 @@ export function hashCode(value: string) {
 
 export class Deferred {
 	promise: Promise<unknown>;
-	reject: (reason?: any) => void;
+	reject: (reason?: unknown) => void;
 	resolve: (value: unknown) => void;
 
 	constructor() {
@@ -26,7 +26,7 @@ export class Deferred {
 	}
 }
 
-export function stripEmptyStrings(obj: Record<string, any>) {
+export function stripEmptyStrings(obj: Record<string, unknown>) {
 	if (obj === undefined) {
 		return undefined;
 	}

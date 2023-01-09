@@ -3,7 +3,10 @@
 
 	import { TEAMNAME_CHECK, TEAMNAME_PROMPT } from '$/lib/config';
 	import { inputHandler } from '$/lib/form-inputs';
+	import { createEventDispatcher } from 'svelte';
 	import Modal from '../base/modal.svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let open: boolean;
 
@@ -21,6 +24,7 @@
 
 			if (res) {
 				open = false;
+				dispatch('success');
 			}
 		}
 	}

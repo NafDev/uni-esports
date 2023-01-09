@@ -29,14 +29,13 @@ export interface IMatchInfo {
 	teams: {
 		id: number;
 		name: string;
+		score: number | null;
 		teamNumber: number;
 	}[];
 }
 
 export type IMatchDetailsCsgo = IMatchInfo & {
 	map: string | null;
-	team1Score: number;
-	team2Score: number;
 	connectString: string | null;
 };
 
@@ -53,4 +52,28 @@ export interface IUpcomingMatch {
 	tournamentId: string | null;
 	time: string | Date;
 	universityIds: number[];
+}
+
+export interface ICreateNewScrim {
+	gameId: string;
+	matchStart: Date | string;
+	teamId: number;
+}
+
+export interface IAcceptScrimDto {
+	scrimId: number;
+	teamId: number;
+}
+
+export interface IOpenScrimRequest {
+	id: number;
+    matchStart: Date | string;
+    acceptDeadline: Date | string;
+    requestingTeam: {
+        id: number;
+        name: string;
+        university: {
+            name: string;
+        };
+    };
 }

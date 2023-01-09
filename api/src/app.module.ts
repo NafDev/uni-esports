@@ -15,6 +15,7 @@ import { DatabaseModule } from './db/db.module';
 import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
 import { NatsModule } from './nats.module';
+import { ScrimModule } from './api/scrim/scrim.module';
 
 @Module({
 	controllers: [AppController],
@@ -30,7 +31,8 @@ import { NatsModule } from './nats.module';
 		EmailModule,
 		AdminModule,
 		GameModule,
-		WebhooksModule
+		WebhooksModule,
+		ScrimModule
 	],
 	providers: [
 		PrismaService,

@@ -26,8 +26,8 @@ export async function getUserInfo() {
 	}
 }
 
-export async function getUserTeams() {
-	const res = await makeRequest<TeamDto[]>('GET', '/teams/me');
+export async function getUserTeams(fetchWrapper?: typeof fetch) {
+	const res = await makeRequest<TeamDto[]>('GET', '/teams/me', undefined, { fetchWrapper });
 
 	if (res) {
 		return res.json;

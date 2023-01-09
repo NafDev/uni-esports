@@ -23,7 +23,9 @@
 	<p>{@html body}</p>
 
 	<div class="mt-5 flex justify-end">
-		<button class="btn secondary mr-2" on:click={() => dispatch('clickCancel')}>Cancel</button>
+		<button class="btn secondary-outlined mr-2" on:click={() => dispatch('clickCancel')}
+			>Cancel</button
+		>
 		<button
 			class={`btn ${confirmBtnType} ml-2`}
 			class:isLoading

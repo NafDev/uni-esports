@@ -12,7 +12,7 @@
 		"test:teardown": "docker compose -f test/scripts/docker-compose.yml down",
 		"test": "run-s -c test:setup test:jest test:teardown",
 		"prod": "node dist/main",
-		"lint": "xo --prettier --fix"
+		"lint": "tsc --noEmit --incremental false && xo --prettier --fix"
 	},
 	"engines": {
 		"node": "^18.12"

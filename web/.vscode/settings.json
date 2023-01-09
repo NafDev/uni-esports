@@ -6,6 +6,9 @@
 	"prettier.requireConfig": true,
 	"prettier.enable": true,
 	"svelte.plugin.svelte.defaultScriptLanguage": "ts",
-	"cSpell.words": ["esports", "nanostores", "supertokens", "sveltejs"],
-	"editor.formatOnSave": true
+	"cSpell.words": ["esports", "nanostores", "supertokens", "sveltejs", "undici"],
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	}
 }
