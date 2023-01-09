@@ -26,7 +26,7 @@ export class Deferred {
 	}
 }
 
-export function stripEmptyStrings(obj: Record<string, unknown>) {
+export function stripEmptyStrings(obj: Record<string, any>) {
 	if (obj === undefined) {
 		return undefined;
 	}

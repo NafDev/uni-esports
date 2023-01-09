@@ -24,7 +24,7 @@ async function httpRequest(url: string, reqInit: RequestInit, http: typeof fetch
 export async function makeRequest<T>(
 	method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
 	url: string,
-	body?: Record<string, unknown>,
+	body?: Record<string, any>,
 	options?: {
 		config?: RequestInit;
 		displayUiError?: boolean;
