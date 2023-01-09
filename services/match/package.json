@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "nodemon --config",
-		"prod": "node dist/main",
+		"prod": "node -r dotenv/config dist/main",
 		"lint": "xo --prettier --fix"
 	},
 	"dependencies": {
@@ -35,7 +35,7 @@
 		"@types/cron": "^2.0.0",
 		"@types/node": "^18.11.15",
 		"@types/steamid": "^2.0.1",
-		"dotenv": "^16.0.1",
+		"dotenv": "^16.0.3",
 		"nodemon": "^2.0.20",
 		"prettier": "^2.8.1",
 		"source-map-support": "^0.5.21",

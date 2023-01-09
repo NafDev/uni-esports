@@ -5,7 +5,6 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"baseUrl": ".",
-		"outDir": "./dist",
 		"incremental": true,
 		"strictNullChecks": true,
 		"resolveJsonModule": true,

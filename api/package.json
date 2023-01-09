@@ -11,7 +11,7 @@
 		"test:jest": "concurrently -k -n jest,app -s first --hide app --prefix none \"jest\" \"node -r ts-node/register -r dotenv/config src/main.ts dotenv_config_path=.env.test\"",
 		"test:teardown": "docker compose -f test/scripts/docker-compose.yml down",
 		"test": "run-s -c test:setup test:jest test:teardown",
-		"prod": "node dist/main",
+		"prod": "node -r dotenv/config dist/main",
 		"lint": "tsc --noEmit --incremental false && xo --prettier --fix"
 	},
 	"engines": {
