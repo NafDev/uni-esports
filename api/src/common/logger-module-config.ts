@@ -29,13 +29,9 @@ export const OgmaModuleConfig = {
 				json: appConfig.isProd,
 				stream: {
 					write(message: unknown) {
-						if (appConfig.isProd) {
-							// Write to log aggregator
-						}
+						stdout.write(message as string);
 
-						if (appConfig.isDev) {
-							stdout.write(message as string);
-						} else {
+						if (!appConfig.isDev) {
 							getLogFileStream().write(message);
 						}
 					}
