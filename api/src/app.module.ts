@@ -36,7 +36,7 @@ import { ScrimModule } from './api/scrim/scrim.module';
 	],
 	providers: [
 		PrismaService,
-		{ provide: APP_GUARD, useClass: ThrottlerGuard },
+		// { provide: APP_GUARD, useClass: ThrottlerGuard },
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: OgmaInterceptor
