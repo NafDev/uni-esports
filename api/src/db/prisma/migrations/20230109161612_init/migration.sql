@@ -1,6 +1,9 @@
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "citext";
 
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER', 'MODERATOR');
 
@@ -14,11 +17,11 @@ CREATE TYPE "Day" AS ENUM ('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun');
 CREATE TYPE "TournamentStatus" AS ENUM ('ANNOUNCED', 'REGISTERATION', 'ONGOING', 'COMPLETED');
 
 -- CreateEnum
-CREATE TYPE "MatchStatus" AS ENUM ('Scheduled', 'Setup', 'Ongoing', 'Completed');
+CREATE TYPE "MatchStatus" AS ENUM ('Scheduled', 'Setup', 'Ongoing', 'Completed', 'Cancelled');
 
 -- CreateTable
 CREATE TABLE "user" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "email" TEXT NOT NULL,
     "password_hash" TEXT,
     "password_hash_token" TEXT,
@@ -105,7 +108,7 @@ CREATE TABLE "game" (
 
 -- CreateTable
 CREATE TABLE "match" (
-    "id" UUID NOT NULL,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "game_id" TEXT NOT NULL,
     "status" "MatchStatus" NOT NULL,
     "start_time" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -116,6 +119,7 @@ CREATE TABLE "match" (
 -- CreateTable
 CREATE TABLE "match_team" (
     "id" SERIAL NOT NULL,
+    "score" INTEGER,
     "team_id" INTEGER NOT NULL,
     "match_id" UUID NOT NULL,
     "team_number" INTEGER NOT NULL
@@ -124,12 +128,24 @@ CREATE TABLE "match_team" (
 -- CreateTable
 CREATE TABLE "match_details_csgo" (
     "id" SERIAL NOT NULL,
-    "matchId" UUID NOT NULL,
+    "match_id" UUID NOT NULL,
     "map" TEXT,
-    "team_1_score" INTEGER NOT NULL DEFAULT 0,
-    "team_2_score" INTEGER NOT NULL DEFAULT 0,
     "team_1_steam_ids" TEXT[],
-    "team_2_steam_ids" TEXT[]
+    "team_2_steam_ids" TEXT[],
+    "server_connect" TEXT,
+    "server_id" TEXT,
+    "steam_game_server_token" TEXT,
+    "steam_game_server_id" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "scrim" (
+    "id" SERIAL NOT NULL,
+    "game_id" TEXT NOT NULL,
+    "match_start" TIMESTAMPTZ NOT NULL,
+    "deadline" TIMESTAMPTZ NOT NULL,
+    "requesting_team_id" INTEGER NOT NULL,
+    "accepting_team_id" INTEGER
 );
 
 -- CreateIndex
@@ -172,7 +188,10 @@ CREATE UNIQUE INDEX "match_team_team_id_match_id_key" ON "match_team"("team_id",
 CREATE UNIQUE INDEX "match_details_csgo_id_key" ON "match_details_csgo"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "match_details_csgo_matchId_key" ON "match_details_csgo"("matchId");
+CREATE UNIQUE INDEX "match_details_csgo_match_id_key" ON "match_details_csgo"("match_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "scrim_id_key" ON "scrim"("id");
 
 -- AddForeignKey
 ALTER TABLE "user" ADD CONSTRAINT "user_university_id_fkey" FOREIGN KEY ("university_id") REFERENCES "university"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -208,4 +227,13 @@ ALTER TABLE "match_team" ADD CONSTRAINT "match_team_team_id_fkey" FOREIGN KEY ("
 ALTER TABLE "match_team" ADD CONSTRAINT "match_team_match_id_fkey" FOREIGN KEY ("match_id") REFERENCES "match"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "match_details_csgo" ADD CONSTRAINT "match_details_csgo_matchId_fkey" FOREIGN KEY ("matchId") REFERENCES "match"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "match_details_csgo" ADD CONSTRAINT "match_details_csgo_match_id_fkey" FOREIGN KEY ("match_id") REFERENCES "match"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "scrim" ADD CONSTRAINT "scrim_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "game"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "scrim" ADD CONSTRAINT "scrim_requesting_team_id_fkey" FOREIGN KEY ("requesting_team_id") REFERENCES "team"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "scrim" ADD CONSTRAINT "scrim_accepting_team_id_fkey" FOREIGN KEY ("accepting_team_id") REFERENCES "team"("id") ON DELETE SET NULL ON UPDATE CASCADE;
