@@ -1,22 +1,20 @@
 import { BASE_API_URL } from '$/lib/config';
 import { browser, dev } from '$app/environment';
-import { pushNotification } from '$lib/stores/notifications';
-import { onDestroy, onMount } from 'svelte';
-import SuperTokens from 'supertokens-website';
 import { goto } from '$app/navigation';
+import { pushNotification } from '$lib/stores/notifications';
+import SuperTokens from 'supertokens-website';
+import { onDestroy, onMount } from 'svelte';
 
 async function httpRequest(url: string, reqInit: RequestInit, http: typeof fetch) {
 	const response = await http(url, reqInit);
 
 	let data;
 
-	if (response.ok) {
-		try {
-			data = await response.json();
-		} catch (error: unknown) {
-			if (!(error instanceof SyntaxError)) {
-				throw error;
-			}
+	try {
+		data = await response.json();
+	} catch (error: unknown) {
+		if (!(error instanceof SyntaxError)) {
+			throw error;
 		}
 	}
 
@@ -26,7 +24,7 @@ async function httpRequest(url: string, reqInit: RequestInit, http: typeof fetch
 export async function makeRequest<T>(
 	method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
 	url: string,
-	body?: Record<string, any>,
+	body?: Record<string, unknown>,
 	options?: {
 		config?: RequestInit;
 		displayUiError?: boolean;
@@ -83,7 +81,7 @@ export async function makeRequest<T>(
 
 type EventSourceListener = {
 	type: string;
-	fn: (this: EventSource, event: MessageEvent<any>) => void;
+	fn: (this: EventSource, event: MessageEvent<unknown>) => void;
 	options?: boolean | AddEventListenerOptions;
 };
 

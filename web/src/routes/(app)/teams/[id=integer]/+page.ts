@@ -2,7 +2,7 @@ import { getRecentResults, getTeamById } from '$lib/api/teams';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, fetch, parent, depends }) => {
+export const load: PageLoad = async ({ params, fetch, parent }) => {
 	const { userStore } = await parent();
 
 	const teamData = await getTeamById(

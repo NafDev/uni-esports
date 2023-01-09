@@ -359,7 +359,7 @@ export class TeamService {
 						}
 					}
 				},
-				orderBy: { match: { startTime: 'desc' } },
+				orderBy: { match: { startTime: 'asc' } },
 				...prismaPaginationSkipTake(page, limit)
 			})
 		]);

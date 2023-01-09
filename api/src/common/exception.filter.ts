@@ -19,7 +19,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 		if (exception instanceof HttpException && exception.message?.length > 0) {
 			this.logger.info(exception.message, { correlationId });
 		} else if (exception instanceof Error) {
-			this.logger.error(exception.message, exception.stack, { correlationId });
+			this.logger.printError(exception, { correlationId });
 		} else {
 			this.logger.fatal('Uncaught error', { correlationId, err: exception });
 		}

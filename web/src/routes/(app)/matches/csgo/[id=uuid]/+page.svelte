@@ -47,7 +47,7 @@
 		minute: 'numeric'
 	});
 
-	const maps: Map<string, { displayName: string; thumb: any }> = new Map([
+	const maps: Map<string, { displayName: string; thumb: string }> = new Map([
 		['de_ancient', { displayName: 'Ancient', thumb: ancient }],
 		['de_anubis', { displayName: 'Anubis', thumb: anubis }],
 		['de_inferno', { displayName: 'Inferno', thumb: inferno }],
@@ -282,7 +282,7 @@
 		{#if showScores}
 			<div class="mb-4 flex flex-col items-center 2xl:absolute 2xl:-top-24 2xl:left-36">
 				<p class="text-xl font-bold text-grey-700">Score</p>
-				<p class="text-xl font-bold text-grey-950">{team1.score}</p>
+				<p class="text-xl font-bold text-grey-950">{team1.score ?? 0}</p>
 			</div>
 		{/if}
 
@@ -311,7 +311,7 @@
 		{#if showScores}
 			<div class="mb-4 flex flex-col items-center 2xl:absolute 2xl:-top-24 2xl:left-36">
 				<p class="text-xl font-bold text-grey-700">Score</p>
-				<p class="text-xl font-bold text-grey-950">{team2.score}</p>
+				<p class="text-xl font-bold text-grey-950">{team2.score ?? 0}</p>
 			</div>
 		{/if}
 

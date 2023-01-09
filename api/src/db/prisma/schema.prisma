@@ -81,10 +81,12 @@ model Team {
   active       Boolean  @default(true)
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
 
-  university  University         @relation(fields: [universityId], references: [id])
-  users       UserOnTeam[]
-  tournaments TeamOnTournament[]
-  matches     TeamOnMatch[]
+  university      University         @relation(fields: [universityId], references: [id])
+  users           UserOnTeam[]
+  tournaments     TeamOnTournament[]
+  matches         TeamOnMatch[]
+  requestedScrims Scrim[]            @relation("requestingTeam")
+  acceptedScrims  Scrim[]            @relation("acceptingTeam")
 
   @@unique([universityId, name])
   @@map("team")
@@ -144,6 +146,7 @@ model Game {
 
   tournaments Tournament[]
   match       Match[]
+  scrim       Scrim[]
 
   @@map("game")
 }
@@ -204,4 +207,20 @@ model MatchDetailsCsgo {
   match Match @relation(fields: [matchId], references: [id])
 
   @@map("match_details_csgo")
+}
+
+model Scrim {
+  id             Int      @unique @default(autoincrement())
+  gameId         String   @map("game_id")
+  matchStart     DateTime @map("match_start") @db.Timestamptz()
+  acceptDeadline DateTime @map("deadline") @db.Timestamptz()
+
+  requestingTeamId Int  @map("requesting_team_id")
+  acceptingTeamId  Int? @map("accepting_team_id")
+
+  game           Game  @relation(fields: [gameId], references: [id])
+  requestingTeam Team  @relation("requestingTeam", fields: [requestingTeamId], references: [id])
+  acceptingTeam  Team? @relation("acceptingTeam", fields: [acceptingTeamId], references: [id])
+
+  @@map("scrim")
 }

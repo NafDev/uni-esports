@@ -53,7 +53,7 @@ export class GameService {
 						select: { team: { select: { name: true } }, score: true }
 					}
 				},
-				orderBy: { startTime: 'desc' },
+				orderBy: { startTime: 'asc' },
 				...prismaPaginationSkipTake(page, limit)
 			})
 		]);

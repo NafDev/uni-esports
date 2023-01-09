@@ -25,8 +25,8 @@
 <NewTeamModal bind:open={newTeamModalOpen} on:success={() => reloadTeamsList()} />
 <JoinTeamModal bind:open={joinTeamModalOpen} on:success={() => reloadTeamsList()} />
 
-<div class="flex flex-row items-center justify-between px-10">
-	<p class="my-8 text-lg font-bold">Your Teams</p>
+<div class="mb-6 flex flex-row items-center justify-between">
+	<p class="text-xl font-bold">Your Teams</p>
 	<div class="flex flex-row justify-center gap-4">
 		<button class="btn primary-outlined" on:click={() => (joinTeamModalOpen = true)}>
 			Join Team

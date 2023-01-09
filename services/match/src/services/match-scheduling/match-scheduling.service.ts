@@ -23,11 +23,14 @@ export class MatchSchedulingService implements OnApplicationBootstrap {
 		private readonly matchOrchestration: MatchOrchestrationService
 	) {}
 
-	@Cron(CronExpression.EVERY_DAY_AT_1AM)
+	@Cron(CronExpression.EVERY_10_MINUTES)
 	async queueUpcomingMatches() {
 		this.logger.info('Starting scheduled job for upcoming matches');
 
-		const matches = await this.pollScheduledMatches();
+		const matches = await this.pollScheduledMatches([
+			'00000000-0000-0000-0000-000000000000',
+			...Array.from(this.queuedMatches.keys())
+		]);
 
 		if (matches) {
 			this.logger.info(`Found ${matches.length} matches to be added to queue`);
@@ -81,11 +84,11 @@ export class MatchSchedulingService implements OnApplicationBootstrap {
 		void this.matchOrchestration.setupMatch(data);
 	}
 
-	async pollScheduledMatches() {
+	async pollScheduledMatches(queuedMatchIds: string[]) {
 		const sql = this.db.query;
 
 		const now = formatISO(new Date());
-		const nowPlus24 = formatISO(add(new Date(), { days: 1 }));
+		const nowPlus15 = formatISO(add(new Date(), { minutes: 15 }));
 
 		let rows;
 
@@ -96,7 +99,8 @@ export class MatchSchedulingService implements OnApplicationBootstrap {
 				from match
 				where
 					${sql('startTime')} > ${now}
-					and ${sql('startTime')} < ${nowPlus24}
+					and ${sql('startTime')} < ${nowPlus15}
+					and ${sql('id')} not in ${sql(queuedMatchIds)}
 					and ${sql('status')} = ${'Scheduled'}
 			`;
 		} catch (error: unknown) {

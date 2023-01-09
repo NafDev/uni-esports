@@ -21,7 +21,7 @@
 	let deferred: Deferred;
 
 	export let data: PageData;
-	let { team, isCaptain, teamResults, isTeamMember, userStore } = data;
+	let { team, isCaptain, teamResults, userStore } = data;
 
 	let confirmModalProps = {};
 

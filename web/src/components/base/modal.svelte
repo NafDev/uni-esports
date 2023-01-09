@@ -22,7 +22,9 @@
 		transition:fade={{ duration: 100 }}
 	>
 		<!-- Modal body -->
-		<div class="app relative z-[99] h-auto rounded-md" style="min-height: fit-content;">
+		<div
+			class="relative z-[99] flex h-auto min-h-fit rounded-md bg-gradient-to-b from-blue-300 to-blue-200"
+		>
 			<button
 				on:click={() => closeModal()}
 				class="absolute right-2 top-2 m-2 aspect-square rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-20"

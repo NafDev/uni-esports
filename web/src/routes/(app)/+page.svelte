@@ -16,10 +16,10 @@
 	}`}
 />
 
+<h2 class="my-10 text-xl font-bold">
+	{$isSignedIn === true ? 'Your ' : ''}Upcoming Matches
+</h2>
 {#if data.upcomingMatches && data.upcomingMatches.length > 0}
-	<h2 class="my-10 pl-10 text-lg font-bold">
-		{$isSignedIn === true ? 'Your ' : ''}Upcoming Matches
-	</h2>
 	<div
 		class={`flex w-fit flex-wrap ${
 			data.upcomingMatches.length < 3 ? 'justify-start' : 'justify-center'
@@ -35,7 +35,12 @@
 			</a>
 		{/each}
 	</div>
+{:else}
+	<p class="text-grey-700">
+		You have no upcoming matches. You can join upcoming tournaments below, or organise a scrim from
+		the game pages in the sidebar.
+	</p>
 {/if}
 
-<h2 class="my-10 pl-10 text-lg font-bold">Upcoming Tournaments</h2>
-<p>There are currently no upcoming tournaments, check back another time!</p>
+<h2 class="my-10 text-xl font-bold">Upcoming Tournaments</h2>
+<p class="text-grey-700">There are currently no upcoming tournaments, check back another time!</p>

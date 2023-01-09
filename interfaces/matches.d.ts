@@ -53,3 +53,27 @@ export interface IUpcomingMatch {
 	time: string | Date;
 	universityIds: number[];
 }
+
+export interface ICreateNewScrim {
+	gameId: string;
+	matchStart: Date | string;
+	teamId: number;
+}
+
+export interface IAcceptScrimDto {
+	scrimId: number;
+	teamId: number;
+}
+
+export interface IOpenScrimRequest {
+	id: number;
+    matchStart: Date | string;
+    acceptDeadline: Date | string;
+    requestingTeam: {
+        id: number;
+        name: string;
+        university: {
+            name: string;
+        };
+    };
+}

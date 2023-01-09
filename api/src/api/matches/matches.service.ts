@@ -56,7 +56,7 @@ export class MatchService {
 		const data = await this.prisma.match.findMany({
 			where: {
 				gameId: gameIdFilter,
-				status: whereUserIsPlaying ? { in: ['Ongoing', 'Scheduled', 'Setup'] } : undefined,
+				status: whereUserIsPlaying ? { in: ['Ongoing', 'Scheduled', 'Setup'] } : { in: ['Scheduled'] },
 				startTime: whereUserIsPlaying ? undefined : betweenTodayAndNextWeek,
 				teams: filterByUserPlaying || undefined
 			},

@@ -18,6 +18,8 @@ declare module '*&imagetools' {
 	 * - code https://github.com/JonasKruckenberg/imagetools/blob/main/packages/core/src/output-formats.ts
 	 * - docs https://github.com/JonasKruckenberg/imagetools/blob/main/docs/guide/getting-started.md#metadata
 	 */
-	const out;
+	const out: ImgSrc;
 	export default out;
 }
+
+type ImgSrc = string;

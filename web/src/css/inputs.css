@@ -1,7 +1,11 @@
 input.form {
-	@apply form-input block grow rounded-sm border-0 border-b-2 border-b-white border-opacity-50 bg-white bg-opacity-5 p-2.5 text-sm transition-colors  focus:border-b-primary focus:ring-transparent disabled:border-b-0 disabled:text-opacity-80;
+	@apply form-input block grow rounded-sm border-0 border-b-2 border-b-white border-opacity-50 bg-gradient-to-tl from-blue-400 to-blue-500 p-2.5 text-sm transition-colors  focus:border-b-primary focus:ring-transparent disabled:border-b-0;
+}
+
+.select-input {
+	@apply form-input block grow rounded-sm border-0 border-b-2 border-b-white border-opacity-50 bg-gradient-to-tl from-blue-400 to-blue-500 p-2.5 text-sm transition-colors  focus:border-b-primary focus:ring-transparent disabled:border-b-0;
 }
 
 select.form {
-	@apply form-select block grow rounded-sm border-0 border-b-2 border-b-white border-opacity-50 bg-white bg-opacity-5 p-2.5 text-sm transition-colors  focus:border-b-primary focus:ring-transparent disabled:border-b-0 disabled:text-opacity-80;
+	@apply form-select block grow rounded-sm border-0 border-b-2 border-b-white border-opacity-50 bg-white bg-opacity-5 p-2.5 text-sm transition-colors  focus:border-b-primary focus:ring-transparent disabled:border-b-0;
 }

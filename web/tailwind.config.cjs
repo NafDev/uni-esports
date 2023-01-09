@@ -14,12 +14,21 @@ module.exports = {
 			},
 			gold: '#d4af37',
 			primary: '#3372DF',
-			secondary: '#435A8A ',
+			secondary: '#435A8A',
 			success: '#30b663',
 			warning: '#D37037',
 			danger: '#B93434',
-			'bg-stop-1': '#283653',
-			'bg-stop-2': '#131e2b',
+			blue: {
+				100: '#131E2B',
+				200: '#1A263D',
+				300: '#283653',
+				400: '#293549',
+				500: '#2A364B'
+			},
+			// 'bg-stop-1': '#283653',
+			// 'bg-stop-2': '#131e2b',
+			// 'bg-stop-3': '#1a263d',
+
 			game: {
 				csgo: '#de9b35',
 				league: '#445fa5',

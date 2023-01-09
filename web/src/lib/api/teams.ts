@@ -43,6 +43,12 @@ export async function regenerateTeamInviteCode(id: number) {
 	const res = await makeRequest<{ inviteCode: string }>('PATCH', `/teams/${id}/invite-code`);
 
 	if (res) {
+		pushNotification({
+			message:
+				"If you've recently invited players by email/username, you'll need to send them another invite.",
+			type: 'success',
+			heading: 'Team invite code has been reset'
+		});
 		return res.json;
 	}
 }

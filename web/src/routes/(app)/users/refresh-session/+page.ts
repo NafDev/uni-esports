@@ -1,8 +1,8 @@
 import { browser } from '$app/environment';
-import type { PageLoad } from './$types';
-import SuperTokens from 'supertokens-website';
-import { redirect } from '@sveltejs/kit';
 import { goto } from '$app/navigation';
+import { redirect } from '@sveltejs/kit';
+import SuperTokens from 'supertokens-website';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url, parent }) => {
 	if (browser) {
