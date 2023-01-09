@@ -24,7 +24,7 @@ export class AuthController {
 		return this.authService.logout(session);
 	}
 
-	@Throttle(5, 120)
+	// @Throttle(5, 120)
 	@Post('password/reset')
 	async resetPassword(@Body() emailDto: EmailDto) {
 		return this.authService.sendPasswordResetTokenEmail(emailDto.email);

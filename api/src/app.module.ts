@@ -21,7 +21,7 @@ import { ScrimModule } from './api/scrim/scrim.module';
 	controllers: [AppController],
 	imports: [
 		OgmaModule.forRoot(OgmaModuleConfig.createModuleConfig()),
-		ThrottlerModule.forRoot({ ttl: 60, limit: 100 }),
+		// ThrottlerModule.forRoot({ ttl: 60, limit: 100 }),
 		AuthModule,
 		NatsModule,
 		DatabaseModule,
