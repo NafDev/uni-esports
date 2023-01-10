@@ -77,7 +77,11 @@
 
 <div class="mt-10 mb-5 flex flex-row justify-between">
 	<p class="text-xl font-bold">Scrim Finder</p>
-	<button class="btn primary" on:click={() => (createScrimModalOpen = true)}>
+	<button
+		class="btn primary"
+		class:invisible={!showScrimButton}
+		on:click={() => (createScrimModalOpen = true)}
+	>
 		Create Scrim Request
 	</button>
 </div>
