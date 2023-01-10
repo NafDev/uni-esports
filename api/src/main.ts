@@ -19,7 +19,13 @@ async function bootstrap() {
 	app.getHttpAdapter().getInstance().set('etag', false);
 	app.use(helmet());
 	app.enableCors({
-		origin: [appConfig.WEB_DOMAIN],
+		origin(origin, callback) {
+			if (origin === appConfig.WEB_DOMAIN || !origin) {
+				callback(null, true);
+			} else {
+				callback(new Error('Not allowed by CORS'));
+			}
+		},
 		allowedHeaders: ['content-type', ...SuperTokens.getAllCORSHeaders()],
 		credentials: true
 	});
