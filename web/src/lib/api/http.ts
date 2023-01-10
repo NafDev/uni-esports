@@ -1,5 +1,5 @@
 import { BASE_API_URL } from '$/lib/config';
-import { browser, dev } from '$app/environment';
+import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
 import { pushNotification } from '$lib/stores/notifications';
 import SuperTokens from 'supertokens-website';
@@ -47,7 +47,7 @@ export async function makeRequest<T>(
 		method,
 		body: json,
 		...config,
-		credentials: dev ? 'include' : 'same-origin',
+		credentials: 'include',
 		headers: { 'Content-Type': 'application/json; charset=utf-8', ...config.headers }
 	};
 
