@@ -2,6 +2,7 @@ import {
 	Body,
 	Controller,
 	Get,
+	Header,
 	HttpCode,
 	Param,
 	ParseBoolPipe,
@@ -26,6 +27,7 @@ export class MatchController {
 
 	@UseGuards(AuthGuardNotRequired)
 	@Sse(':id/events')
+	@Header('X-Accel-Buffering', 'no')
 	async matchSetupEvents(@Param('id', ParseUUIDPipe) matchId: string, @Session() session: SessionContainer) {
 		return this.matchService.matchEvents(matchId, session);
 	}
