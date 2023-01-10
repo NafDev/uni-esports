@@ -31,6 +31,8 @@ const appConfig = cleanEnv(process.env, {
 
 export default appConfig;
 
+export const CORS_WEB = new RegExp(`${appConfig.WEB_DOMAIN.replace(/^https?:\/\//, '').replace('.', '\\.')}$`);
+
 export const DEFAULT_PAGE_LEN = 20;
 
 export const WEB_EMAIL_VERIFY = `${appConfig.WEB_DOMAIN.replace(/\/$/, '')}${

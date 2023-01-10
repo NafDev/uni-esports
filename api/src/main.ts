@@ -7,7 +7,7 @@ import SuperTokens from 'supertokens-node';
 import { SupertokensExceptionFilter } from './api/auth/auth.filter';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/exception.filter';
-import appConfig from './config/app.config';
+import appConfig, { CORS_WEB } from './config/app.config';
 import { PrismaExceptionFilter } from './db/prisma/prisma.filter';
 
 async function bootstrap() {
@@ -19,13 +19,7 @@ async function bootstrap() {
 	app.getHttpAdapter().getInstance().set('etag', false);
 	app.use(helmet());
 	app.enableCors({
-		origin(origin, callback) {
-			if (origin === appConfig.WEB_DOMAIN || !origin) {
-				callback(null, true);
-			} else {
-				callback(new Error('Not allowed by CORS'));
-			}
-		},
+		origin: [CORS_WEB],
 		allowedHeaders: ['content-type', ...SuperTokens.getAllCORSHeaders()],
 		credentials: true
 	});
