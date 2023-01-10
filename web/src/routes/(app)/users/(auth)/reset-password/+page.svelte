@@ -1,6 +1,5 @@
 <script lang="ts">
 	import HeadTitle from '$/components/base/headTitle.svelte';
-	import PageTitle from '$/components/base/pageTitle.svelte';
 	import logo from '$/images/logo.png';
 	import { performPasswordReset } from '$/lib/api/auth';
 	import { PASSWORD_CHECK, PASSWORD_PROMPT } from '$/lib/config';
@@ -35,7 +34,6 @@
 </script>
 
 <HeadTitle value="Reset password" />
-<PageTitle value="Reset password" />
 
 <div class="m-auto w-5/6 md:w-96">
 	<div class="mb-10 flex flex-col items-center justify-center">

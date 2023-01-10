@@ -13,7 +13,7 @@
           Hi there,
         </mj-text>
         <mj-text>
-          You recieved an invite to join the team <b>{{teamName}}</b>. Click the button below and sign in to join your new team and play in tournaments.
+          You received an invite to join the team <b>{{teamName}}</b>. Click the button below and sign in to join your new team and play in tournaments.
         </mj-text>
         <mj-button href="{{link}}" padding="5%">
           Join Team
