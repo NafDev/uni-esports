@@ -1,5 +1,6 @@
 <script lang="ts">
 	import HeadTitle from '$/components/base/headTitle.svelte';
+	import Loader from '$/components/base/loader.svelte';
 	import PageTitle from '$/components/base/pageTitle.svelte';
 	import ancient from '$/images/maps/csgo/ancient.jpg?w=100&imagetools';
 	import anubis from '$/images/maps/csgo/anubis.jpg?w=100&imagetools';
@@ -31,7 +32,14 @@
 		$isSignedIn &&
 		$userInfo.id === vetoingTeam?.members.find((player) => player.id && player.captain)?.id;
 
+	let updateVetoTimerId: number;
 	let secondsTillVetoStart = (data.startTime.getTime() - Date.now()) / 1000;
+	let serverLoading = false;
+	let isPlayer =
+		data.userStore?.id &&
+		Array.prototype
+			.concat(data.teams[0].members, data.teams[1].members)
+			.find((player) => player.id === data.userStore.id);
 
 	if (browser && !data.map && !data.vetoOngoing) {
 		let inter = setInterval(() => {
@@ -113,6 +121,8 @@
 						map: event.data,
 						vetoOngoing: false
 					};
+
+					serverLoading = true;
 				}
 			},
 			{
@@ -121,6 +131,7 @@
 					const eventData: MatchService['match.server.start'] = JSON.parse(event.data);
 					console.log(eventData);
 
+					serverLoading = false;
 					data = { ...data, connectString: eventData.connectString };
 				}
 			},
@@ -152,7 +163,6 @@
 		);
 	}
 
-	let updateVetoTimerId: number;
 	function updateVetoTimer(lastVetoTime: Date) {
 		clearInterval(updateVetoTimerId);
 
@@ -213,6 +223,11 @@
 						<p class="mx-5 font-bold">{data.map ? maps.get(data.map).displayName : 'TBD'}</p>
 					</div>
 				</div>
+				{#if isPlayer && serverLoading}
+					<div class="my-10 flex w-full justify-center">
+						<Loader />
+					</div>
+				{/if}
 				{#if data.status === 'Match in progress' && data.connectString}
 					<div class="flex flex-col">
 						<a

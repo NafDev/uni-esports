@@ -23,10 +23,9 @@ export class CsgoServerService {
 
 		await this.startMatchOnServer(match.id, { dathostServerId: server.id, map: match.map, team1, team2 });
 
-		const domain = server.custom_domain.length > 0 ? server.custom_domain : server.ip;
 		const passwdSuffix = server.csgo_settings.password.length > 0 ? `; password ${server.csgo_settings.password}` : '';
 
-		const connectString = `connect ${domain}:${server.ports.game}${passwdSuffix}`;
+		const connectString = `connect ${server.raw_ip}:${server.ports.game}${passwdSuffix}`;
 
 		return { connectString, serverId: server.id, gameAccountDetails };
 	}
@@ -94,7 +93,6 @@ export class CsgoServerService {
 		const serverToken = createToken(10);
 
 		const updateServerDetails = {
-			custom_domain: `ukue-${serverToken}.ggwp.cc`,
 			name: `UKUE_${serverToken}`,
 			'csgo_settings.steam_game_server_login_token': steamGameServer.login_token
 		};

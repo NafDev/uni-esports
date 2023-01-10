@@ -177,7 +177,7 @@ model Match {
 model TeamOnMatch {
   id Int @unique @default(autoincrement())
 
-  score Int?
+  score Int @default(0)
 
   teamId     Int    @map("team_id")
   matchId    String @map("match_id") @db.Uuid

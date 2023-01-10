@@ -77,7 +77,11 @@ export class MatchOrchestrationService {
 						data.matchId,
 						data.result
 					);
-					this.natsClient.emit('match.server.start', matchInfo);
+
+					// Some time for the CSGO server to load up...
+					setTimeout(() => {
+						this.natsClient.emit('match.server.start', matchInfo);
+					}, 10_000);
 					break;
 				}
 
