@@ -20,8 +20,8 @@ export class AuthService {
 		});
 	}
 
-	async createJwt(validitySeconds: number, source?: string) {
-		const resp = await createJWT({ source }, validitySeconds);
+	async createJwt(validitySeconds: number, scope?: string) {
+		const resp = await createJWT({ scope }, validitySeconds);
 
 		if (resp.status === 'OK') {
 			return resp.jwt;

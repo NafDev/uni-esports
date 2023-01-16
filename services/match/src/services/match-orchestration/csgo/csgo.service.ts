@@ -172,7 +172,7 @@ export class CsgoService {
 				update
 					${sql('matchTeam')}
 				set
-					${sql('score')} = ${team1_stats.score}
+					${sql('score')} = ${team1_stats.score ?? 0}
 				where
 					${sql('matchId')} = ${matchId} and
 					${sql('teamNumber')} = ${1}
@@ -182,7 +182,7 @@ export class CsgoService {
 				update
 					${sql('matchTeam')}
 				set
-					${sql('score')} = ${team2_stats.score}
+					${sql('score')} = ${team2_stats.score ?? 0}
 				where
 					${sql('matchId')} = ${matchId} and
 					${sql('teamNumber')} = ${2}

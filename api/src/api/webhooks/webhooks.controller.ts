@@ -23,7 +23,7 @@ export class WebhooksController {
 			roundData: body
 		};
 
-		this.natsClient.emit(`match.event.${matchId}.csgo.round`, data);
+		this.natsClient.emit(`match.event.csgo.round`, data);
 
 		const sseData: MatchServiceInterface['match_round'] = {
 			team1Score: body.team1_stats.score,
@@ -44,7 +44,7 @@ export class WebhooksController {
 			matchData: body
 		};
 
-		this.natsClient.emit(`match.event.${matchId}.csgo.match`, data);
+		this.natsClient.emit(`match.event.csgo.match`, data);
 
 		const sseData: MatchServiceInterface['match_end'] = {
 			team1Score: body.team1_stats.score,
