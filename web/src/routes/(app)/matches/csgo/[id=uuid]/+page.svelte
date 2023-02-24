@@ -157,7 +157,7 @@
 					const eventData: MatchService['match_round'] = JSON.parse(event.data);
 
 					team1 = { ...team1, score: eventData.team1Score };
-					team2 = { ...team1, score: eventData.team2Score };
+					team2 = { ...team2, score: eventData.team2Score };
 				}
 			}
 		);
@@ -232,7 +232,7 @@
 					<div class="flex flex-col">
 						<a
 							class="self-center"
-							href={`steam://connect/${data.connectString.split(';')[0].substring(8)}`}
+							href={`steam://rungame/730/76561202255233023/+${data.connectString}`}
 						>
 							<button class="btn primary my-2 mb-4">Connect to game server</button>
 						</a>
@@ -240,7 +240,7 @@
 							If button above does not work, copy the connect command below and paste into your game
 							console
 						</p>
-						<p>Server IP</p>
+						<p>Server connect command</p>
 						<div class="mt-1 w-full select-all rounded-md bg-white bg-opacity-5 p-2.5 text-sm">
 							{data.connectString}
 						</div>
